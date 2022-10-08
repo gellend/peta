@@ -4,11 +4,9 @@ import { ThemeProvider, createTheme } from '@mui/material/styles';
 
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
-import Checkbox from '@mui/material/Checkbox';
 import Container from '@mui/material/Container';
 import Copyright from '../src/components/Copyright';
 import CssBaseline from '@mui/material/CssBaseline';
-import FormControlLabel from '@mui/material/FormControlLabel';
 import Grid from '@mui/material/Grid';
 import Link from '@mui/material/Link';
 import TextField from '@mui/material/TextField';
@@ -16,7 +14,7 @@ import Typography from '@mui/material/Typography';
 
 const theme = createTheme();
 
-export default function LogIn() {
+export default function Register() {
   const handleSubmit = (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
@@ -39,7 +37,7 @@ export default function LogIn() {
           }}
         >
           <Typography component="h1" variant="h5">
-            Masuk
+            Registrasi Akun
           </Typography>
           <Typography component="h1" variant="h5">
             PETA - Pengajuan Judul TA
@@ -63,17 +61,13 @@ export default function LogIn() {
               type="password"
               id="password"
             />
-            <FormControlLabel
-              control={<Checkbox value="remember" color="primary" />}
-              label="Ingat saya"
-            />
             <Button
               type="submit"
               fullWidth
               variant="contained"
               sx={{ mt: 3, mb: 2 }}
             >
-              Masuk
+              Register
             </Button>
             <Grid container>
               <Grid item xs>
@@ -82,8 +76,8 @@ export default function LogIn() {
                 </Link>
               </Grid>
               <Grid item>
-                <Link href="/register" variant="body2">
-                  Buat akun
+                <Link href="/login" variant="body2">
+                  Sudah punya akun
                 </Link>
               </Grid>
             </Grid>
