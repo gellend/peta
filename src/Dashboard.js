@@ -1,19 +1,15 @@
 import * as React from 'react';
 
-import { Menu, MenuItem } from '@mui/material';
+import { ListItem, ListItemAvatar, ListItemText, Menu, MenuItem, Popover } from '@mui/material';
 import { ThemeProvider, createTheme, styled } from '@mui/material/styles';
 import { getAuth, signOut } from 'firebase/auth';
-import { mainListItems, secondaryListItems } from './listItems';
 
 import Avatar from '@mui/material/Avatar';
 import Badge from '@mui/material/Badge';
 import Box from '@mui/material/Box';
-import Chart from './Chart';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import Container from '@mui/material/Container';
-import Copyright from './components/Copyright';
 import CssBaseline from '@mui/material/CssBaseline';
-import Deposits from './Deposits';
 import Divider from '@mui/material/Divider';
 import Grid from '@mui/material/Grid';
 import IconButton from '@mui/material/IconButton';
@@ -24,13 +20,13 @@ import MenuIcon from '@mui/icons-material/Menu';
 import MuiAppBar from '@mui/material/AppBar';
 import MuiDrawer from '@mui/material/Drawer';
 import NotificationsIcon from '@mui/icons-material/Notifications';
-import Orders from './Orders';
 import Paper from '@mui/material/Paper';
 import PersonIcon from '@mui/icons-material/Person';
 import Toolbar from '@mui/material/Toolbar';
 import Tooltip from '@mui/material/Tooltip';
 import Typography from '@mui/material/Typography';
 import { createFirebaseApp } from '../firebase/clientApp';
+import { mainListItems } from './listItems';
 import { useRouter } from 'next/router';
 
 const drawerWidth = 240;
@@ -95,12 +91,19 @@ function DashboardContent() {
   const [anchorEl, setAnchorEl] = React.useState(null);
   const openUserMenu = Boolean(anchorEl);
 
-  const handleOpenUserMenu = (e) => {
-    setAnchorEl(e.currentTarget)
-  };
+  const handleOpenUserMenu = (e) => setAnchorEl(e.currentTarget);
 
   const handleCloseUserMenu = () => setAnchorEl(null);
   // User Menu
+
+  // Notif
+  const [notifAnchorEl, setNotifAnchorEl] = React.useState(null);
+  const openNotif = Boolean(notifAnchorEl);
+  const idNotif = openNotif ? 'notif-popover' : undefined;
+
+  const handleOpenNotif = (e) => setNotifAnchorEl(e.currentTarget);
+  const handleCloseNotif = () => setNotifAnchorEl(null);
+  // Notif
 
   const router = useRouter();
 
@@ -137,11 +140,91 @@ function DashboardContent() {
             >
               Dashboard
             </Typography>
-            <IconButton color="inherit">
-              <Badge badgeContent={4} color="secondary">
-                <NotificationsIcon />
-              </Badge>
-            </IconButton>
+            <Tooltip title="Notifikasi">
+              <IconButton onClick={handleOpenNotif} color="inherit">
+                <Badge badgeContent={4} color="secondary">
+                  <NotificationsIcon />
+                </Badge>
+              </IconButton>
+            </Tooltip>
+            <Popover
+              id={idNotif}
+              open={openNotif}
+              anchorEl={notifAnchorEl}
+              onClose={handleCloseNotif}
+              anchorOrigin={{
+                vertical: 'bottom',
+                horizontal: 'left',
+              }}
+            >
+              <List sx={{ width: '100%', maxWidth: 360, bgcolor: 'background.paper' }}>
+                <ListItem alignItems="flex-start">
+                  <ListItemAvatar>
+                    <Avatar alt="Remy Sharp" src="/static/images/avatar/1.jpg" />
+                  </ListItemAvatar>
+                  <ListItemText
+                    primary="Brunch this weekend?"
+                    secondary={
+                      <React.Fragment>
+                        <Typography
+                          sx={{ display: 'inline' }}
+                          component="span"
+                          variant="body2"
+                          color="text.primary"
+                        >
+                          Ali Connors
+                        </Typography>
+                        {" — I'll be in your neighborhood doing errands this…"}
+                      </React.Fragment>
+                    }
+                  />
+                </ListItem>
+                <Divider variant="inset" component="li" />
+                <ListItem alignItems="flex-start">
+                  <ListItemAvatar>
+                    <Avatar alt="Travis Howard" src="/static/images/avatar/2.jpg" />
+                  </ListItemAvatar>
+                  <ListItemText
+                    primary="Summer BBQ"
+                    secondary={
+                      <React.Fragment>
+                        <Typography
+                          sx={{ display: 'inline' }}
+                          component="span"
+                          variant="body2"
+                          color="text.primary"
+                        >
+                          to Scott, Alex, Jennifer
+                        </Typography>
+                        {" — Wish I could come, but I'm out of town this…"}
+                      </React.Fragment>
+                    }
+                  />
+                </ListItem>
+                <Divider variant="inset" component="li" />
+                <ListItem alignItems="flex-start">
+                  <ListItemAvatar>
+                    <Avatar alt="Cindy Baker" src="/static/images/avatar/3.jpg" />
+                  </ListItemAvatar>
+                  <ListItemText
+                    primary="Oui Oui"
+                    secondary={
+                      <React.Fragment>
+                        <Typography
+                          sx={{ display: 'inline' }}
+                          component="span"
+                          variant="body2"
+                          color="text.primary"
+                        >
+                          Sandra Adams
+                        </Typography>
+                        {' — Do you have Paris recommendations? Have you ever…'}
+                      </React.Fragment>
+                    }
+                  />
+                </ListItem>
+              </List>
+            </Popover>
             <Tooltip title="Pengaturan Akun">
               <IconButton
                 onClick={handleOpenUserMenu}
