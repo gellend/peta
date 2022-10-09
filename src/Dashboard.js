@@ -108,6 +108,8 @@ function DashboardContent() {
     <ThemeProvider theme={mdTheme}>
       <Box sx={{ display: 'flex' }}>
         <CssBaseline />
+
+        {/* Topbar */}
         <AppBar position="absolute" open={open}>
           <Toolbar
             sx={{
@@ -176,6 +178,9 @@ function DashboardContent() {
             </Menu>
           </Toolbar>
         </AppBar>
+        {/* Topbar */}
+
+        {/* Sidebar */}
         <Drawer variant="permanent" open={open}>
           <Toolbar
             sx={{
@@ -192,10 +197,10 @@ function DashboardContent() {
           <Divider />
           <List component="nav">
             {mainListItems}
-            <Divider sx={{ my: 1 }} />
-            {secondaryListItems}
           </List>
         </Drawer>
+        {/* Sidebar */}
+
         <Box
           component="main"
           sx={{
@@ -211,40 +216,46 @@ function DashboardContent() {
           <Toolbar />
           <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
             <Grid container spacing={3}>
-              {/* Chart */}
-              <Grid item xs={12} md={8} lg={9}>
+              <Grid item xs={12} md={4}>
                 <Paper
                   sx={{
                     p: 2,
                     display: 'flex',
                     flexDirection: 'column',
-                    height: 240,
+                    height: 140,
                   }}
                 >
-                  <Chart />
+                  <Typography variant="h5" sx={{ mb: 2 }}>Total Pengajuan Judul TA</Typography>
+                  <Typography variant="h5">18</Typography>
                 </Paper>
               </Grid>
-              {/* Recent Deposits */}
-              <Grid item xs={12} md={4} lg={3}>
+              <Grid item xs={12} md={4}>
                 <Paper
                   sx={{
                     p: 2,
                     display: 'flex',
                     flexDirection: 'column',
-                    height: 240,
+                    height: 140,
                   }}
                 >
-                  <Deposits />
+                  <Typography variant="h5" sx={{ mb: 2 }}>Pengajuan Judul TA Disetujui</Typography>
+                  <Typography variant="h5">9</Typography>
                 </Paper>
               </Grid>
-              {/* Recent Orders */}
-              <Grid item xs={12}>
-                <Paper sx={{ p: 2, display: 'flex', flexDirection: 'column' }}>
-                  <Orders />
+              <Grid item xs={12} md={4}>
+                <Paper
+                  sx={{
+                    p: 2,
+                    display: 'flex',
+                    flexDirection: 'column',
+                    height: 140,
+                  }}
+                >
+                  <Typography variant="h5" sx={{ mb: 2 }}>Pengajuan Judul TA Ditolak</Typography>
+                  <Typography variant="h5">9</Typography>
                 </Paper>
               </Grid>
             </Grid>
-            <Copyright sx={{ pt: 4 }} />
           </Container>
         </Box>
       </Box>
