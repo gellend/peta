@@ -1,39 +1,37 @@
 import * as React from 'react';
-import { styled, createTheme, ThemeProvider } from '@mui/material/styles';
-import CssBaseline from '@mui/material/CssBaseline';
-import MuiDrawer from '@mui/material/Drawer';
-import Box from '@mui/material/Box';
-import MuiAppBar from '@mui/material/AppBar';
-import Toolbar from '@mui/material/Toolbar';
-import List from '@mui/material/List';
-import Typography from '@mui/material/Typography';
-import Divider from '@mui/material/Divider';
-import IconButton from '@mui/material/IconButton';
-import Badge from '@mui/material/Badge';
-import Container from '@mui/material/Container';
-import Grid from '@mui/material/Grid';
-import Paper from '@mui/material/Paper';
-import Link from '@mui/material/Link';
-import MenuIcon from '@mui/icons-material/Menu';
-import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
-import NotificationsIcon from '@mui/icons-material/Notifications';
-import { mainListItems, secondaryListItems } from './listItems';
-import Chart from './Chart';
-import Deposits from './Deposits';
-import Orders from './Orders';
 
-function Copyright(props) {
-  return (
-    <Typography variant="body2" color="text.secondary" align="center" {...props}>
-      {'Copyright © '}
-      <Link color="inherit" href="https://mui.com/">
-        Your Website
-      </Link>{' '}
-      {new Date().getFullYear()}
-      {'.'}
-    </Typography>
-  );
-}
+import { Menu, MenuItem } from '@mui/material';
+import { ThemeProvider, createTheme, styled } from '@mui/material/styles';
+import { getAuth, signOut } from 'firebase/auth';
+import { mainListItems, secondaryListItems } from './listItems';
+
+import Avatar from '@mui/material/Avatar';
+import Badge from '@mui/material/Badge';
+import Box from '@mui/material/Box';
+import Chart from './Chart';
+import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
+import Container from '@mui/material/Container';
+import Copyright from './components/Copyright';
+import CssBaseline from '@mui/material/CssBaseline';
+import Deposits from './Deposits';
+import Divider from '@mui/material/Divider';
+import Grid from '@mui/material/Grid';
+import IconButton from '@mui/material/IconButton';
+import List from '@mui/material/List';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import Logout from '@mui/icons-material/Logout';
+import MenuIcon from '@mui/icons-material/Menu';
+import MuiAppBar from '@mui/material/AppBar';
+import MuiDrawer from '@mui/material/Drawer';
+import NotificationsIcon from '@mui/icons-material/Notifications';
+import Orders from './Orders';
+import Paper from '@mui/material/Paper';
+import PersonIcon from '@mui/icons-material/Person';
+import Toolbar from '@mui/material/Toolbar';
+import Tooltip from '@mui/material/Tooltip';
+import Typography from '@mui/material/Typography';
+import { createFirebaseApp } from '../firebase/clientApp';
+import { useRouter } from 'next/router';
 
 const drawerWidth = 240;
 
@@ -82,12 +80,29 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
 );
 
 const mdTheme = createTheme();
+const app = createFirebaseApp();
+const auth = getAuth(app);
 
 function DashboardContent() {
+  // AppBar
   const [open, setOpen] = React.useState(true);
   const toggleDrawer = () => {
     setOpen(!open);
   };
+  // AppBar
+
+  // User Menu
+  const [anchorEl, setAnchorEl] = React.useState(null);
+  const openUserMenu = Boolean(anchorEl);
+
+  const handleOpenUserMenu = (e) => {
+    setAnchorEl(e.currentTarget)
+  };
+
+  const handleCloseUserMenu = () => setAnchorEl(null);
+  // User Menu
+
+  const router = useRouter();
 
   return (
     <ThemeProvider theme={mdTheme}>
@@ -125,6 +140,40 @@ function DashboardContent() {
                 <NotificationsIcon />
               </Badge>
             </IconButton>
+            <Tooltip title="Pengaturan Akun">
+              <IconButton
+                onClick={handleOpenUserMenu}
+                color="inherit"
+                sx={{ ml: 2 }}
+              >
+                <Avatar sx={{ width: 28, height: 28 }}>G</Avatar>
+              </IconButton>
+            </Tooltip>
+            <Menu
+              anchorEl={anchorEl}
+              open={openUserMenu}
+              onClose={handleCloseUserMenu}
+              onClick={handleCloseUserMenu}
+            >
+              <MenuItem>
+                <ListItemIcon>
+                  <PersonIcon fontSize="small" />
+                </ListItemIcon>
+                Profile
+              </MenuItem>
+              <Divider />
+              <MenuItem
+                onClick={() => {
+                  signOut(auth);
+                  router.push('/login');
+                }}
+              >
+                <ListItemIcon>
+                  <Logout fontSize="small" />
+                </ListItemIcon>
+                Logout
+              </MenuItem>
+            </Menu>
           </Toolbar>
         </AppBar>
         <Drawer variant="permanent" open={open}>
