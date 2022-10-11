@@ -25,7 +25,6 @@ export default function UserContextComp({ children }) {
           setUser({ uid, displayName, email, photoURL })
 
           console.log(user)
-          router.push('/dashboard')
         } else {
           console.log('there is no user logged in')
           setUser(null)
