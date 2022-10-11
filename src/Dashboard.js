@@ -250,7 +250,7 @@ function DashboardContent() {
               <MenuItem
                 onClick={() => {
                   signOut(auth);
-                  router.push('/login');
+                  router.push('/');
                 }}
               >
                 <ListItemIcon>

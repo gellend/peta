@@ -24,7 +24,7 @@ export default function UserContextComp({ children }) {
           // const userDoc = await firebase.firestore().doc(`users/${uid}`).get()
           setUser({ uid, displayName, email, photoURL })
 
-          router.push('/')
+          router.push('/dashboard')
         } else {
           console.log('there is no user logged in')
           setUser(null)
