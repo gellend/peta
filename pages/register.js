@@ -1,17 +1,10 @@
 import * as React from 'react';
 
-import { createUserWithEmailAndPassword, getAuth } from "firebase/auth";
+import { Box, Button, Container, CssBaseline, Grid, Link, TextField, Typography } from '@mui/material';
+import { createUserWithEmailAndPassword, getAuth } from 'firebase/auth';
 
-import Box from '@mui/material/Box';
-import Button from '@mui/material/Button';
-import Container from '@mui/material/Container';
 import Copyright from '../src/components/Copyright';
-import CssBaseline from '@mui/material/CssBaseline';
-import Grid from '@mui/material/Grid';
-import Link from '@mui/material/Link';
-import TextField from '@mui/material/TextField';
-import Typography from '@mui/material/Typography';
-import { createFirebaseApp } from '../firebase/clientApp'
+import { createFirebaseApp } from '../firebase/clientApp';
 import { useRouter } from 'next/router';
 
 export default function Register() {
@@ -28,7 +21,7 @@ export default function Register() {
         // Signed in 
         const user = userCredential.user;
 
-        router.push('/')
+        router.push('/dashboard')
       })
       .catch((error) => {
         console.log(error.code);
@@ -86,7 +79,7 @@ export default function Register() {
               </Link>
             </Grid>
             <Grid item>
-              <Link href="/login" variant="body2">
+              <Link href="/" variant="body2">
                 Sudah punya akun
               </Link>
             </Grid>

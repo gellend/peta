@@ -1,16 +1,9 @@
 import * as React from 'react';
 
+import { Box, Button, Container, CssBaseline, Grid, Link, TextField, Typography } from '@mui/material';
 import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
 
-import Box from '@mui/material/Box';
-import Button from '@mui/material/Button';
-import Container from '@mui/material/Container';
 import Copyright from '../src/components/Copyright';
-import CssBaseline from '@mui/material/CssBaseline';
-import Grid from '@mui/material/Grid';
-import Link from '@mui/material/Link';
-import TextField from '@mui/material/TextField';
-import Typography from '@mui/material/Typography';
 import { createFirebaseApp } from '../firebase/clientApp'
 import { useRouter } from 'next/router';
 
