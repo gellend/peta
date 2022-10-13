@@ -232,7 +232,7 @@ export default function Navbar() {
             onClose={handleCloseUserMenu}
             onClick={handleCloseUserMenu}
           >
-            <MenuItem>
+            <MenuItem component="a" href="/profil">
               <ListItemIcon>
                 <PersonIcon fontSize="small" />
               </ListItemIcon>

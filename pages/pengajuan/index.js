@@ -26,7 +26,7 @@ const rows = [
     'Lihat Detail',
   ),
   createData(
-    1,
+    2,
     'Implementasi ABC',
     'Bimo',
     '1811110465',
@@ -34,7 +34,7 @@ const rows = [
     'Lihat Detail',
   ),
   createData(
-    1,
+    3,
     'Implementasi ABC',
     'Bimo',
     '1811110465',
