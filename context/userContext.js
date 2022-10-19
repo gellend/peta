@@ -23,8 +23,6 @@ export default function UserContextComp({ children }) {
           // You could also look for the user doc in your Firestore (if you have one):
           // const userDoc = await firebase.firestore().doc(`users/${uid}`).get()
           setUser({ uid, displayName, email, photoURL })
-
-          console.log(user)
         } else {
           console.log('there is no user logged in')
           setUser(null)

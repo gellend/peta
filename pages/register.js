@@ -1,7 +1,7 @@
-import * as React from 'react';
-
 import { Box, Button, Container, CssBaseline, Grid, Link, TextField, Typography } from '@mui/material';
 import { createUserWithEmailAndPassword, getAuth } from 'firebase/auth';
+import { doc, getFirestore, serverTimestamp, setDoc } from 'firebase/firestore';
+import { useEffect, useState } from 'react';
 
 import Copyright from '../src/components/Copyright';
 import { createFirebaseApp } from '../firebase/clientApp';
@@ -11,20 +11,30 @@ export default function Register() {
   const router = useRouter()
   const app = createFirebaseApp()
   const auth = getAuth(app)
+  const db = getFirestore(app)
+
+  // State
+  const [nrp, setNrp] = useState("");
+  const [nama, setNama] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    const data = new FormData(event.currentTarget);
 
-    createUserWithEmailAndPassword(auth, data.get('email'), data.get('password'))
-      .then((userCredential) => {
-        // Signed in 
-        const user = userCredential.user;
+    createUserWithEmailAndPassword(auth, email, password)
+      .then(async (user) => {
+        await setDoc(doc(db, "users", nrp), {
+          nama: nama,
+          email: email,
+          role: "Mahasiswa",
+          created_at: serverTimestamp()
+        });
 
         router.push('/dashboard')
       })
       .catch((error) => {
-        console.log(error.code);
+        console.log(error.message);
       });
   };
 
@@ -50,19 +60,40 @@ export default function Register() {
             margin="normal"
             required
             fullWidth
-            id="email"
-            label="Alamat Email"
-            name="email"
+            label="NRP"
+            name="nrp"
             autoFocus
+            value={nrp}
+            onChange={(e) => setNrp(e.target.value)}
           />
           <TextField
             margin="normal"
             required
             fullWidth
-            name="password"
+            label="Nama Lengkap"
+            name="nama"
+            value={nama}
+            onChange={(e) => setNama(e.target.value)}
+          />
+          <TextField
+            margin="normal"
+            required
+            fullWidth
+            label="Alamat Email"
+            name="email"
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+          />
+          <TextField
+            margin="normal"
+            required
+            fullWidth
             label="Kata Sandi"
+            name="password"
             type="password"
-            id="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
           />
           <Button
             type="submit"
