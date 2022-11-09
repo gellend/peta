@@ -1,4 +1,4 @@
-import { initializeApp } from 'firebase/app'
+import { getApps, initializeApp } from 'firebase/app'
 
 export const createFirebaseApp = () => {
   const clientCredentials = {
@@ -12,7 +12,9 @@ export const createFirebaseApp = () => {
     measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID,
   }
 
-  const app = initializeApp(clientCredentials)
+  if (getApps().length <= 0) {
+    const app = initializeApp(clientCredentials)
 
-  return app
+    return app
+  }
 }
