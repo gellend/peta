@@ -1,28 +1,55 @@
-import * as React from 'react';
+import {
+  Avatar,
+  Box,
+  Container,
+  CssBaseline,
+  Grid,
+  Paper,
+  Table,
+  TableBody,
+  TableCell,
+  TableRow,
+  Toolbar,
+  Typography,
+} from "@mui/material";
+import { ThemeProvider, createTheme } from "@mui/material/styles";
+import { doc, getDoc, getFirestore } from "firebase/firestore";
 
-import { Avatar, Box, Container, CssBaseline, Grid, Paper, Table, TableBody, TableCell, TableRow, Toolbar, Typography } from '@mui/material';
-import { ThemeProvider, createTheme } from '@mui/material/styles';
-
-import Navbar from '../../src/components/Navbar';
+import Navbar from "../../src/components/Navbar";
+import { createFirebaseApp } from "../../firebase/clientApp";
+import { useEffect } from "react";
+import { useUser } from "../../context/userContext";
 
 const mdTheme = createTheme();
 
 export default function Dashboard() {
+  const app = createFirebaseApp();
+  const db = getFirestore(app);
+
+  const { loadingUser, user } = useUser();
+
+  useEffect(() => {
+    if (!loadingUser) {
+      console.log(user);
+    }
+    // You also have your firebase app initialized
+  }, [loadingUser, user]);
+
   return (
     <ThemeProvider theme={mdTheme}>
-      <Box sx={{ display: 'flex' }}>
+      <Box sx={{ display: "flex" }}>
         <CssBaseline />
         <Navbar />
         <Box
           component="main"
           sx={{
             backgroundColor: (theme) =>
-              theme.palette.mode === 'light'
+              theme.palette.mode === "light"
                 ? theme.palette.grey[100]
                 : theme.palette.grey[900],
             flexGrow: 1,
-            height: '100vh',
-            overflow: 'auto',
+            height: "100vh",
+            overflow: "auto",
           }}
         >
           <Toolbar />
@@ -32,11 +59,13 @@ export default function Dashboard() {
                 <Paper
                   sx={{
                     p: 2,
-                    display: 'flex',
-                    flexDirection: 'column'
+                    display: "flex",
+                    flexDirection: "column",
                   }}
                 >
-                  <Typography variant="h5" sx={{ mb: 3 }}>Profil Bimo Satriyo</Typography>
+                  <Typography variant="h5" sx={{ mb: 3 }}>
+                    Profil Bimo Satriyo
+                  </Typography>
                   <Avatar
                     alt="Remy Sharp"
                     src="/static/images/avatar/1.jpg"

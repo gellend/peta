@@ -23,12 +23,13 @@ export default function Register() {
     event.preventDefault();
 
     createUserWithEmailAndPassword(auth, email, password)
-      .then(async (user) => {
-        await setDoc(doc(db, "users", nrp), {
+      .then(async (res) => {
+        await setDoc(doc(db, "users", res.user.uid), {
+          nrp: nrp,
           nama: nama,
           email: email,
           role: "Mahasiswa",
-          created_at: serverTimestamp()
+          created_at: serverTimestamp(),
         });
 
         router.push('/dashboard')

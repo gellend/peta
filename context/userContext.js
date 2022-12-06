@@ -1,49 +1,52 @@
-import { createContext, useContext, useEffect, useState } from 'react'
-import { getAuth, onAuthStateChanged } from 'firebase/auth'
+import { createContext, useContext, useEffect, useState } from "react";
+import { doc, getDoc, getFirestore } from "firebase/firestore";
+import { getAuth, onAuthStateChanged } from "firebase/auth";
 
-import { createFirebaseApp } from '../firebase/clientApp'
-import { useRouter } from 'next/router'
+import { createFirebaseApp } from "../firebase/clientApp";
+import { useRouter } from "next/router";
 
-export const UserContext = createContext()
+export const UserContext = createContext();
 
 export default function UserContextComp({ children }) {
-  const router = useRouter()
-  const [user, setUser] = useState(null)
-  const [loadingUser, setLoadingUser] = useState(true) // Helpful, to update the UI accordingly.
+  const app = createFirebaseApp();
+  const db = getFirestore(app);
+  const auth = getAuth(app);
+  const router = useRouter();
+
+  const [user, setUser] = useState(null);
+  const [loadingUser, setLoadingUser] = useState(true);
+
+  const getUserData = async (uid) => {
+    const userDoc = await getDoc(doc(db, "users", uid));
+    return userDoc.data();
+  };
 
   useEffect(() => {
-    // Listen authenticated user
-    const app = createFirebaseApp()
-    const auth = getAuth(app)
     const unsubscriber = onAuthStateChanged(auth, async (user) => {
       try {
         if (user) {
-          // User is signed in.
-          const { uid, displayName, email, photoURL } = user
-          // You could also look for the user doc in your Firestore (if you have one):
-          // const userDoc = await firebase.firestore().doc(`users/${uid}`).get()
-          setUser({ uid, displayName, email, photoURL })
+          setUser(getUserData(user.uid));
         } else {
-          console.log('there is no user logged in')
-          setUser(null)
+          setUser(null);
+          router.push("/");
         }
       } catch (error) {
         // Most probably a connection error. Handle appropriately.
       } finally {
-        setLoadingUser(false)
+        setLoadingUser(false);
       }
-    })
+    });
 
     // Unsubscribe auth listener on unmount
-    return () => unsubscriber()
-  }, [])
+    return () => unsubscriber();
+  }, []);
 
   return (
     <UserContext.Provider value={{ user, setUser, loadingUser }}>
       {children}
     </UserContext.Provider>
-  )
+  );
 }
 
 // Custom hook that shorthands the context!
-export const useUser = () => useContext(UserContext)
+export const useUser = () => useContext(UserContext);
