@@ -13,26 +13,14 @@ import {
   Typography,
 } from "@mui/material";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
-import { doc, getDoc, getFirestore } from "firebase/firestore";
 
 import Navbar from "../../src/components/Navbar";
-import { createFirebaseApp } from "../../firebase/clientApp";
-import { useEffect } from "react";
 import { useUser } from "../../context/userContext";
 
 const mdTheme = createTheme();
 
 export default function Dashboard() {
-  const app = createFirebaseApp();
-  const db = getFirestore(app);
-
-  const { loadingUser, user } = useUser();
-
-  useEffect(() => {
-    if (!loadingUser) {
-      console.log(user);
-    }
-  }, [loadingUser, user]);
+  const { _, user } = useUser();
 
   return (
     <ThemeProvider theme={mdTheme}>
@@ -63,7 +51,7 @@ export default function Dashboard() {
                   }}
                 >
                   <Typography variant="h5" sx={{ mb: 3 }}>
-                    Profil Bimo Satriyo
+                    Profil {user ? user.nama : ""}
                   </Typography>
                   <Avatar
                     alt="Remy Sharp"
@@ -74,15 +62,15 @@ export default function Dashboard() {
                     <TableBody>
                       <TableRow>
                         <TableCell>NRP</TableCell>
-                        <TableCell>181111030</TableCell>
+                        <TableCell>{user ? user.nrp : ""}</TableCell>
                       </TableRow>
                       <TableRow>
                         <TableCell>Nama</TableCell>
-                        <TableCell>Bimo Satriyo</TableCell>
+                        <TableCell>{user ? user.nama : ""}</TableCell>
                       </TableRow>
                       <TableRow>
                         <TableCell>Email</TableCell>
-                        <TableCell>bimo@mhs.stiki.ac.id</TableCell>
+                        <TableCell>{user ? user.email : ""}</TableCell>
                       </TableRow>
                     </TableBody>
                   </Table>
