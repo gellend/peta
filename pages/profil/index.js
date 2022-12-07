@@ -32,7 +32,6 @@ export default function Dashboard() {
     if (!loadingUser) {
       console.log(user);
     }
-    // You also have your firebase app initialized
   }, [loadingUser, user]);
 
   return (

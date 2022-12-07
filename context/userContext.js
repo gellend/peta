@@ -17,15 +17,15 @@ export default function UserContextComp({ children }) {
   const [loadingUser, setLoadingUser] = useState(true);
 
   const getUserData = async (uid) => {
-    const userDoc = await getDoc(doc(db, "users", uid));
-    return userDoc.data();
+    const user = await getDoc(doc(db, "users", uid));
+    return user.data();
   };
 
   useEffect(() => {
     const unsubscriber = onAuthStateChanged(auth, async (user) => {
       try {
         if (user) {
-          setUser(getUserData(user.uid));
+          setUser(await getUserData(user.uid));
         } else {
           setUser(null);
           router.push("/");
