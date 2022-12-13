@@ -11,12 +11,13 @@ import {
   TableBody,
   TableCell,
   TableRow,
+  TextField,
   Toolbar,
   Typography,
 } from "@mui/material";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
 
-import { Edit } from "@mui/icons-material";
+import { ArrowBack } from "@mui/icons-material";
 import Navbar from "../../src/components/Navbar";
 import { useUser } from "../../context/userContext";
 
@@ -55,16 +56,14 @@ export default function Dashboard() {
                 >
                   <Stack
                     direction="row"
-                    justifyContent="space-between"
                     alignItems="center"
+                    spacing={2}
                     sx={{ mb: 3 }}
                   >
-                    <Typography variant="h5">
-                      Profil {user ? user.nama : ""}
-                    </Typography>
-                    <IconButton LinkComponent="a" href="/profil/update">
-                      <Edit />
+                    <IconButton LinkComponent="a" href="/profil">
+                      <ArrowBack />
                     </IconButton>
+                    <Typography variant="h5">Update profil</Typography>
                   </Stack>
                   <Avatar
                     alt="Remy Sharp"
@@ -79,7 +78,13 @@ export default function Dashboard() {
                       </TableRow>
                       <TableRow>
                         <TableCell>Nama</TableCell>
-                        <TableCell>{user ? user.nama : ""}</TableCell>
+                        <TableCell>
+                          <TextField
+                            label="Nama"
+                            variant="outlined"
+                            value={user ? user.nama : ""}
+                          />
+                        </TableCell>
                       </TableRow>
                       <TableRow>
                         <TableCell>Email</TableCell>
