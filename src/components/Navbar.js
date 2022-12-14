@@ -1,28 +1,39 @@
 import * as React from 'react';
 
-import { ListItem, ListItemAvatar, ListItemText, Menu, MenuItem, Popover } from '@mui/material';
+import {
+  Avatar,
+  Badge,
+  Divider,
+  List,
+  ListItem,
+  ListItemAvatar,
+  ListItemButton,
+  ListItemIcon,
+  ListItemText,
+  Menu,
+  MenuItem,
+  Popover,
+  Toolbar,
+  Tooltip,
+  Typography
+} from '@mui/material';
 import { createTheme, styled } from '@mui/material/styles';
 import { getAuth, signOut } from 'firebase/auth';
 
-import Avatar from '@mui/material/Avatar';
-import Badge from '@mui/material/Badge';
+import BarChartIcon from '@mui/icons-material/BarChart';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
-import Divider from '@mui/material/Divider';
+import DashboardIcon from '@mui/icons-material/Dashboard';
 import IconButton from '@mui/material/IconButton';
 import Link from 'next/link';
-import List from '@mui/material/List';
-import ListItemIcon from '@mui/material/ListItemIcon';
 import Logout from '@mui/icons-material/Logout';
+import LogoutIcon from '@mui/icons-material/Logout';
 import MenuIcon from '@mui/icons-material/Menu';
 import MuiAppBar from '@mui/material/AppBar';
 import MuiDrawer from '@mui/material/Drawer';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import PersonIcon from '@mui/icons-material/Person';
-import Toolbar from '@mui/material/Toolbar';
-import Tooltip from '@mui/material/Tooltip';
-import Typography from '@mui/material/Typography';
+import VerifiedUserIcon from '@mui/icons-material/VerifiedUser';
 import { createFirebaseApp } from '../../firebase/clientApp';
-import { mainListItems } from '../listItems';
 import { useRouter } from 'next/router';
 
 const drawerWidth = 240;
@@ -274,7 +285,49 @@ export default function Navbar() {
         </Toolbar>
         <Divider />
         <List component="nav">
-          {mainListItems}
+          {/* Dashboard */}
+          <Link href="/dashboard">
+            <ListItemButton>
+              <ListItemIcon>
+                <DashboardIcon />
+              </ListItemIcon>
+              <ListItemText primary="Dashboard" />
+            </ListItemButton>
+          </Link>
+
+          {/* Pengajuan */}
+          <Link href="/pengajuan">
+            <ListItemButton>
+              <ListItemIcon>
+                <BarChartIcon />
+              </ListItemIcon>
+              <ListItemText primary="Pengajuan" />
+            </ListItemButton>
+          </Link>
+
+          {/* Verifikasi Pengguna */}
+          <Link href="/verifikasi">
+            <ListItemButton>
+              <ListItemIcon>
+                <VerifiedUserIcon />
+              </ListItemIcon>
+              <ListItemText primary="Verifikasi Pengguna" />
+            </ListItemButton>
+          </Link>
+
+          <Divider sx={{ my: 1 }} />
+
+          {/* Keluar */}
+          <ListItemButton onClick={() => {
+            signOut(auth);
+            router.push('/');
+          }}
+          >
+            <ListItemIcon>
+              <LogoutIcon />
+            </ListItemIcon>
+            <ListItemText primary="Keluar" />
+          </ListItemButton>
         </List>
       </Drawer>
       {/* Sidebar */}
