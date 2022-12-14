@@ -1,5 +1,7 @@
 import { getApps, initializeApp } from 'firebase/app'
 
+import { getPerformance } from 'firebase/performance'
+
 export const createFirebaseApp = () => {
   const clientCredentials = {
     apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
@@ -14,6 +16,8 @@ export const createFirebaseApp = () => {
 
   if (getApps().length <= 0) {
     const app = initializeApp(clientCredentials)
+    const perf = getPerformance(app)
+
 
     return app
   }
