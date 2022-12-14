@@ -35,6 +35,7 @@ import PersonIcon from '@mui/icons-material/Person';
 import VerifiedUserIcon from '@mui/icons-material/VerifiedUser';
 import { createFirebaseApp } from '../../firebase/clientApp';
 import { useRouter } from 'next/router';
+import { useUser } from '../../context/userContext';
 
 const drawerWidth = 240;
 
@@ -113,6 +114,9 @@ export default function Navbar() {
   // Notif
 
   const router = useRouter();
+  const { user, setUser, loadingUser } = useUser();
+
+  let currentPage = router.pathname
 
   return (
     <React.Fragment>
@@ -142,7 +146,7 @@ export default function Navbar() {
             noWrap
             sx={{ flexGrow: 1 }}
           >
-            Dashboard
+            {currentPage.replaceAll('/', ' ').toUpperCase()}
           </Typography>
           <Tooltip title="Notifikasi">
             <IconButton onClick={handleOpenNotif} color="inherit">
@@ -286,14 +290,21 @@ export default function Navbar() {
         <Divider />
         <List component="nav">
           {/* Dashboard */}
-          <Link href="/dashboard">
-            <ListItemButton>
-              <ListItemIcon>
-                <DashboardIcon />
-              </ListItemIcon>
-              <ListItemText primary="Dashboard" />
-            </ListItemButton>
-          </Link>
+          {
+            user &&
+              ["Dosen", "Kepala Prodi", "Koordinator Lab", "Admin"].includes(user.role)
+              ?
+              <Link href="/dashboard">
+                <ListItemButton>
+                  <ListItemIcon>
+                    <DashboardIcon />
+                  </ListItemIcon>
+                  <ListItemText primary="Dashboard" />
+                </ListItemButton>
+              </Link>
+              : ""
+          }
+
 
           {/* Pengajuan */}
           <Link href="/pengajuan">
@@ -306,14 +317,20 @@ export default function Navbar() {
           </Link>
 
           {/* Verifikasi Pengguna */}
-          <Link href="/verifikasi">
-            <ListItemButton>
-              <ListItemIcon>
-                <VerifiedUserIcon />
-              </ListItemIcon>
-              <ListItemText primary="Verifikasi Pengguna" />
-            </ListItemButton>
-          </Link>
+          {
+            user &&
+              user.role === "Admin"
+              ?
+              <Link href="/verifikasi">
+                <ListItemButton>
+                  <ListItemIcon>
+                    <VerifiedUserIcon />
+                  </ListItemIcon>
+                  <ListItemText primary="Verifikasi Pengguna" />
+                </ListItemButton>
+              </Link>
+              : ""
+          }
 
           <Divider sx={{ my: 1 }} />
 

@@ -33,7 +33,8 @@ export default function LogIn() {
         } catch (e) {
           console.error(e)
         } finally {
-          router.push('/dashboard')
+          if (user && user.role === "Mahasiswa") router.push('/pengajuan')
+          else router.push('/dashboard')
         }
 
       })
