@@ -1,27 +1,41 @@
 import * as React from 'react';
 
 import { Box, Button, Container, CssBaseline, Grid, Link, TextField, Typography } from '@mui/material';
+import { doc, getDoc, getFirestore } from 'firebase/firestore';
 import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
 
 import Copyright from '../src/components/Copyright';
 import { createFirebaseApp } from '../firebase/clientApp'
 import { useRouter } from 'next/router';
+import { useUser } from '../context/userContext';
 
 export default function LogIn() {
-  const router = useRouter()
   const app = createFirebaseApp()
+  const router = useRouter()
+  const db = getFirestore(app)
   const auth = getAuth(app)
+
+  const { user, setUser, loadingUser } = useUser();
+
+  const getUserData = async (uid) => {
+    const user = await getDoc(doc(db, "users", uid));
+    return user.data();
+  };
 
   const handleSubmit = (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
 
     signInWithEmailAndPassword(auth, data.get('email'), data.get('password'))
-      .then((userCredential) => {
-        // Signed in 
-        const user = userCredential.user;
+      .then(async (userCredential) => {
+        try {
+          setUser(await getUserData(userCredential.user.uid))
+        } catch (e) {
+          console.error(e)
+        } finally {
+          router.push('/dashboard')
+        }
 
-        router.push('/dashboard')
       })
       .catch((error) => {
         console.log(error.code);

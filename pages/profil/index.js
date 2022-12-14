@@ -17,13 +17,14 @@ import {
 import { ThemeProvider, createTheme } from "@mui/material/styles";
 
 import { Edit } from "@mui/icons-material";
+import Link from "next/link";
 import Navbar from "../../src/components/Navbar";
 import { useUser } from "../../context/userContext";
 
 const mdTheme = createTheme();
 
 export default function Dashboard() {
-  const { _, user } = useUser();
+  const { user, setUser, loadingUser } = useUser();
 
   return (
     <ThemeProvider theme={mdTheme}>
@@ -62,9 +63,11 @@ export default function Dashboard() {
                     <Typography variant="h5">
                       Profil {user ? user.nama : ""}
                     </Typography>
-                    <IconButton LinkComponent="a" href="/profil/update">
-                      <Edit />
-                    </IconButton>
+                    <Link href="/profil/update">
+                      <IconButton>
+                        <Edit />
+                      </IconButton>
+                    </Link>
                   </Stack>
                   <Avatar
                     alt="Remy Sharp"

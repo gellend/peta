@@ -9,6 +9,7 @@ import Badge from '@mui/material/Badge';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import Divider from '@mui/material/Divider';
 import IconButton from '@mui/material/IconButton';
+import Link from 'next/link';
 import List from '@mui/material/List';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import Logout from '@mui/icons-material/Logout';
@@ -232,12 +233,14 @@ export default function Navbar() {
             onClose={handleCloseUserMenu}
             onClick={handleCloseUserMenu}
           >
-            <MenuItem component="a" href="/profil">
-              <ListItemIcon>
-                <PersonIcon fontSize="small" />
-              </ListItemIcon>
-              Profile
-            </MenuItem>
+            <Link href="/profil">
+              <MenuItem>
+                <ListItemIcon>
+                  <PersonIcon fontSize="small" />
+                </ListItemIcon>
+                Profile
+              </MenuItem>
+            </Link>
             <Divider />
             <MenuItem
               onClick={() => {

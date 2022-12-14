@@ -18,6 +18,7 @@ import {
 import { ThemeProvider, createTheme } from "@mui/material/styles";
 
 import { ArrowBack } from "@mui/icons-material";
+import Link from "next/link";
 import Navbar from "../../src/components/Navbar";
 import { useUser } from "../../context/userContext";
 
@@ -60,9 +61,11 @@ export default function Dashboard() {
                     spacing={2}
                     sx={{ mb: 3 }}
                   >
-                    <IconButton LinkComponent="a" href="/profil">
-                      <ArrowBack />
-                    </IconButton>
+                    <Link href="/profil">
+                      <IconButton>
+                        <ArrowBack />
+                      </IconButton>
+                    </Link>
                     <Typography variant="h5">Update profil</Typography>
                   </Stack>
                   <Avatar
@@ -73,11 +76,15 @@ export default function Dashboard() {
                   <Table aria-label="Data Diri">
                     <TableBody>
                       <TableRow>
-                        <TableCell>NRP</TableCell>
-                        <TableCell>{user ? user.nrp : ""}</TableCell>
+                        <TableCell>
+                          <TextField
+                            label="NRP"
+                            variant="outlined"
+                            value={user ? user.nrp : ""}
+                          />
+                        </TableCell>
                       </TableRow>
                       <TableRow>
-                        <TableCell>Nama</TableCell>
                         <TableCell>
                           <TextField
                             label="Nama"
@@ -87,12 +94,22 @@ export default function Dashboard() {
                         </TableCell>
                       </TableRow>
                       <TableRow>
-                        <TableCell>Email</TableCell>
-                        <TableCell>{user ? user.email : ""}</TableCell>
+                        <TableCell>
+                          <TextField
+                            label="Email"
+                            variant="outlined"
+                            value={user ? user.email : ""}
+                          />
+                        </TableCell>
                       </TableRow>
                       <TableRow>
-                        <TableCell>Role</TableCell>
-                        <TableCell>{user ? user.role : ""}</TableCell>
+                        <TableCell>
+                          <TextField
+                            label="Role"
+                            variant="outlined"
+                            value={user ? user.role : ""}
+                          />
+                        </TableCell>
                       </TableRow>
                     </TableBody>
                   </Table>
