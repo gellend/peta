@@ -24,7 +24,7 @@ import { useUser } from "../../context/userContext";
 
 const mdTheme = createTheme();
 
-export default function Dashboard() {
+export default function UpdateProfil() {
   const { _, user } = useUser();
 
   return (

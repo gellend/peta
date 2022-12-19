@@ -1,8 +1,9 @@
 import * as React from 'react';
 
-import { Box, Container, CssBaseline, Grid, Paper, Toolbar } from '@mui/material';
+import { Box, Button, Container, CssBaseline, Grid, Paper, Toolbar } from '@mui/material';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 
+import Link from 'next/link';
 import Navbar from '../../src/components/Navbar';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
@@ -64,6 +65,9 @@ export default function Pengajuan() {
         >
           <Toolbar />
           <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
+            <Link href="/pengajuan/create">
+              <Button variant="contained" sx={{ mb: 3 }}>Ajukan Judul</Button>
+            </Link>
             <Grid container spacing={3}>
               <Grid item xs={12}>
                 <Paper
@@ -73,7 +77,7 @@ export default function Pengajuan() {
                     flexDirection: 'column'
                   }}
                 >
-                  <Table size="small">
+                  <Table>
                     <TableHead>
                       <TableRow>
                         <TableCell>No</TableCell>
