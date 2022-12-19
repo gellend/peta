@@ -23,7 +23,7 @@ import { useUser } from "../../context/userContext";
 
 const mdTheme = createTheme();
 
-export default function Dashboard() {
+export default function Profil() {
   const { user, setUser, loadingUser } = useUser();
 
   return (
