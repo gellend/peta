@@ -1,5 +1,3 @@
-import * as React from "react";
-
 import { ArrowBack, Edit } from "@mui/icons-material";
 import {
   Box,
@@ -27,6 +25,7 @@ import TableCell from "@mui/material/TableCell";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import { useRouter } from "next/router";
+import { useState } from "react";
 
 const mdTheme = createTheme();
 
@@ -55,6 +54,16 @@ const currencies = [
 
 export default function CreatePengajuan() {
   const router = useRouter();
+
+  const [judul, setJudul] = useState("");
+  const [totalSksLulus, setTotalSksLulus] = useState("");
+  const [sksAmbilSemesterIni, setSksAmbilSemesterIni] = useState("");
+  const [sksMengulang, setSksMengulang] = useState("");
+  const [deskripsi, setDeskripsi] = useState("");
+  const [dosenPembimbing1, setDosenPembimbing1] = useState("");
+  const [dosenPembimbing2, setDosenPembimbing2] = useState("");
+  const [dosenPembimbing3, setDosenPembimbing3] = useState("");
+
   return (
     <ThemeProvider theme={mdTheme}>
       <Box sx={{ display: "flex" }}>
@@ -99,7 +108,7 @@ export default function CreatePengajuan() {
               }}
             >
               <Grid container spacing={3}>
-                <Grid item xs={12} md={5}>
+                <Grid item xs={12} lg={5}>
                   <Table aria-label="Pengajuan-Left">
                     <TableBody>
                       <TableRow>
@@ -107,8 +116,9 @@ export default function CreatePengajuan() {
                           <TextField
                             label="Judul"
                             variant="outlined"
-                            value={""}
                             fullWidth
+                            value={judul}
+                            onChange={(e) => setJudul(e.target.value)}
                           />
                         </TableCell>
                       </TableRow>
@@ -117,8 +127,9 @@ export default function CreatePengajuan() {
                           <TextField
                             label="Total SKS Lulus"
                             variant="outlined"
-                            value={""}
                             fullWidth
+                            value={totalSksLulus}
+                            onChange={(e) => setTotalSksLulus(e.target.value)}
                           />
                         </TableCell>
                       </TableRow>
@@ -127,8 +138,11 @@ export default function CreatePengajuan() {
                           <TextField
                             label="SKS Ambil Smt. Ini"
                             variant="outlined"
-                            value={""}
                             fullWidth
+                            value={sksAmbilSemesterIni}
+                            onChange={(e) =>
+                              setSksAmbilSemesterIni(e.target.value)
+                            }
                           />
                         </TableCell>
                       </TableRow>
@@ -137,8 +151,9 @@ export default function CreatePengajuan() {
                           <TextField
                             label="SKS Nilai D & E"
                             variant="outlined"
-                            value={""}
                             fullWidth
+                            value={sksMengulang}
+                            onChange={(e) => setSksMengulang(e.target.value)}
                           />
                         </TableCell>
                       </TableRow>
@@ -147,10 +162,11 @@ export default function CreatePengajuan() {
                           <TextField
                             label="Deskripsi Singkat"
                             variant="outlined"
-                            value={""}
                             fullWidth
                             multiline
                             rows={4}
+                            value={deskripsi}
+                            onChange={(e) => setDeskripsi(e.target.value)}
                           />
                         </TableCell>
                       </TableRow>
@@ -159,9 +175,12 @@ export default function CreatePengajuan() {
                           <TextField
                             select
                             label="Usulan Dosen Pembimbing 1"
-                            defaultValue="EUR"
                             helperText="Pilih Setidaknya 1 Dosen Pembimbing"
                             fullWidth
+                            value={dosenPembimbing1}
+                            onChange={(e) =>
+                              setDosenPembimbing1(e.target.value)
+                            }
                           >
                             {currencies.map((option) => (
                               <MenuItem key={option.value} value={option.value}>
@@ -176,8 +195,11 @@ export default function CreatePengajuan() {
                           <TextField
                             select
                             label="Usulan Dosen Pembimbing 2"
-                            defaultValue="EUR"
                             fullWidth
+                            value={dosenPembimbing2}
+                            onChange={(e) =>
+                              setDosenPembimbing2(e.target.value)
+                            }
                           >
                             {currencies.map((option) => (
                               <MenuItem key={option.value} value={option.value}>
@@ -192,8 +214,11 @@ export default function CreatePengajuan() {
                           <TextField
                             select
                             label="Usulan Dosen Pembimbing 3"
-                            defaultValue="EUR"
                             fullWidth
+                            value={dosenPembimbing3}
+                            onChange={(e) =>
+                              setDosenPembimbing3(e.target.value)
+                            }
                           >
                             {currencies.map((option) => (
                               <MenuItem key={option.value} value={option.value}>
@@ -206,7 +231,7 @@ export default function CreatePengajuan() {
                     </TableBody>
                   </Table>
                 </Grid>
-                <Grid item xs={12} md={5}>
+                <Grid item xs={12} lg={5}>
                   <Table aria-label="Pengajuan-Right">
                     <TableBody>
                       <TableRow>
@@ -331,6 +356,17 @@ export default function CreatePengajuan() {
                       </TableRow>
                     </TableBody>
                   </Table>
+                </Grid>
+                <Grid item xs={12}>
+                  <Box display="flex" justifyContent="center">
+                    <Button
+                      sx={{ minWidth: 200 }}
+                      variant="contained"
+                      color="success"
+                    >
+                      Submit
+                    </Button>
+                  </Box>
                 </Grid>
               </Grid>
             </Paper>
