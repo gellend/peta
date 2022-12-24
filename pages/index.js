@@ -1,47 +1,65 @@
-import * as React from 'react';
-
-import { Box, Button, Container, CssBaseline, Grid, Link, TextField, Typography } from '@mui/material';
-import { doc, getDoc, getFirestore } from 'firebase/firestore';
+import {
+  Box,
+  Button,
+  Container,
+  CssBaseline,
+  Grid,
+  Link,
+  TextField,
+  Typography,
+} from "@mui/material";
+import { doc, getDoc, getFirestore } from "firebase/firestore";
 import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
 
-import Copyright from '../src/components/Copyright';
-import { createFirebaseApp } from '../firebase/clientApp'
-import { useRouter } from 'next/router';
-import { useUser } from '../context/userContext';
+import Copyright from "../src/components/Copyright";
+import { createFirebaseApp } from "../firebase/clientApp";
+import { useRouter } from "next/router";
+import { useUser } from "../context/userContext";
+import { useState } from "react";
+import { useEffect } from "react";
 
 export default function LogIn() {
-  const app = createFirebaseApp()
-  const router = useRouter()
-  const db = getFirestore(app)
-  const auth = getAuth(app)
+  const app = createFirebaseApp();
+  const router = useRouter();
+  const db = getFirestore(app);
+  const auth = getAuth(app);
 
-  const { user, setUser, loadingUser } = useUser();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
+  const { user, setUser, loadingUser, setLoadingUser } = useUser();
+
+  useEffect(() => {
+    if (user && user.role === "Mahasiswa") {
+      router.push("/pengajuan");
+    } else if (
+      user &&
+      ["Dosen", "Kepala Prodi", "Koordinator Lab", "Admin"].includes(user.role)
+    ) {
+      router.push("/dashboard");
+    }
+  }, [user, loadingUser]);
 
   const getUserData = async (uid) => {
     const user = await getDoc(doc(db, "users", uid));
     return user.data();
   };
 
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    const data = new FormData(event.currentTarget);
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    setLoadingUser(true);
 
-    signInWithEmailAndPassword(auth, data.get('email'), data.get('password'))
+    signInWithEmailAndPassword(auth, email, password)
       .then(async (userCredential) => {
-        try {
-          setUser(await getUserData(userCredential.user.uid))
-        } catch (e) {
-          console.error(e)
-        } finally {
-          if (user && user.role === "Mahasiswa") router.push('/pengajuan')
-          else router.push('/dashboard')
-        }
-
+        setUser(await getUserData(userCredential.user.uid));
       })
       .catch((error) => {
-        console.log(error.code);
+        console.log(error.code, error.message);
+        setUser(null);
+      })
+      .finally(() => {
+        setLoadingUser(false);
       });
-
   };
 
   return (
@@ -50,9 +68,9 @@ export default function LogIn() {
       <Box
         sx={{
           marginTop: 8,
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
         }}
       >
         <Typography component="h1" variant="h5">
@@ -61,32 +79,33 @@ export default function LogIn() {
         <Typography component="h1" variant="h5">
           PETA - Pengajuan Judul TA
         </Typography>
-        <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
+        <Box component="form" onSubmit={handleSubmit} sx={{ mt: 1 }}>
           <TextField
             margin="normal"
             required
             fullWidth
-            id="email"
             label="Alamat Email"
-            name="email"
             autoFocus
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
           />
           <TextField
             margin="normal"
             required
             fullWidth
-            name="password"
             label="Kata Sandi"
             type="password"
-            id="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
           />
           <Button
             type="submit"
             fullWidth
             variant="contained"
             sx={{ mt: 3, mb: 2 }}
+            disabled={loadingUser}
           >
-            Masuk
+            {loadingUser ? "Loading..." : "Masuk"}
           </Button>
           <Grid container>
             <Grid item xs>

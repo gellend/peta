@@ -1,4 +1,4 @@
-import * as React from 'react';
+import * as React from "react";
 
 import {
   Avatar,
@@ -15,73 +15,73 @@ import {
   Popover,
   Toolbar,
   Tooltip,
-  Typography
-} from '@mui/material';
-import { createTheme, styled } from '@mui/material/styles';
-import { getAuth, signOut } from 'firebase/auth';
+  Typography,
+} from "@mui/material";
+import { createTheme, styled } from "@mui/material/styles";
+import { getAuth, signOut } from "firebase/auth";
 
-import BarChartIcon from '@mui/icons-material/BarChart';
-import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
-import DashboardIcon from '@mui/icons-material/Dashboard';
-import IconButton from '@mui/material/IconButton';
-import Link from 'next/link';
-import Logout from '@mui/icons-material/Logout';
-import LogoutIcon from '@mui/icons-material/Logout';
-import MenuIcon from '@mui/icons-material/Menu';
-import MuiAppBar from '@mui/material/AppBar';
-import MuiDrawer from '@mui/material/Drawer';
-import NotificationsIcon from '@mui/icons-material/Notifications';
-import PersonIcon from '@mui/icons-material/Person';
-import VerifiedUserIcon from '@mui/icons-material/VerifiedUser';
-import { createFirebaseApp } from '../../firebase/clientApp';
-import { useRouter } from 'next/router';
-import { useUser } from '../../context/userContext';
+import BarChartIcon from "@mui/icons-material/BarChart";
+import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
+import DashboardIcon from "@mui/icons-material/Dashboard";
+import IconButton from "@mui/material/IconButton";
+import Link from "next/link";
+import Logout from "@mui/icons-material/Logout";
+import LogoutIcon from "@mui/icons-material/Logout";
+import MenuIcon from "@mui/icons-material/Menu";
+import MuiAppBar from "@mui/material/AppBar";
+import MuiDrawer from "@mui/material/Drawer";
+import NotificationsIcon from "@mui/icons-material/Notifications";
+import PersonIcon from "@mui/icons-material/Person";
+import VerifiedUserIcon from "@mui/icons-material/VerifiedUser";
+import { createFirebaseApp } from "../../firebase/clientApp";
+import { useRouter } from "next/router";
+import { useUser } from "../../context/userContext";
 
 const drawerWidth = 240;
 
 const AppBar = styled(MuiAppBar, {
-  shouldForwardProp: (prop) => prop !== 'open',
+  shouldForwardProp: (prop) => prop !== "open",
 })(({ theme, open }) => ({
   zIndex: theme.zIndex.drawer + 1,
-  transition: theme.transitions.create(['width', 'margin'], {
+  transition: theme.transitions.create(["width", "margin"], {
     easing: theme.transitions.easing.sharp,
     duration: theme.transitions.duration.leavingScreen,
   }),
   ...(open && {
     marginLeft: drawerWidth,
     width: `calc(100% - ${drawerWidth}px)`,
-    transition: theme.transitions.create(['width', 'margin'], {
+    transition: theme.transitions.create(["width", "margin"], {
       easing: theme.transitions.easing.sharp,
       duration: theme.transitions.duration.enteringScreen,
     }),
   }),
 }));
 
-const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' })(
-  ({ theme, open }) => ({
-    '& .MuiDrawer-paper': {
-      position: 'relative',
-      whiteSpace: 'nowrap',
-      width: drawerWidth,
-      transition: theme.transitions.create('width', {
+const Drawer = styled(MuiDrawer, {
+  shouldForwardProp: (prop) => prop !== "open",
+})(({ theme, open }) => ({
+  "& .MuiDrawer-paper": {
+    position: "relative",
+    whiteSpace: "nowrap",
+    width: drawerWidth,
+    transition: theme.transitions.create("width", {
+      easing: theme.transitions.easing.sharp,
+      duration: theme.transitions.duration.enteringScreen,
+    }),
+    boxSizing: "border-box",
+    ...(!open && {
+      overflowX: "hidden",
+      transition: theme.transitions.create("width", {
         easing: theme.transitions.easing.sharp,
-        duration: theme.transitions.duration.enteringScreen,
+        duration: theme.transitions.duration.leavingScreen,
       }),
-      boxSizing: 'border-box',
-      ...(!open && {
-        overflowX: 'hidden',
-        transition: theme.transitions.create('width', {
-          easing: theme.transitions.easing.sharp,
-          duration: theme.transitions.duration.leavingScreen,
-        }),
-        width: theme.spacing(7),
-        [theme.breakpoints.up('sm')]: {
-          width: theme.spacing(9),
-        },
-      }),
-    },
-  }),
-);
+      width: theme.spacing(7),
+      [theme.breakpoints.up("sm")]: {
+        width: theme.spacing(9),
+      },
+    }),
+  },
+}));
 
 const mdTheme = createTheme();
 const app = createFirebaseApp();
@@ -107,16 +107,16 @@ export default function Navbar() {
   // Notif
   const [notifAnchorEl, setNotifAnchorEl] = React.useState(null);
   const openNotif = Boolean(notifAnchorEl);
-  const idNotif = openNotif ? 'notif-popover' : undefined;
+  const idNotif = openNotif ? "notif-popover" : undefined;
 
   const handleOpenNotif = (e) => setNotifAnchorEl(e.currentTarget);
   const handleCloseNotif = () => setNotifAnchorEl(null);
   // Notif
 
   const router = useRouter();
-  const { user, setUser, loadingUser } = useUser();
+  const { user, setUser } = useUser();
 
-  let currentPage = router.pathname
+  let currentPage = router.pathname;
 
   return (
     <React.Fragment>
@@ -124,7 +124,7 @@ export default function Navbar() {
       <AppBar position="absolute" open={open}>
         <Toolbar
           sx={{
-            pr: '24px', // keep right padding when drawer closed
+            pr: "24px", // keep right padding when drawer closed
           }}
         >
           <IconButton
@@ -133,8 +133,8 @@ export default function Navbar() {
             aria-label="open drawer"
             onClick={toggleDrawer}
             sx={{
-              marginRight: '36px',
-              ...(open && { display: 'none' }),
+              marginRight: "36px",
+              ...(open && { display: "none" }),
             }}
           >
             <MenuIcon />
@@ -146,7 +146,7 @@ export default function Navbar() {
             noWrap
             sx={{ flexGrow: 1 }}
           >
-            {currentPage.replaceAll('/', ' ').toUpperCase()}
+            {currentPage.replaceAll("/", " ").toUpperCase()}
           </Typography>
           <Tooltip title="Notifikasi">
             <IconButton onClick={handleOpenNotif} color="inherit">
@@ -161,11 +161,13 @@ export default function Navbar() {
             anchorEl={notifAnchorEl}
             onClose={handleCloseNotif}
             anchorOrigin={{
-              vertical: 'bottom',
-              horizontal: 'left',
+              vertical: "bottom",
+              horizontal: "left",
             }}
           >
-            <List sx={{ width: '100%', maxWidth: 360, bgcolor: 'background.paper' }}>
+            <List
+              sx={{ width: "100%", maxWidth: 360, bgcolor: "background.paper" }}
+            >
               <ListItem alignItems="flex-start">
                 <ListItemAvatar>
                   <Avatar alt="Remy Sharp" src="/static/images/avatar/1.jpg" />
@@ -175,7 +177,7 @@ export default function Navbar() {
                   secondary={
                     <React.Fragment>
                       <Typography
-                        sx={{ display: 'inline' }}
+                        sx={{ display: "inline" }}
                         component="span"
                         variant="body2"
                         color="text.primary"
@@ -190,14 +192,17 @@ export default function Navbar() {
               <Divider variant="inset" component="li" />
               <ListItem alignItems="flex-start">
                 <ListItemAvatar>
-                  <Avatar alt="Travis Howard" src="/static/images/avatar/2.jpg" />
+                  <Avatar
+                    alt="Travis Howard"
+                    src="/static/images/avatar/2.jpg"
+                  />
                 </ListItemAvatar>
                 <ListItemText
                   primary="Summer BBQ"
                   secondary={
                     <React.Fragment>
                       <Typography
-                        sx={{ display: 'inline' }}
+                        sx={{ display: "inline" }}
                         component="span"
                         variant="body2"
                         color="text.primary"
@@ -219,14 +224,14 @@ export default function Navbar() {
                   secondary={
                     <React.Fragment>
                       <Typography
-                        sx={{ display: 'inline' }}
+                        sx={{ display: "inline" }}
                         component="span"
                         variant="body2"
                         color="text.primary"
                       >
                         Sandra Adams
                       </Typography>
-                      {' — Do you have Paris recommendations? Have you ever…'}
+                      {" — Do you have Paris recommendations? Have you ever…"}
                     </React.Fragment>
                   }
                 />
@@ -259,8 +264,10 @@ export default function Navbar() {
             <Divider />
             <MenuItem
               onClick={() => {
-                signOut(auth);
-                router.push('/');
+                signOut(auth).then(() => {
+                  setUser(null);
+                  router.push("/");
+                });
               }}
             >
               <ListItemIcon>
@@ -277,9 +284,9 @@ export default function Navbar() {
       <Drawer variant="permanent" open={open}>
         <Toolbar
           sx={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'flex-end',
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "flex-end",
             px: [1],
           }}
         >
@@ -290,21 +297,21 @@ export default function Navbar() {
         <Divider />
         <List component="nav">
           {/* Dashboard */}
-          {
-            user &&
-              ["Dosen", "Kepala Prodi", "Koordinator Lab", "Admin"].includes(user.role)
-              ?
-              <Link href="/dashboard">
-                <ListItemButton>
-                  <ListItemIcon>
-                    <DashboardIcon />
-                  </ListItemIcon>
-                  <ListItemText primary="Dashboard" />
-                </ListItemButton>
-              </Link>
-              : ""
-          }
-
+          {user &&
+          ["Dosen", "Kepala Prodi", "Koordinator Lab", "Admin"].includes(
+            user.role
+          ) ? (
+            <Link href="/dashboard">
+              <ListItemButton>
+                <ListItemIcon>
+                  <DashboardIcon />
+                </ListItemIcon>
+                <ListItemText primary="Dashboard" />
+              </ListItemButton>
+            </Link>
+          ) : (
+            ""
+          )}
 
           {/* Pengajuan */}
           <Link href="/pengajuan">
@@ -317,28 +324,29 @@ export default function Navbar() {
           </Link>
 
           {/* Verifikasi Pengguna */}
-          {
-            user &&
-              user.role === "Admin"
-              ?
-              <Link href="/verifikasi">
-                <ListItemButton>
-                  <ListItemIcon>
-                    <VerifiedUserIcon />
-                  </ListItemIcon>
-                  <ListItemText primary="Verifikasi Pengguna" />
-                </ListItemButton>
-              </Link>
-              : ""
-          }
+          {user && user.role === "Admin" ? (
+            <Link href="/verifikasi">
+              <ListItemButton>
+                <ListItemIcon>
+                  <VerifiedUserIcon />
+                </ListItemIcon>
+                <ListItemText primary="Verifikasi Pengguna" />
+              </ListItemButton>
+            </Link>
+          ) : (
+            ""
+          )}
 
           <Divider sx={{ my: 1 }} />
 
           {/* Keluar */}
-          <ListItemButton onClick={() => {
-            signOut(auth);
-            router.push('/');
-          }}
+          <ListItemButton
+            onClick={() => {
+              signOut(auth).then(() => {
+                setUser(null);
+                router.push("/");
+              });
+            }}
           >
             <ListItemIcon>
               <LogoutIcon />
@@ -349,5 +357,5 @@ export default function Navbar() {
       </Drawer>
       {/* Sidebar */}
     </React.Fragment>
-  )
+  );
 }
