@@ -79,10 +79,11 @@ export default function LogIn() {
 
   return (
     <Container component="main" maxWidth="xs">
-      <CssBaseline />
-
-      {!isLoggingIn ? (
+      {isLoggingIn ? (
+        <div>Loading...</div>
+      ) : (
         <>
+          <CssBaseline />
           <Box
             sx={{
               marginTop: 8,
@@ -141,8 +142,6 @@ export default function LogIn() {
           </Box>
           <Copyright sx={{ mt: 8, mb: 4 }} />
         </>
-      ) : (
-        <div>Loading...</div>
       )}
     </Container>
   );

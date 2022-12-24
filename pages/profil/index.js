@@ -34,14 +34,14 @@ export default function Profil() {
   const router = useRouter();
 
   const [user, setUser] = useState(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoggingIn, setIsLoggingIn] = useState(true);
 
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged(async (user) => {
       if (user) {
         const userData = await getDoc(doc(db, "users", user.uid));
         setUser(userData.data());
-        setIsLoading(false);
+        setIsLoggingIn(false);
       } else {
         router.push("/");
       }
@@ -52,7 +52,7 @@ export default function Profil() {
 
   return (
     <ThemeProvider theme={mdTheme}>
-      {isLoading ? (
+      {isLoggingIn ? (
         <div>Loading...</div>
       ) : (
         <Box sx={{ display: "flex" }}>
