@@ -116,7 +116,7 @@ export default function Verifikasi() {
                           listUsers.map((user, index) => (
                             <TableRow key={user.id}>
                               <TableCell>{index + 1}</TableCell>
-                              <TableCell>{user.nrp}</TableCell>
+                              <TableCell>{user.id}</TableCell>
                               <TableCell>{user.nama}</TableCell>
                               <TableCell>{user.email}</TableCell>
                               <TableCell>{user.role}</TableCell>

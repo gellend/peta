@@ -16,6 +16,8 @@ import {
   Typography,
   TextField,
   MenuItem,
+  Snackbar,
+  Alert
 } from "@mui/material";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
 import { ArrowBack, Edit } from "@mui/icons-material";
@@ -32,6 +34,7 @@ import {
   getDocs,
   getFirestore,
   setDoc,
+  serverTimestamp
 } from "firebase/firestore";
 import { useRouter } from "next/router";
 
@@ -43,14 +46,21 @@ export default function CreateUser() {
   const db = getFirestore(app);
   const router = useRouter();
 
+  // Global
   const [user, setUser] = useState(null);
   const [isLoggingIn, setIsLoggingIn] = useState(true);
 
+  // Form
   const [id, setId] = useState("");
   const [nama, setNama] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [role, setRole] = useState("");
+  const [role, setRole] = useState("Mahasiswa");
+
+  // Snackbar
+  const [openSnackBar, setOpenSnackBar] = useState(false);
+  const [messageSnackBar, setMessageSnackBar] = useState("");
+  const [typeSnackBar, setTypeSnackBar] = useState("");
 
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged(async (user) => {
@@ -66,24 +76,44 @@ export default function CreateUser() {
     return unsubscribe;
   }, []);
 
+  const handleCloseSnackBar = () => setOpenSnackBar(false);
+
+  const handleOpenSnackBar = (message, type) => {
+    setMessageSnackBar(message);
+    setTypeSnackBar(type);
+    setOpenSnackBar(true);
+  }
+
+  const resetForm = () => {
+    setId("")
+    setNama("")
+    setEmail("")
+    setPassword("")
+    setRole("")
+  }
+
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    if (role === "Dosen") {
-    }
-
     createUserWithEmailAndPassword(auth, email, password)
       .then(async (res) => {
-        await setDoc(doc(db, "users", res.user.uid), {
-          nrp: nrp,
+        await setDoc(doc(db, "users", id), {
+          id: id,
           nama: nama,
           email: email,
           role: role,
           created_at: serverTimestamp(),
         });
+
+        handleOpenSnackBar(`${id} berhasil di daftarkan!`, "success")
+
+        router.push("/verifikasi")
       })
       .catch((error) => {
-        console.log(error.message);
+        handleOpenSnackBar(error.message, "error")
+      })
+      .finally(() => {
+        resetForm()
       });
   };
 
@@ -137,7 +167,7 @@ export default function CreateUser() {
                         <TableRow>
                           <TableCell>
                             <TextField
-                              label="ID (NRP / NIDN)"
+                              label={role === "Mahasiswa" ? "NRP" : "NIDN"}
                               variant="outlined"
                               fullWidth
                               value={id}
@@ -176,6 +206,7 @@ export default function CreateUser() {
                               value={role}
                               onChange={(e) => setRole(e.target.value)}
                             >
+                              <MenuItem value="Mahasiswa">Mahasiswa</MenuItem>
                               <MenuItem value="Dosen">Dosen</MenuItem>
                             </TextField>
                           </TableCell>
@@ -186,6 +217,7 @@ export default function CreateUser() {
                               label="Kata Sandi"
                               variant="outlined"
                               fullWidth
+                              type="password"
                               value={password}
                               onChange={(e) => setPassword(e.target.value)}
                             />
@@ -198,6 +230,8 @@ export default function CreateUser() {
                                 sx={{ minWidth: 200 }}
                                 variant="contained"
                                 color="success"
+                                type="submit"
+                                onClick={handleSubmit}
                               >
                                 Submit
                               </Button>
@@ -211,6 +245,11 @@ export default function CreateUser() {
               </Paper>
             </Container>
           </Box>
+          <Snackbar open={openSnackBar} autoHideDuration={2000} onClose={handleCloseSnackBar}>
+            <Alert onClose={handleCloseSnackBar} severity={typeSnackBar} sx={{ width: '100%' }}>
+              {messageSnackBar}
+            </Alert>
+          </Snackbar>
         </Box>
       )}
     </ThemeProvider>

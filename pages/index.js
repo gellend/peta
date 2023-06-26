@@ -7,8 +7,10 @@ import {
   Link,
   TextField,
   Typography,
+  Snackbar,
+  Alert
 } from "@mui/material";
-import { doc, getDoc, getFirestore } from "firebase/firestore";
+import { doc, getDoc, getFirestore, collection, query, where } from "firebase/firestore";
 import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
 
 import Copyright from "../src/components/Copyright";
@@ -17,6 +19,7 @@ import { useRouter } from "next/router";
 import { useUser } from "../context/userContext";
 import { useState } from "react";
 import { useEffect } from "react";
+import { useAuthState } from '../src/lib/user';
 
 export default function LogIn() {
   const app = createFirebaseApp();
@@ -29,6 +32,11 @@ export default function LogIn() {
   const [isLoggingIn, setIsLoggingIn] = useState(true);
 
   const { user, setUser, loadingUser, setLoadingUser } = useUser();
+
+  // Snackbar
+  const [openSnackBar, setOpenSnackBar] = useState(false);
+  const [messageSnackBar, setMessageSnackBar] = useState("");
+  const [typeSnackBar, setTypeSnackBar] = useState("");
 
   // Check if user is already logged in
   useEffect(() => {
@@ -70,12 +78,21 @@ export default function LogIn() {
       })
       .catch((error) => {
         console.log(error.code, error.message);
+        handleOpenSnackBar(error.message, "error")
         setUser(null);
       })
       .finally(() => {
         setLoadingUser(false);
       });
   };
+
+  const handleCloseSnackBar = () => setOpenSnackBar(false);
+
+  const handleOpenSnackBar = (message, type) => {
+    setMessageSnackBar(message);
+    setTypeSnackBar(type);
+    setOpenSnackBar(true);
+  }
 
   return (
     <Container component="main" maxWidth="xs">
@@ -143,6 +160,11 @@ export default function LogIn() {
           <Copyright sx={{ mt: 8, mb: 4 }} />
         </>
       )}
+      <Snackbar open={openSnackBar} autoHideDuration={2000} onClose={handleCloseSnackBar}>
+        <Alert onClose={handleCloseSnackBar} severity={typeSnackBar} sx={{ width: '100%' }}>
+          {messageSnackBar}
+        </Alert>
+      </Snackbar>
     </Container>
   );
 }

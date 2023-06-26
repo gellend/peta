@@ -104,8 +104,8 @@ export default function Profil() {
                     <Table aria-label="Data Diri">
                       <TableBody>
                         <TableRow>
-                          <TableCell>NRP</TableCell>
-                          <TableCell>{user ? user.nrp : ""}</TableCell>
+                          <TableCell>ID</TableCell>
+                          <TableCell>{user ? user.id : ""}</TableCell>
                         </TableRow>
                         <TableRow>
                           <TableCell>Nama</TableCell>

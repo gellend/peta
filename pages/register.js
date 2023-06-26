@@ -1,4 +1,4 @@
-import { Box, Button, Container, CssBaseline, Grid, Link, TextField, Typography } from '@mui/material';
+import { Box, Button, Container, CssBaseline, Grid, Link, TextField, Typography, Snackbar, Alert } from '@mui/material';
 import { createUserWithEmailAndPassword, getAuth } from 'firebase/auth';
 import { doc, getFirestore, serverTimestamp, setDoc } from 'firebase/firestore';
 import { useEffect, useState } from 'react';
@@ -14,18 +14,23 @@ export default function Register() {
   const db = getFirestore(app)
 
   // State
-  const [nrp, setNrp] = useState("");
+  const [id, setId] = useState("");
   const [nama, setNama] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+
+  // Snackbar
+  const [openSnackBar, setOpenSnackBar] = useState(false);
+  const [messageSnackBar, setMessageSnackBar] = useState("");
+  const [typeSnackBar, setTypeSnackBar] = useState("");
 
   const handleSubmit = (event) => {
     event.preventDefault();
 
     createUserWithEmailAndPassword(auth, email, password)
       .then(async (res) => {
-        await setDoc(doc(db, "users", res.user.uid), {
-          nrp: nrp,
+        await setDoc(doc(db, "users", id), {
+          id: id,
           nama: nama,
           email: email,
           role: "Mahasiswa",
@@ -35,9 +40,18 @@ export default function Register() {
         router.push('/dashboard')
       })
       .catch((error) => {
-        console.log(error.message);
+        console.error(error.message)
+        handleOpenSnackBar(error.message, "error")
       });
   };
+
+  const handleCloseSnackBar = () => setOpenSnackBar(false);
+
+  const handleOpenSnackBar = (message, type) => {
+    setMessageSnackBar(message);
+    setTypeSnackBar(type);
+    setOpenSnackBar(true);
+  }
 
   return (
     <Container component="main" maxWidth="xs">
@@ -64,8 +78,8 @@ export default function Register() {
             label="NRP"
             name="nrp"
             autoFocus
-            value={nrp}
-            onChange={(e) => setNrp(e.target.value)}
+            value={id}
+            onChange={(e) => setId(e.target.value)}
           />
           <TextField
             margin="normal"
@@ -119,6 +133,11 @@ export default function Register() {
         </Box>
       </Box>
       <Copyright sx={{ mt: 8, mb: 4 }} />
+      <Snackbar open={openSnackBar} autoHideDuration={2000} onClose={handleCloseSnackBar}>
+        <Alert onClose={handleCloseSnackBar} severity={typeSnackBar} sx={{ width: '100%' }}>
+          {messageSnackBar}
+        </Alert>
+      </Snackbar>
     </Container>
   );
 }
