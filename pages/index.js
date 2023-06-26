@@ -149,6 +149,7 @@ export default function LogIn() {
           <Copyright sx={{ mt: 8, mb: 4 }} />
         </>
       )}
+
       <CustomSnackbar
         open={snackbarData.open}
         message={snackbarData.message}

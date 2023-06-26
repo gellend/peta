@@ -1,9 +1,10 @@
-import { Box, Button, Container, CssBaseline, Grid, Link, TextField, Typography, Snackbar, Alert } from '@mui/material';
+import { Box, Button, Container, CssBaseline, Grid, Link, TextField, Typography } from '@mui/material';
 import { createUserWithEmailAndPassword, getAuth } from 'firebase/auth';
 import { doc, getFirestore, serverTimestamp, setDoc } from 'firebase/firestore';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 
 import Copyright from '../src/components/Copyright';
+import CustomSnackbar from '../src/components/CustomSnackbar';
 import { createFirebaseApp } from '../firebase/clientApp';
 import { useRouter } from 'next/router';
 
@@ -20,9 +21,7 @@ export default function Register() {
   const [password, setPassword] = useState("");
 
   // Snackbar
-  const [openSnackBar, setOpenSnackBar] = useState(false);
-  const [messageSnackBar, setMessageSnackBar] = useState("");
-  const [typeSnackBar, setTypeSnackBar] = useState("");
+  const [snackbarData, setSnackbarData] = useState({ open: false, message: "", type: "" });
 
   const handleSubmit = (event) => {
     event.preventDefault();
@@ -45,13 +44,14 @@ export default function Register() {
       });
   };
 
-  const handleCloseSnackBar = () => setOpenSnackBar(false);
-
+  // Handle snackbar
   const handleOpenSnackBar = (message, type) => {
-    setMessageSnackBar(message);
-    setTypeSnackBar(type);
-    setOpenSnackBar(true);
-  }
+    setSnackbarData({ open: true, message, type });
+  };
+
+  const handleCloseSnackBar = () => {
+    setSnackbarData({ ...snackbarData, open: false });
+  };
 
   return (
     <Container component="main" maxWidth="xs">
@@ -133,11 +133,13 @@ export default function Register() {
         </Box>
       </Box>
       <Copyright sx={{ mt: 8, mb: 4 }} />
-      <Snackbar open={openSnackBar} autoHideDuration={2000} onClose={handleCloseSnackBar}>
-        <Alert onClose={handleCloseSnackBar} severity={typeSnackBar} sx={{ width: '100%' }}>
-          {messageSnackBar}
-        </Alert>
-      </Snackbar>
+
+      <CustomSnackbar
+        open={snackbarData.open}
+        message={snackbarData.message}
+        type={snackbarData.type}
+        onClose={handleCloseSnackBar}
+      />
     </Container>
   );
 }
