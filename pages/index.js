@@ -10,21 +10,18 @@ import {
   Snackbar,
   Alert
 } from "@mui/material";
-import { doc, getDoc, getFirestore, collection, query, where } from "firebase/firestore";
 import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
 
 import Copyright from "../src/components/Copyright";
 import { createFirebaseApp } from "../firebase/clientApp";
 import { useRouter } from "next/router";
 import { useUser } from "../context/userContext";
-import { useState } from "react";
-import { useEffect } from "react";
-import { useAuthState } from '../src/lib/user';
+import { useState, useEffect } from "react";
+import { getUserDataByEmail } from '../src/lib/user';
 
 export default function LogIn() {
   const app = createFirebaseApp();
   const router = useRouter();
-  const db = getFirestore(app);
   const auth = getAuth(app);
 
   const [email, setEmail] = useState("");
@@ -40,14 +37,14 @@ export default function LogIn() {
 
   // Check if user is already logged in
   useEffect(() => {
-    setIsLoggingIn(true);
+    setLoadingUser(true);
     const unsubscribe = auth.onAuthStateChanged(async (user) => {
       if (user) {
-        const userData = await getDoc(doc(db, "users", user.uid));
-        setUser(userData.data());
+        const userData = await getUserDataByEmail(user.email)
+        setUser(userData);
       }
 
-      setIsLoggingIn(false);
+      setLoadingUser(false);
     });
 
     return unsubscribe;
@@ -65,25 +62,21 @@ export default function LogIn() {
     }
   }, [user, loadingUser]);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setLoadingUser(true);
 
-    signInWithEmailAndPassword(auth, email, password)
-      .then(async (userCredential) => {
-        const userData = await getDoc(
-          doc(db, "users", userCredential.user.uid)
-        );
-        setUser(userData.data());
-      })
-      .catch((error) => {
-        console.log(error.code, error.message);
-        handleOpenSnackBar(error.message, "error")
-        setUser(null);
-      })
-      .finally(() => {
-        setLoadingUser(false);
-      });
+    try {
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      const userData = await getUserDataByEmail(userCredential.user.email);
+      setUser(userData);
+    } catch (error) {
+      console.log(error.code, error.message);
+      handleOpenSnackBar(error.message, "error");
+      setUser(null);
+    } finally {
+      setLoadingUser(false);
+    }
   };
 
   const handleCloseSnackBar = () => setOpenSnackBar(false);
@@ -96,7 +89,7 @@ export default function LogIn() {
 
   return (
     <Container component="main" maxWidth="xs">
-      {isLoggingIn ? (
+      {loadingUser ? (
         <div>Loading...</div>
       ) : (
         <>
