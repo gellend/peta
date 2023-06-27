@@ -1,4 +1,4 @@
-import { ArrowBack, Edit } from "@mui/icons-material";
+import { ArrowBack } from "@mui/icons-material";
 import {
   Box,
   Button,
@@ -7,7 +7,6 @@ import {
   CssBaseline,
   Grid,
   IconButton,
-  Input,
   MenuItem,
   Paper,
   Stack,
@@ -17,44 +16,24 @@ import {
 } from "@mui/material";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
 
-import Link from "next/link";
 import Navbar from "../../src/components/Navbar";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
-import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import { useRouter } from "next/router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { getUsersByRoles } from "../../src/lib/user";
 
 const mdTheme = createTheme();
-
-function createData(no, judul, nama, nrp, status, aksi) {
-  return { no, judul, nama, nrp, status, aksi };
-}
-
-const currencies = [
-  {
-    value: "USD",
-    label: "$",
-  },
-  {
-    value: "EUR",
-    label: "€",
-  },
-  {
-    value: "BTC",
-    label: "฿",
-  },
-  {
-    value: "JPY",
-    label: "¥",
-  },
-];
 
 export default function CreatePengajuan() {
   const router = useRouter();
 
+  // Dosen dropdown
+  const [dosenDropdown, setDosenDropdown] = useState([]);
+
+  // Form state
   const [judul, setJudul] = useState("");
   const [totalSksLulus, setTotalSksLulus] = useState("");
   const [sksAmbilSemesterIni, setSksAmbilSemesterIni] = useState("");
@@ -63,6 +42,19 @@ export default function CreatePengajuan() {
   const [dosenPembimbing1, setDosenPembimbing1] = useState("");
   const [dosenPembimbing2, setDosenPembimbing2] = useState("");
   const [dosenPembimbing3, setDosenPembimbing3] = useState("");
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const data = await getUsersByRoles(['Dosen']);
+        setDosenDropdown(data)
+      } catch (error) {
+        console.error("Error fetching users:", error);
+      }
+    };
+
+    fetchData();
+  }, []);
 
   return (
     <ThemeProvider theme={mdTheme}>
@@ -182,9 +174,9 @@ export default function CreatePengajuan() {
                               setDosenPembimbing1(e.target.value)
                             }
                           >
-                            {currencies.map((option) => (
-                              <MenuItem key={option.value} value={option.value}>
-                                {option.label}
+                            {dosenDropdown && dosenDropdown.map((dosen) => (
+                              <MenuItem key={dosen.id} value={dosen.id}>
+                                {dosen.nama}
                               </MenuItem>
                             ))}
                           </TextField>
@@ -201,9 +193,9 @@ export default function CreatePengajuan() {
                               setDosenPembimbing2(e.target.value)
                             }
                           >
-                            {currencies.map((option) => (
-                              <MenuItem key={option.value} value={option.value}>
-                                {option.label}
+                            {dosenDropdown && dosenDropdown.map((dosen) => (
+                              <MenuItem key={dosen.id} value={dosen.id}>
+                                {dosen.nama}
                               </MenuItem>
                             ))}
                           </TextField>
@@ -220,9 +212,9 @@ export default function CreatePengajuan() {
                               setDosenPembimbing3(e.target.value)
                             }
                           >
-                            {currencies.map((option) => (
-                              <MenuItem key={option.value} value={option.value}>
-                                {option.label}
+                            {dosenDropdown && dosenDropdown.map((dosen) => (
+                              <MenuItem key={dosen.id} value={dosen.id}>
+                                {dosen.nama}
                               </MenuItem>
                             ))}
                           </TextField>

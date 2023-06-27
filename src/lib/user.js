@@ -15,3 +15,20 @@ export const getUserDataByEmail = async (email) => {
 
     return user;
 };
+
+export const getUsersByRoles = async (roles) => {
+    try {
+        const q = query(collection(db, "users"), where("role", "in", roles));
+        const querySnapshot = await getDocs(q);
+        const users = [];
+
+        querySnapshot.forEach((doc) => {
+            users.push(doc.data());
+        });
+
+        return users;
+    } catch (error) {
+        console.error("Error fetching users:", error);
+        throw error;
+    }
+};
