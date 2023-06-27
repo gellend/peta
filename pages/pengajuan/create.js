@@ -24,11 +24,20 @@ import TableRow from "@mui/material/TableRow";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { getUsersByRoles } from "../../src/lib/user";
+import { createFirebaseApp } from "../../firebase/clientApp";
+import { getStorage, ref, uploadBytes } from "firebase/storage";
+import { observeAuthState } from "../../src/lib/authUtils";
 
 const mdTheme = createTheme();
 
 export default function CreatePengajuan() {
+  const app = createFirebaseApp();
+  const storage = getStorage(app);
+
   const router = useRouter();
+
+  // User
+  const [userData, setUserData] = useState({});
 
   // Dosen dropdown
   const [dosenDropdown, setDosenDropdown] = useState([]);
@@ -43,17 +52,38 @@ export default function CreatePengajuan() {
   const [dosenPembimbing2, setDosenPembimbing2] = useState("");
   const [dosenPembimbing3, setDosenPembimbing3] = useState("");
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const data = await getUsersByRoles(['Dosen']);
-        setDosenDropdown(data)
-      } catch (error) {
-        console.error("Error fetching users:", error);
-      }
-    };
+  const fetchUserData = async () => {
+    const user = await observeAuthState();
 
-    fetchData();
+    if (user) {
+      setUserData(user)
+    }
+  };
+
+  const fetchDataDosen = async () => {
+    try {
+      const data = await getUsersByRoles(['Dosen']);
+      setDosenDropdown(data)
+    } catch (error) {
+      console.error("Error fetching users:", error);
+    }
+  };
+
+  const handleFileUpload = async (e) => {
+    const file = e.target.files[0];
+
+    try {
+      const storageRef = ref(storage, `user/${userData.uid}/khs-total-terakhir.pdf`); // Specify the desired file name or path in the Firebase Storage
+      await uploadBytes(storageRef, file);
+      console.log("File uploaded successfully!");
+    } catch (error) {
+      console.error("Error uploading file:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchUserData();
+    fetchDataDosen();
   }, []);
 
   return (
@@ -243,7 +273,7 @@ export default function CreatePengajuan() {
                                 hidden
                                 accept=".pdf"
                                 type="file"
-                                onChange={(e) => console.log(e.target.files)}
+                                onChange={handleFileUpload}
                               />
                             </Button>
                             <Chip label="Chip Outlined" variant="outlined" />
