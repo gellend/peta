@@ -56,14 +56,14 @@ export default function CreatePengajuan() {
     const user = await observeAuthState();
 
     if (user) {
-      setUserData(user)
+      setUserData(user);
     }
   };
 
   const fetchDataDosen = async () => {
     try {
-      const data = await getUsersByRoles(['Dosen']);
-      setDosenDropdown(data)
+      const data = await getUsersByRoles(["Dosen"]);
+      setDosenDropdown(data);
     } catch (error) {
       console.error("Error fetching users:", error);
     }
@@ -73,7 +73,10 @@ export default function CreatePengajuan() {
     const file = e.target.files[0];
 
     try {
-      const storageRef = ref(storage, `user/${userData.uid}/khs-total-terakhir.pdf`); // Specify the desired file name or path in the Firebase Storage
+      const storageRef = ref(
+        storage,
+        `user/${userData.uid}/khs-total-terakhir.pdf`
+      );
       await uploadBytes(storageRef, file);
       console.log("File uploaded successfully!");
     } catch (error) {
@@ -204,11 +207,12 @@ export default function CreatePengajuan() {
                               setDosenPembimbing1(e.target.value)
                             }
                           >
-                            {dosenDropdown && dosenDropdown.map((dosen) => (
-                              <MenuItem key={dosen.id} value={dosen.id}>
-                                {dosen.nama}
-                              </MenuItem>
-                            ))}
+                            {dosenDropdown &&
+                              dosenDropdown.map((dosen) => (
+                                <MenuItem key={dosen.id} value={dosen.id}>
+                                  {dosen.nama}
+                                </MenuItem>
+                              ))}
                           </TextField>
                         </TableCell>
                       </TableRow>
@@ -223,11 +227,12 @@ export default function CreatePengajuan() {
                               setDosenPembimbing2(e.target.value)
                             }
                           >
-                            {dosenDropdown && dosenDropdown.map((dosen) => (
-                              <MenuItem key={dosen.id} value={dosen.id}>
-                                {dosen.nama}
-                              </MenuItem>
-                            ))}
+                            {dosenDropdown &&
+                              dosenDropdown.map((dosen) => (
+                                <MenuItem key={dosen.id} value={dosen.id}>
+                                  {dosen.nama}
+                                </MenuItem>
+                              ))}
                           </TextField>
                         </TableCell>
                       </TableRow>
@@ -242,11 +247,12 @@ export default function CreatePengajuan() {
                               setDosenPembimbing3(e.target.value)
                             }
                           >
-                            {dosenDropdown && dosenDropdown.map((dosen) => (
-                              <MenuItem key={dosen.id} value={dosen.id}>
-                                {dosen.nama}
-                              </MenuItem>
-                            ))}
+                            {dosenDropdown &&
+                              dosenDropdown.map((dosen) => (
+                                <MenuItem key={dosen.id} value={dosen.id}>
+                                  {dosen.nama}
+                                </MenuItem>
+                              ))}
                           </TextField>
                         </TableCell>
                       </TableRow>
