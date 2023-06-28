@@ -13,14 +13,14 @@ import {
   TextField,
   Toolbar,
   Typography,
+  Table,
+  TableBody,
+  TableCell,
+  TableRow,
 } from "@mui/material";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
 
 import Navbar from "../../src/components/Navbar";
-import Table from "@mui/material/Table";
-import TableBody from "@mui/material/TableBody";
-import TableCell from "@mui/material/TableCell";
-import TableRow from "@mui/material/TableRow";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { getUsersByRoles } from "../../src/lib/user";
@@ -63,7 +63,7 @@ export default function CreatePengajuan() {
       const data = await getUsersByRoles(["Dosen"]);
       setDosenDropdown(data);
     } catch (error) {
-      console.error("Error fetching users:", error);
+      console.error("fetchDataDosen:", error);
     }
   };
 
