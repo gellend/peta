@@ -52,12 +52,10 @@ export default function CreatePengajuan() {
   const [dosenPembimbing2, setDosenPembimbing2] = useState("");
   const [dosenPembimbing3, setDosenPembimbing3] = useState("");
 
-  const fetchUserData = async () => {
+  const getCurrentLoginUser = async () => {
     const user = await observeAuthState();
 
-    if (user) {
-      setUserData(user);
-    }
+    if (user) setUserData(user);
   };
 
   const fetchDataDosen = async () => {
@@ -85,7 +83,7 @@ export default function CreatePengajuan() {
   };
 
   useEffect(() => {
-    fetchUserData();
+    getCurrentLoginUser();
     fetchDataDosen();
   }, []);
 
