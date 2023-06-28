@@ -42,15 +42,37 @@ export default function CreatePengajuan() {
   // Dosen dropdown
   const [dosenDropdown, setDosenDropdown] = useState([]);
 
-  // Form state
-  const [judul, setJudul] = useState("");
-  const [totalSksLulus, setTotalSksLulus] = useState("");
-  const [sksAmbilSemesterIni, setSksAmbilSemesterIni] = useState("");
-  const [sksMengulang, setSksMengulang] = useState("");
-  const [deskripsi, setDeskripsi] = useState("");
-  const [dosenPembimbing1, setDosenPembimbing1] = useState("");
-  const [dosenPembimbing2, setDosenPembimbing2] = useState("");
-  const [dosenPembimbing3, setDosenPembimbing3] = useState("");
+  // Form states
+  const [formValues, setFormValues] = useState({
+    judul: "",
+    totalSksLulus: "",
+    sksAmbil: "",
+    sksMengulang: "",
+    deskripsi: "",
+    dosenPembimbing1: "",
+    dosenPembimbing2: "",
+    dosenPembimbing3: "",
+  });
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormValues((prevValues) => ({
+      ...prevValues,
+      [name]: value,
+    }));
+  };
+
+  // Destructure form values for easier access
+  const {
+    judul,
+    totalSksLulus,
+    sksAmbil,
+    sksMengulang,
+    deskripsi,
+    dosenPembimbing1,
+    dosenPembimbing2,
+    dosenPembimbing3,
+  } = formValues;
 
   const getCurrentLoginUser = async () => {
     const user = await observeAuthState();
@@ -141,7 +163,8 @@ export default function CreatePengajuan() {
                             variant="outlined"
                             fullWidth
                             value={judul}
-                            onChange={(e) => setJudul(e.target.value)}
+                            name="judul"
+                            onChange={handleInputChange}
                           />
                         </TableCell>
                       </TableRow>
@@ -152,7 +175,8 @@ export default function CreatePengajuan() {
                             variant="outlined"
                             fullWidth
                             value={totalSksLulus}
-                            onChange={(e) => setTotalSksLulus(e.target.value)}
+                            name="totalSksLulus"
+                            onChange={handleInputChange}
                           />
                         </TableCell>
                       </TableRow>
@@ -162,10 +186,9 @@ export default function CreatePengajuan() {
                             label="SKS Ambil Smt. Ini"
                             variant="outlined"
                             fullWidth
-                            value={sksAmbilSemesterIni}
-                            onChange={(e) =>
-                              setSksAmbilSemesterIni(e.target.value)
-                            }
+                            value={sksAmbil}
+                            name="sksAmbil"
+                            onChange={handleInputChange}
                           />
                         </TableCell>
                       </TableRow>
@@ -176,7 +199,8 @@ export default function CreatePengajuan() {
                             variant="outlined"
                             fullWidth
                             value={sksMengulang}
-                            onChange={(e) => setSksMengulang(e.target.value)}
+                            name="sksMengulang"
+                            onChange={handleInputChange}
                           />
                         </TableCell>
                       </TableRow>
@@ -189,7 +213,8 @@ export default function CreatePengajuan() {
                             multiline
                             rows={4}
                             value={deskripsi}
-                            onChange={(e) => setDeskripsi(e.target.value)}
+                            name="deskripsi"
+                            onChange={handleInputChange}
                           />
                         </TableCell>
                       </TableRow>
@@ -201,9 +226,8 @@ export default function CreatePengajuan() {
                             helperText="Pilih Setidaknya 1 Dosen Pembimbing"
                             fullWidth
                             value={dosenPembimbing1}
-                            onChange={(e) =>
-                              setDosenPembimbing1(e.target.value)
-                            }
+                            name="dosenPembimbing1"
+                            onChange={handleInputChange}
                           >
                             {dosenDropdown &&
                               dosenDropdown.map((dosen) => (
@@ -221,9 +245,8 @@ export default function CreatePengajuan() {
                             label="Usulan Dosen Pembimbing 2"
                             fullWidth
                             value={dosenPembimbing2}
-                            onChange={(e) =>
-                              setDosenPembimbing2(e.target.value)
-                            }
+                            name="dosenPembimbing2"
+                            onChange={handleInputChange}
                           >
                             {dosenDropdown &&
                               dosenDropdown.map((dosen) => (
@@ -241,9 +264,8 @@ export default function CreatePengajuan() {
                             label="Usulan Dosen Pembimbing 3"
                             fullWidth
                             value={dosenPembimbing3}
-                            onChange={(e) =>
-                              setDosenPembimbing3(e.target.value)
-                            }
+                            name="dosenPembimbing3"
+                            onChange={handleInputChange}
                           >
                             {dosenDropdown &&
                               dosenDropdown.map((dosen) => (
