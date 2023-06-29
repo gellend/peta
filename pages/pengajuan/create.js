@@ -24,16 +24,12 @@ import Navbar from "../../src/components/Navbar";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { getUsersByRoles } from "../../src/lib/user";
-import { createFirebaseApp } from "../../firebase/clientApp";
-import { getStorage, ref, uploadBytes } from "firebase/storage";
 import { observeAuthState } from "../../src/lib/authUtils";
+import { uploadFile } from "../../src/lib/upload";
 
 const mdTheme = createTheme();
 
 export default function CreatePengajuan() {
-  const app = createFirebaseApp();
-  const storage = getStorage(app);
-
   const router = useRouter();
 
   // User
@@ -74,6 +70,31 @@ export default function CreatePengajuan() {
     dosenPembimbing3,
   } = formValues;
 
+  // File map
+  const FILE_MAP = {
+    khsFile: "khs.pdf",
+    frsFile: "frs.pdf",
+    jalurPraCoFile: "jalur-pra-co.pdf",
+    toeflFile: "toefl.pdf",
+    kompetensiFile: "kompetensi.pdf",
+  };
+
+  // File states
+  const [fileInputs, setFileInputs] = useState({
+    khsFile: { file: null, chipLabel: "" },
+    frsFile: { file: null, chipLabel: "" },
+    jalurPraCoFile: { file: null, chipLabel: "" },
+    toeflFile: { file: null, chipLabel: "" },
+    kompetensiFile: { file: null, chipLabel: "" },
+  });
+
+  const handleFileInputChange = (inputName, file) => {
+    setFileInputs((prevInputs) => ({
+      ...prevInputs,
+      [inputName]: { file, chipLabel: file ? file.name : "" },
+    }));
+  };
+
   const getCurrentLoginUser = async () => {
     const user = await observeAuthState();
 
@@ -89,25 +110,31 @@ export default function CreatePengajuan() {
     }
   };
 
-  const handleFileUpload = async (e) => {
-    const file = e.target.files[0];
-
-    try {
-      const storageRef = ref(
-        storage,
-        `user/${userData.uid}/khs-total-terakhir.pdf`
-      );
-      await uploadBytes(storageRef, file);
-      console.log("File uploaded successfully!");
-    } catch (error) {
-      console.error("Error uploading file:", error);
-    }
-  };
-
   useEffect(() => {
     getCurrentLoginUser();
     fetchDataDosen();
   }, []);
+
+  const handleFormSubmit = () => {
+    console.log("formValues", formValues);
+    Object.entries(fileInputs).forEach(([inputName, input]) => {
+      const { file } = input;
+      if (file) {
+        const fileName = FILE_MAP[inputName];
+        if (fileName) {
+          uploadFile(file, `user/${userData.uid}/${fileName}`);
+        }
+      }
+    });
+
+    // Reset the file inputs and chip labels
+    setFileInputs((prevInputs) =>
+      Object.keys(prevInputs).reduce((acc, inputName) => {
+        acc[inputName] = { file: null, chipLabel: "" };
+        return acc;
+      }, {})
+    );
+  };
 
   return (
     <ThemeProvider theme={mdTheme}>
@@ -299,10 +326,20 @@ export default function CreatePengajuan() {
                                 hidden
                                 accept=".pdf"
                                 type="file"
-                                onChange={handleFileUpload}
+                                onChange={(e) =>
+                                  handleFileInputChange(
+                                    "khsFile",
+                                    e.target.files[0]
+                                  )
+                                }
                               />
                             </Button>
-                            <Chip label="Chip Outlined" variant="outlined" />
+                            {fileInputs.khsFile.chipLabel && (
+                              <Chip
+                                label={fileInputs.khsFile.chipLabel}
+                                variant="outlined"
+                              />
+                            )}
                           </Stack>
                         </TableCell>
                       </TableRow>
@@ -323,10 +360,20 @@ export default function CreatePengajuan() {
                                 hidden
                                 accept=".pdf"
                                 type="file"
-                                onChange={(e) => console.log(e.target.files)}
+                                onChange={(e) =>
+                                  handleFileInputChange(
+                                    "frsFile",
+                                    e.target.files[0]
+                                  )
+                                }
                               />
                             </Button>
-                            <Chip label="Chip Outlined" variant="outlined" />
+                            {fileInputs.frsFile.chipLabel && (
+                              <Chip
+                                label={fileInputs.frsFile.chipLabel}
+                                variant="outlined"
+                              />
+                            )}
                           </Stack>
                         </TableCell>
                       </TableRow>
@@ -347,10 +394,20 @@ export default function CreatePengajuan() {
                                 hidden
                                 accept=".pdf"
                                 type="file"
-                                onChange={(e) => console.log(e.target.files)}
+                                onChange={(e) =>
+                                  handleFileInputChange(
+                                    "jalurPraCoFile",
+                                    e.target.files[0]
+                                  )
+                                }
                               />
                             </Button>
-                            <Chip label="Chip Outlined" variant="outlined" />
+                            {fileInputs.jalurPraCoFile.chipLabel && (
+                              <Chip
+                                label={fileInputs.jalurPraCoFile.chipLabel}
+                                variant="outlined"
+                              />
+                            )}
                           </Stack>
                         </TableCell>
                       </TableRow>
@@ -371,10 +428,20 @@ export default function CreatePengajuan() {
                                 hidden
                                 accept=".pdf"
                                 type="file"
-                                onChange={(e) => console.log(e.target.files)}
+                                onChange={(e) =>
+                                  handleFileInputChange(
+                                    "toeflFile",
+                                    e.target.files[0]
+                                  )
+                                }
                               />
                             </Button>
-                            <Chip label="Chip Outlined" variant="outlined" />
+                            {fileInputs.toeflFile.chipLabel && (
+                              <Chip
+                                label={fileInputs.toeflFile.chipLabel}
+                                variant="outlined"
+                              />
+                            )}
                           </Stack>
                         </TableCell>
                       </TableRow>
@@ -395,10 +462,20 @@ export default function CreatePengajuan() {
                                 hidden
                                 accept=".pdf"
                                 type="file"
-                                onChange={(e) => console.log(e.target.files)}
+                                onChange={(e) =>
+                                  handleFileInputChange(
+                                    "kompetensiFile",
+                                    e.target.files[0]
+                                  )
+                                }
                               />
                             </Button>
-                            <Chip label="Chip Outlined" variant="outlined" />
+                            {fileInputs.kompetensiFile.chipLabel && (
+                              <Chip
+                                label={fileInputs.kompetensiFile.chipLabel}
+                                variant="outlined"
+                              />
+                            )}
                           </Stack>
                         </TableCell>
                       </TableRow>
@@ -411,6 +488,7 @@ export default function CreatePengajuan() {
                       sx={{ minWidth: 200 }}
                       variant="contained"
                       color="success"
+                      onClick={handleFormSubmit}
                     >
                       Submit
                     </Button>
