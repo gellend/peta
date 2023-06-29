@@ -1,18 +1,27 @@
-import { Box, Button, Container, CssBaseline, Grid, Link, TextField, Typography } from '@mui/material';
-import { createUserWithEmailAndPassword, getAuth } from 'firebase/auth';
-import { doc, getFirestore, serverTimestamp, setDoc } from 'firebase/firestore';
-import { useState } from 'react';
+import {
+  Box,
+  Button,
+  Container,
+  CssBaseline,
+  Grid,
+  Link,
+  TextField,
+  Typography,
+} from "@mui/material";
+import { createUserWithEmailAndPassword, getAuth } from "firebase/auth";
+import { doc, getFirestore, serverTimestamp, setDoc } from "firebase/firestore";
+import { useState } from "react";
 
-import Copyright from '../src/components/Copyright';
-import CustomSnackbar from '../src/components/CustomSnackbar';
-import { createFirebaseApp } from '../firebase/clientApp';
-import { useRouter } from 'next/router';
+import Copyright from "../src/components/Copyright";
+import CustomSnackbar from "../src/components/CustomSnackbar";
+import { createFirebaseApp } from "../firebase/clientApp";
+import { useRouter } from "next/router";
 
 export default function Register() {
-  const router = useRouter()
-  const app = createFirebaseApp()
-  const auth = getAuth(app)
-  const db = getFirestore(app)
+  const router = useRouter();
+  const app = createFirebaseApp();
+  const auth = getAuth(app);
+  const db = getFirestore(app);
 
   // State
   const [id, setId] = useState("");
@@ -21,14 +30,18 @@ export default function Register() {
   const [password, setPassword] = useState("");
 
   // Snackbar
-  const [snackbarData, setSnackbarData] = useState({ open: false, message: "", type: "" });
+  const [snackbarData, setSnackbarData] = useState({
+    open: false,
+    message: "",
+    type: "",
+  });
 
   const handleSubmit = (event) => {
     event.preventDefault();
 
     createUserWithEmailAndPassword(auth, email, password)
       .then(async (res) => {
-        await setDoc(doc(db, "users", id), {
+        await setDoc(doc(db, "users", res.user.uid), {
           id: id,
           nama: nama,
           email: email,
@@ -36,11 +49,11 @@ export default function Register() {
           created_at: serverTimestamp(),
         });
 
-        router.push('/dashboard')
+        router.push("/dashboard");
       })
       .catch((error) => {
-        console.error(error.message)
-        handleOpenSnackBar(error.message, "error")
+        console.error(error.message);
+        handleOpenSnackBar(error.message, "error");
       });
   };
 
@@ -59,9 +72,9 @@ export default function Register() {
       <Box
         sx={{
           marginTop: 8,
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
         }}
       >
         <Typography component="h1" variant="h5">

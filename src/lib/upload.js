@@ -8,8 +8,9 @@ export const uploadFile = async (file, path) => {
   try {
     const storageRef = ref(storage, path);
     await uploadBytes(storageRef, file);
-    console.log("File uploaded successfully!");
+    console.info(`${path} uploaded successfully!`);
   } catch (error) {
-    console.error("Error uploading file:", error);
+    console.error(`Error uploading ${file}:`, error);
+    throw error;
   }
 };

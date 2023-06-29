@@ -14,7 +14,7 @@ import {
   IconButton,
   Typography,
   TextField,
-  MenuItem
+  MenuItem,
 } from "@mui/material";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
 import { ArrowBack } from "@mui/icons-material";
@@ -29,7 +29,7 @@ import {
   getDoc,
   getFirestore,
   setDoc,
-  serverTimestamp
+  serverTimestamp,
 } from "firebase/firestore";
 import { useRouter } from "next/router";
 
@@ -53,7 +53,11 @@ export default function CreateUser() {
   const [role, setRole] = useState("Mahasiswa");
 
   // Snackbar
-  const [snackbarData, setSnackbarData] = useState({ open: false, message: "", type: "" });
+  const [snackbarData, setSnackbarData] = useState({
+    open: false,
+    message: "",
+    type: "",
+  });
 
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged(async (user) => {
@@ -70,19 +74,19 @@ export default function CreateUser() {
   }, []);
 
   const resetForm = () => {
-    setId("")
-    setNama("")
-    setEmail("")
-    setPassword("")
-    setRole("")
-  }
+    setId("");
+    setNama("");
+    setEmail("");
+    setPassword("");
+    setRole("");
+  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
 
     createUserWithEmailAndPassword(auth, email, password)
       .then(async (res) => {
-        await setDoc(doc(db, "users", id), {
+        await setDoc(doc(db, "users", res.user.uid), {
           id: id,
           nama: nama,
           email: email,
@@ -90,15 +94,15 @@ export default function CreateUser() {
           created_at: serverTimestamp(),
         });
 
-        handleOpenSnackBar(`${id} berhasil di daftarkan!`, "success")
+        handleOpenSnackBar(`${id} berhasil di daftarkan!`, "success");
 
-        router.push("/verifikasi")
+        router.push("/verifikasi");
       })
       .catch((error) => {
-        handleOpenSnackBar(error.message, "error")
+        handleOpenSnackBar(error.message, "error");
       })
       .finally(() => {
-        resetForm()
+        resetForm();
       });
   };
 

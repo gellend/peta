@@ -23,9 +23,10 @@ import { ThemeProvider, createTheme } from "@mui/material/styles";
 import Navbar from "../../src/components/Navbar";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
-import { getUsersByRoles } from "../../src/lib/store";
+import { getUsersByRoles, postData } from "../../src/lib/store";
 import { observeAuthState } from "../../src/lib/auth";
 import { uploadFile } from "../../src/lib/upload";
+import { serverTimestamp } from "firebase/firestore";
 
 const mdTheme = createTheme();
 
@@ -115,25 +116,51 @@ export default function CreatePengajuan() {
     fetchDataDosen();
   }, []);
 
-  const handleFormSubmit = () => {
-    console.log("formValues", formValues);
-    Object.entries(fileInputs).forEach(([inputName, input]) => {
-      const { file } = input;
-      if (file) {
-        const fileName = FILE_MAP[inputName];
-        if (fileName) {
-          uploadFile(file, `user/${userData.uid}/raw/${fileName}`);
+  const handleFormSubmit = async () => {
+    try {
+      // Upload files
+      const fileData = {};
+      for (const [inputName, input] of Object.entries(fileInputs)) {
+        const { file } = input;
+        if (file) {
+          const fileName = FILE_MAP[inputName];
+          if (fileName) {
+            try {
+              const path = `user/${userData.uid}/raw/${fileName}`;
+              await uploadFile(file, path);
+              fileData[inputName] = path; // Store filepath
+            } catch (error) {
+              console.error(`Failed to upload file '${fileName}', ${error}`);
+              // Handle the error here (e.g., show an error message to the user)
+            }
+          }
         }
       }
-    });
 
-    // Reset the file inputs and chip labels
-    setFileInputs((prevInputs) =>
-      Object.keys(prevInputs).reduce((acc, inputName) => {
-        acc[inputName] = { file: null, chipLabel: "" };
-        return acc;
-      }, {})
-    );
+      // Merge formValues with fileData
+      const dataToStore = {
+        ...formValues,
+        ...fileData,
+        timestamp: serverTimestamp(),
+        userId: userData.uid,
+      };
+
+      // Store merged data to Firestore
+      const success = await postData("pengajuan", dataToStore);
+      if (success) {
+        // Reset the file inputs and chip labels
+        setFileInputs((prevInputs) =>
+          Object.keys(prevInputs).reduce((acc, inputName) => {
+            acc[inputName] = { file: null, chipLabel: "" };
+            return acc;
+          }, {})
+        );
+      } else {
+        console.log("Failed to store data to Firestore");
+      }
+    } catch (error) {
+      console.error("Error:", error);
+    }
   };
 
   return (
