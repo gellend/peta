@@ -122,7 +122,7 @@ export default function CreatePengajuan() {
       if (file) {
         const fileName = FILE_MAP[inputName];
         if (fileName) {
-          uploadFile(file, `user/${userData.uid}/${fileName}`);
+          uploadFile(file, `user/${userData.uid}/raw/${fileName}`);
         }
       }
     });
