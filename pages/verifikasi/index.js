@@ -58,7 +58,7 @@ export default function Verifikasi() {
   useEffect(() => {
     const getUsers = async () => {
       const userData = await getDocs(collection(db, "users"));
-      setListUsers(userData.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
+      setListUsers(userData.docs.map((doc) => ({ ...doc.data() })));
     };
     getUsers();
   }, []);

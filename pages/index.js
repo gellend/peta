@@ -16,7 +16,7 @@ import { createFirebaseApp } from "../firebase/clientApp";
 import { useRouter } from "next/router";
 import { useUser } from "../context/userContext";
 import { useState, useEffect } from "react";
-import { getUserDataByEmail } from '../src/lib/user';
+import { getUserDataByEmail } from "../src/lib/store";
 
 export default function LogIn() {
   const app = createFirebaseApp();
@@ -28,14 +28,18 @@ export default function LogIn() {
 
   const { user, setUser, loadingUser, setLoadingUser } = useUser();
 
-  const [snackbarData, setSnackbarData] = useState({ open: false, message: "", type: "" });
+  const [snackbarData, setSnackbarData] = useState({
+    open: false,
+    message: "",
+    type: "",
+  });
 
   // Check if user is already logged in
   useEffect(() => {
     setLoadingUser(true);
     const unsubscribe = auth.onAuthStateChanged(async (user) => {
       if (user) {
-        const userData = await getUserDataByEmail(user.email)
+        const userData = await getUserDataByEmail(user.email);
         setUser(userData);
       }
 
@@ -62,7 +66,11 @@ export default function LogIn() {
     setLoadingUser(true);
 
     try {
-      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      const userCredential = await signInWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
       const userData = await getUserDataByEmail(userCredential.user.email);
       setUser(userData);
     } catch (error) {
