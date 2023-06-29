@@ -23,8 +23,8 @@ import { ThemeProvider, createTheme } from "@mui/material/styles";
 import Navbar from "../../src/components/Navbar";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
-import { getUsersByRoles } from "../../src/lib/user";
-import { observeAuthState } from "../../src/lib/authUtils";
+import { getUsersByRoles } from "../../src/lib/store";
+import { observeAuthState } from "../../src/lib/auth";
 import { uploadFile } from "../../src/lib/upload";
 
 const mdTheme = createTheme();
