@@ -7,6 +7,7 @@ import {
   getDocs,
   doc,
   setDoc,
+  getDoc,
 } from "firebase/firestore";
 
 const app = createFirebaseApp();
@@ -22,6 +23,16 @@ export const getUserDataByEmail = async (email) => {
   });
 
   return user;
+};
+
+export const getUserDataByUid = async (uid) => {
+  try {
+    const user = await getDoc(doc(db, "users", uid));
+    return user.data();
+  } catch (error) {
+    console.error("getUserDataByUid:", error);
+    throw error;
+  }
 };
 
 export const getUsersByRoles = async (roles) => {

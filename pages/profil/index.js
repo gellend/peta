@@ -19,40 +19,34 @@ import { ThemeProvider, createTheme } from "@mui/material/styles";
 import { Edit } from "@mui/icons-material";
 import Link from "next/link";
 import Navbar from "../../src/components/Navbar";
-import { createFirebaseApp } from "../../firebase/clientApp";
-import { getAuth } from "firebase/auth";
 import { useEffect, useState } from "react";
-import { doc, getDoc, getFirestore } from "firebase/firestore";
-import { useRouter } from "next/router";
+import { getUserDataByUid } from "../../src/lib/store";
+import { observeAuthState } from "../../src/lib/auth";
 
 const mdTheme = createTheme();
 
 export default function Profil() {
-  const app = createFirebaseApp();
-  const auth = getAuth(app);
-  const db = getFirestore(app);
-  const router = useRouter();
-
   const [user, setUser] = useState(null);
-  const [isLoggingIn, setIsLoggingIn] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const getCurrentLoginUser = async () => {
+    setIsLoading(true);
+    const user = await observeAuthState();
+    const userData = await getUserDataByUid(user.uid);
+
+    if (userData) {
+      setUser(userData);
+      setIsLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const unsubscribe = auth.onAuthStateChanged(async (user) => {
-      if (user) {
-        const userData = await getDoc(doc(db, "users", user.uid));
-        setUser(userData.data());
-        setIsLoggingIn(false);
-      } else {
-        router.push("/");
-      }
-    });
-
-    return unsubscribe;
+    getCurrentLoginUser();
   }, []);
 
   return (
     <ThemeProvider theme={mdTheme}>
-      {isLoggingIn ? (
+      {isLoading ? (
         <div>Loading...</div>
       ) : (
         <Box sx={{ display: "flex" }}>
