@@ -62,3 +62,20 @@ export const postData = async (path, data, id = null) => {
     return false;
   }
 };
+
+export const getData = async (path, column, operator, key) => {
+  let data = [];
+  try {
+    const q = query(collection(db, path), where(column, operator, key));
+
+    const querySnapshot = await getDocs(q);
+    querySnapshot.forEach((doc) => {
+      data.push(doc.data());
+    });
+
+    return data;
+  } catch (error) {
+    console.log("getData:", error);
+    return data;
+  }
+};
