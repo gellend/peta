@@ -23,7 +23,11 @@ import { ThemeProvider, createTheme } from "@mui/material/styles";
 import Navbar from "../../src/components/Navbar";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
-import { getUsersByRoles, postData } from "../../src/lib/store";
+import {
+  getUserDataByEmail,
+  getUsersByRoles,
+  postData,
+} from "../../src/lib/store";
 import { observeAuthState } from "../../src/lib/auth";
 import { uploadFile } from "../../src/lib/upload";
 import { serverTimestamp } from "firebase/firestore";
@@ -98,8 +102,10 @@ export default function CreatePengajuan() {
 
   const getCurrentLoginUser = async () => {
     const user = await observeAuthState();
+    let userData = await getUserDataByEmail(user.email);
+    userData = userData[0];
 
-    if (user) setUserData(user);
+    if (user || userData) setUserData({ ...user, ...userData });
   };
 
   const fetchDataDosen = async () => {
@@ -126,7 +132,7 @@ export default function CreatePengajuan() {
           const fileName = FILE_MAP[inputName];
           if (fileName) {
             try {
-              const path = `user/${userData.uid}/raw/${fileName}`;
+              let path = `user/${userData.uid}/raw/${fileName}`;
               await uploadFile(file, path);
               fileData[inputName] = path; // Store filepath
             } catch (error) {
@@ -141,6 +147,8 @@ export default function CreatePengajuan() {
       const dataToStore = {
         ...formValues,
         ...fileData,
+        ...userData,
+        status: "pending",
         timestamp: serverTimestamp(),
         userId: userData.uid,
       };

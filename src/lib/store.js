@@ -25,14 +25,24 @@ export const postData = async (path, data, id = null) => {
   }
 };
 
-export const getDataWithQuery = async (path, column, operator, key) => {
+export const getDataWithQuery = async (
+  path,
+  column,
+  operator,
+  key,
+  withDocId = true
+) => {
   let data = [];
   try {
     const q = query(collection(db, path), where(column, operator, key));
 
     const querySnapshot = await getDocs(q);
     querySnapshot.forEach((doc) => {
-      data.push(doc.data());
+      if (withDocId) {
+        data.push({ ...doc.data(), docId: doc.id });
+      } else {
+        data.push(doc.data());
+      }
     });
 
     return data;
@@ -43,15 +53,8 @@ export const getDataWithQuery = async (path, column, operator, key) => {
 };
 
 export const getUserDataByEmail = async (email) => {
-  let user = null;
-  const q = query(collection(db, "users"), where("email", "==", email));
-
-  const querySnapshot = await getDocs(q);
-  querySnapshot.forEach((doc) => {
-    user = doc.data();
-  });
-
-  return user;
+  const rows = await getDataWithQuery("users", "email", "==", email, false);
+  return rows;
 };
 
 export const getUserDataByUid = async (uid) => {

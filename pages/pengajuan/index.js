@@ -40,6 +40,7 @@ export default function Pengajuan() {
 
   const getPengajuan = async (uid) => {
     const rows = await getPengajuanByCurrentUser(uid);
+    console.log(rows);
     setListPengajuan(rows);
   };
 
@@ -95,25 +96,25 @@ export default function Pengajuan() {
                           <TableCell>Nama</TableCell>
                           <TableCell>NRP</TableCell>
                           <TableCell>Status</TableCell>
-                          <TableCell>Aksi</TableCell>
+                          <TableCell />
                         </TableRow>
                       </TableHead>
                       <TableBody>
                         {listPengajuan && listPengajuan.length === 0 ? (
                           <TableRow>
-                            <TableCell colSpan={6} align="center">
-                              Tidak ada pengajuan judul!
+                            <TableCell colSpan={6}>
+                              Tidak ada pengajuan judul
                             </TableCell>
                           </TableRow>
                         ) : (
-                          listPengajuan.map((row) => (
-                            <TableRow key={row.userId}>
-                              <TableCell>no</TableCell>
+                          listPengajuan.map((row, index) => (
+                            <TableRow key={row.docId}>
+                              <TableCell>{index + 1}</TableCell>
                               <TableCell>{row.judul}</TableCell>
-                              <TableCell>{row.userId}</TableCell>
-                              <TableCell>nrp</TableCell>
-                              <TableCell>status</TableCell>
-                              <TableCell>aksi</TableCell>
+                              <TableCell>{row.nama}</TableCell>
+                              <TableCell>{row.id}</TableCell>
+                              <TableCell>{row.status}</TableCell>
+                              <TableCell>Aksi</TableCell>
                             </TableRow>
                           ))
                         )}
