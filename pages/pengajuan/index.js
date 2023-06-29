@@ -56,6 +56,9 @@ export default function Pengajuan() {
   const [user, setUser] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
 
+  // List pengajuan
+  const [listPengajuan, setListPengajuan] = useState([]);
+
   const getCurrentLoginUser = async () => {
     setIsLoading(true);
     const user = await observeAuthState();
@@ -67,8 +70,8 @@ export default function Pengajuan() {
   };
 
   const getPengajuan = async (uid) => {
-    const pengajuan = await getData("pengajuan", "userId", "==", uid);
-    console.log(71, pengajuan);
+    const rows = await getData("pengajuan", "userId", "==", uid);
+    setListPengajuan(rows);
   };
 
   useEffect(() => {
@@ -127,16 +130,24 @@ export default function Pengajuan() {
                         </TableRow>
                       </TableHead>
                       <TableBody>
-                        {rows.map((row) => (
-                          <TableRow key={row.no}>
-                            <TableCell>{row.no}</TableCell>
-                            <TableCell>{row.judul}</TableCell>
-                            <TableCell>{row.nama}</TableCell>
-                            <TableCell>{row.nrp}</TableCell>
-                            <TableCell>{row.status}</TableCell>
-                            <TableCell>{row.aksi}</TableCell>
+                        {listPengajuan && listPengajuan.length === 0 ? (
+                          <TableRow>
+                            <TableCell colSpan={6} align="center">
+                              Tidak ada pengajuan judul!
+                            </TableCell>
                           </TableRow>
-                        ))}
+                        ) : (
+                          listPengajuan.map((row) => (
+                            <TableRow key={row.userId}>
+                              <TableCell>no</TableCell>
+                              <TableCell>{row.judul}</TableCell>
+                              <TableCell>{row.userId}</TableCell>
+                              <TableCell>nrp</TableCell>
+                              <TableCell>status</TableCell>
+                              <TableCell>aksi</TableCell>
+                            </TableRow>
+                          ))
+                        )}
                       </TableBody>
                     </Table>
                   </Paper>

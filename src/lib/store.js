@@ -47,7 +47,7 @@ export const getUsersByRoles = async (roles) => {
 
     return users;
   } catch (error) {
-    console.error("Error fetching users:", error);
+    console.error("getUsersByRoles:", error);
     throw error;
   }
 };
@@ -58,7 +58,7 @@ export const postData = async (path, data, id = null) => {
     await setDoc(documentRef, data);
     return true;
   } catch (error) {
-    console.error(error);
+    console.error("postData:", error);
     return false;
   }
 };
@@ -75,7 +75,7 @@ export const getData = async (path, column, operator, key) => {
 
     return data;
   } catch (error) {
-    console.log("getData:", error);
+    console.error("getData:", error);
     return data;
   }
 };

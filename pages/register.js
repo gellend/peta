@@ -52,7 +52,6 @@ export default function Register() {
         router.push("/dashboard");
       })
       .catch((error) => {
-        console.error(error.message);
         handleOpenSnackBar(error.message, "error");
       });
   };

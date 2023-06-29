@@ -74,7 +74,6 @@ export default function LogIn() {
       const userData = await getUserDataByEmail(userCredential.user.email);
       setUser(userData);
     } catch (error) {
-      console.log(error.code, error.message);
       handleOpenSnackBar(error.message, "error");
       setUser(null);
     } finally {
