@@ -13,6 +13,35 @@ import {
 const app = createFirebaseApp();
 const db = getFirestore(app);
 
+// Common Function
+export const postData = async (path, data, id = null) => {
+  try {
+    const documentRef = id ? doc(db, path, id) : doc(collection(db, path));
+    await setDoc(documentRef, data);
+    return true;
+  } catch (error) {
+    console.error("postData:", error);
+    return false;
+  }
+};
+
+export const getDataWithQuery = async (path, column, operator, key) => {
+  let data = [];
+  try {
+    const q = query(collection(db, path), where(column, operator, key));
+
+    const querySnapshot = await getDocs(q);
+    querySnapshot.forEach((doc) => {
+      data.push(doc.data());
+    });
+
+    return data;
+  } catch (error) {
+    console.error("getDataWithQuery:", error);
+    return data;
+  }
+};
+
 export const getUserDataByEmail = async (email) => {
   let user = null;
   const q = query(collection(db, "users"), where("email", "==", email));
@@ -52,30 +81,7 @@ export const getUsersByRoles = async (roles) => {
   }
 };
 
-export const postData = async (path, data, id = null) => {
-  try {
-    const documentRef = id ? doc(db, path, id) : doc(collection(db, path));
-    await setDoc(documentRef, data);
-    return true;
-  } catch (error) {
-    console.error("postData:", error);
-    return false;
-  }
-};
-
-export const getData = async (path, column, operator, key) => {
-  let data = [];
-  try {
-    const q = query(collection(db, path), where(column, operator, key));
-
-    const querySnapshot = await getDocs(q);
-    querySnapshot.forEach((doc) => {
-      data.push(doc.data());
-    });
-
-    return data;
-  } catch (error) {
-    console.error("getData:", error);
-    return data;
-  }
+export const getPengajuanByCurrentUser = async (uid) => {
+  const rows = await getDataWithQuery("pengajuan", "userId", "==", uid);
+  return rows;
 };

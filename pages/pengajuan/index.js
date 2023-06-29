@@ -17,40 +17,9 @@ import Link from "next/link";
 import Navbar from "../../src/components/Navbar";
 import { useEffect, useState } from "react";
 import { observeAuthState } from "../../src/lib/auth";
-import { getData, getUserDataByUid } from "../../src/lib/store";
+import { getPengajuanByCurrentUser } from "../../src/lib/store";
 
 const mdTheme = createTheme();
-
-function createData(no, judul, nama, nrp, status, aksi) {
-  return { no, judul, nama, nrp, status, aksi };
-}
-
-const rows = [
-  createData(
-    1,
-    "Implementasi ABC",
-    "Bimo",
-    "1811110465",
-    "Menunggu",
-    "Lihat Detail"
-  ),
-  createData(
-    2,
-    "Implementasi ABC",
-    "Bimo",
-    "1811110465",
-    "Menunggu",
-    "Lihat Detail"
-  ),
-  createData(
-    3,
-    "Implementasi ABC",
-    "Bimo",
-    "1811110465",
-    "Menunggu",
-    "Lihat Detail"
-  ),
-];
 
 export default function Pengajuan() {
   const [user, setUser] = useState(null);
@@ -70,7 +39,7 @@ export default function Pengajuan() {
   };
 
   const getPengajuan = async (uid) => {
-    const rows = await getData("pengajuan", "userId", "==", uid);
+    const rows = await getPengajuanByCurrentUser(uid);
     setListPengajuan(rows);
   };
 
