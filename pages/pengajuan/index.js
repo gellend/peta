@@ -1,15 +1,20 @@
-import * as React from 'react';
-
-import { Box, Button, Container, CssBaseline, Grid, Paper, Toolbar } from '@mui/material';
-import { ThemeProvider, createTheme } from '@mui/material/styles';
-
-import Link from 'next/link';
-import Navbar from '../../src/components/Navbar';
-import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
-import TableCell from '@mui/material/TableCell';
-import TableHead from '@mui/material/TableHead';
-import TableRow from '@mui/material/TableRow';
+import {
+  Box,
+  Button,
+  Container,
+  CssBaseline,
+  Grid,
+  Paper,
+  Toolbar,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableRow,
+} from "@mui/material";
+import { ThemeProvider, createTheme } from "@mui/material/styles";
+import Link from "next/link";
+import Navbar from "../../src/components/Navbar";
 
 const mdTheme = createTheme();
 
@@ -20,61 +25,62 @@ function createData(no, judul, nama, nrp, status, aksi) {
 const rows = [
   createData(
     1,
-    'Implementasi ABC',
-    'Bimo',
-    '1811110465',
-    'Menunggu',
-    'Lihat Detail',
+    "Implementasi ABC",
+    "Bimo",
+    "1811110465",
+    "Menunggu",
+    "Lihat Detail"
   ),
   createData(
     2,
-    'Implementasi ABC',
-    'Bimo',
-    '1811110465',
-    'Menunggu',
-    'Lihat Detail',
+    "Implementasi ABC",
+    "Bimo",
+    "1811110465",
+    "Menunggu",
+    "Lihat Detail"
   ),
   createData(
     3,
-    'Implementasi ABC',
-    'Bimo',
-    '1811110465',
-    'Menunggu',
-    'Lihat Detail',
+    "Implementasi ABC",
+    "Bimo",
+    "1811110465",
+    "Menunggu",
+    "Lihat Detail"
   ),
-
 ];
 
 export default function Pengajuan() {
   return (
     <ThemeProvider theme={mdTheme}>
-      <Box sx={{ display: 'flex' }}>
+      <Box sx={{ display: "flex" }}>
         <CssBaseline />
         <Navbar />
         <Box
           component="main"
           sx={{
             backgroundColor: (theme) =>
-              theme.palette.mode === 'light'
+              theme.palette.mode === "light"
                 ? theme.palette.grey[100]
                 : theme.palette.grey[900],
             flexGrow: 1,
-            height: '100vh',
-            overflow: 'auto',
+            height: "100vh",
+            overflow: "auto",
           }}
         >
           <Toolbar />
           <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
             <Link href="/pengajuan/create">
-              <Button variant="contained" sx={{ mb: 3 }}>Ajukan Judul</Button>
+              <Button variant="contained" sx={{ mb: 3 }}>
+                Ajukan Judul
+              </Button>
             </Link>
             <Grid container spacing={3}>
               <Grid item xs={12}>
                 <Paper
                   sx={{
                     p: 2,
-                    display: 'flex',
-                    flexDirection: 'column'
+                    display: "flex",
+                    flexDirection: "column",
                   }}
                 >
                   <Table>
