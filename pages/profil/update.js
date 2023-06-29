@@ -69,21 +69,12 @@ export default function UpdateProfil() {
                     <Typography variant="h5">Update profil</Typography>
                   </Stack>
                   <Avatar
-                    alt="Remy Sharp"
+                    alt={user ? user.nama : ""}
                     src="/static/images/avatar/1.jpg"
                     sx={{ width: 128, height: 128, mb: 3 }}
                   />
                   <Table aria-label="Data Diri">
                     <TableBody>
-                      <TableRow>
-                        <TableCell>
-                          <TextField
-                            label="NRP"
-                            variant="outlined"
-                            value={user ? user.nrp : ""}
-                          />
-                        </TableCell>
-                      </TableRow>
                       <TableRow>
                         <TableCell>
                           <TextField
