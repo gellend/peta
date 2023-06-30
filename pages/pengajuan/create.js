@@ -102,8 +102,7 @@ export default function CreatePengajuan() {
 
   const getCurrentLoginUser = async () => {
     const user = await observeAuthState();
-    let userData = await getUserDataByEmail(user.email);
-    userData = userData[0];
+    const userData = await getUserDataByEmail(user.email);
 
     if (user || userData) setUserData({ ...user, ...userData });
   };

@@ -54,7 +54,7 @@ export const getDataWithQuery = async (
 
 export const getUserDataByEmail = async (email) => {
   const rows = await getDataWithQuery("users", "email", "==", email, false);
-  return rows;
+  return rows[0];
 };
 
 export const getUserDataByUid = async (uid) => {
