@@ -16,6 +16,8 @@ import Copyright from "../src/components/Copyright";
 import CustomSnackbar from "../src/components/CustomSnackbar";
 import { createFirebaseApp } from "../firebase/clientApp";
 import { useRouter } from "next/router";
+import useForm from "../src/helper/useForm";
+import isValidEmail from "../src/helper/validateEmail";
 
 export default function Register() {
   const router = useRouter();
@@ -24,10 +26,29 @@ export default function Register() {
   const db = getFirestore(app);
 
   // State
-  const [id, setId] = useState("");
-  const [nama, setNama] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const initialState = {
+    id: "",
+    nama: "",
+    email: "",
+    password: "",
+  };
+
+  const validationRules = {
+    id: (value) => (!value ? "NRP is required" : ""),
+    nama: (value) => (!value ? "Nama Lengkap is required" : ""),
+    email: (value) =>
+      !value
+        ? "Alamat Email is required"
+        : !isValidEmail(value)
+        ? "Invalid email format"
+        : "",
+    password: (value) => (!value ? "Kata Sandi is required" : ""),
+  };
+
+  const { values, errors, handleChange, validateForm } = useForm(
+    initialState,
+    validationRules
+  );
 
   // Snackbar
   const [snackbarData, setSnackbarData] = useState({
@@ -39,21 +60,25 @@ export default function Register() {
   const handleSubmit = (event) => {
     event.preventDefault();
 
-    createUserWithEmailAndPassword(auth, email, password)
-      .then(async (res) => {
-        await setDoc(doc(db, "users", res.user.uid), {
-          id: id,
-          nama: nama,
-          email: email,
-          role: "Mahasiswa",
-          created_at: serverTimestamp(),
-        });
+    const isValid = validateForm();
 
-        router.push("/dashboard");
-      })
-      .catch((error) => {
-        handleOpenSnackBar(error.message, "error");
-      });
+    if (isValid) {
+      createUserWithEmailAndPassword(auth, values.email, values.password)
+        .then(async (res) => {
+          await setDoc(doc(db, "users", res.user.uid), {
+            id: values.id,
+            nama: values.nama,
+            email: values.email,
+            role: "Mahasiswa",
+            created_at: serverTimestamp(),
+          });
+
+          router.push("/dashboard");
+        })
+        .catch((error) => {
+          handleOpenSnackBar(error.message, "error");
+        });
+    }
   };
 
   // Handle snackbar
@@ -85,46 +110,62 @@ export default function Register() {
         <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
           <TextField
             data-cy="register-id"
+            inputProps={{ "data-cy": "register-id-input" }}
+            FormHelperTextProps={{ "data-cy": "register-id-helper-text" }}
             margin="normal"
             required
             fullWidth
             label="NRP"
-            name="nrp"
+            name="id"
             autoFocus
-            value={id}
-            onChange={(e) => setId(e.target.value)}
+            value={values.id}
+            onChange={handleChange}
+            error={!!errors.id}
+            helperText={errors.id}
           />
           <TextField
             data-cy="register-nama"
+            inputProps={{ "data-cy": "register-nama-input" }}
+            FormHelperTextProps={{ "data-cy": "register-nama-helper-text" }}
             margin="normal"
             required
             fullWidth
             label="Nama Lengkap"
             name="nama"
-            value={nama}
-            onChange={(e) => setNama(e.target.value)}
+            value={values.nama}
+            onChange={handleChange}
+            error={!!errors.nama}
+            helperText={errors.nama}
           />
           <TextField
             data-cy="register-email"
+            inputProps={{ "data-cy": "register-email-input" }}
+            FormHelperTextProps={{ "data-cy": "register-email-helper-text" }}
             margin="normal"
             required
             fullWidth
             label="Alamat Email"
             name="email"
             type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            value={values.email}
+            onChange={handleChange}
+            error={!!errors.email}
+            helperText={errors.email}
           />
           <TextField
             data-cy="register-password"
+            inputProps={{ "data-cy": "register-password-input" }}
+            FormHelperTextProps={{ "data-cy": "register-password-helper-text" }}
             margin="normal"
             required
             fullWidth
             label="Kata Sandi"
             name="password"
             type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            value={values.password}
+            onChange={handleChange}
+            error={!!errors.password}
+            helperText={errors.password}
           />
           <Button
             data-cy="register-submit"
