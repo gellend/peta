@@ -2,7 +2,6 @@ import {
   Box,
   Button,
   Container,
-  CssBaseline,
   Grid,
   Link,
   TextField,
@@ -92,7 +91,6 @@ export default function Register() {
 
   return (
     <Container component="main" maxWidth="xs">
-      <CssBaseline />
       <Box
         sx={{
           marginTop: 8,

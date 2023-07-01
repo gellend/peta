@@ -2,7 +2,6 @@ import {
   Box,
   Button,
   Container,
-  CssBaseline,
   Grid,
   Link,
   TextField,
@@ -119,7 +118,6 @@ export default function LogIn() {
         <div>Loading...</div>
       ) : (
         <>
-          <CssBaseline />
           <Box
             sx={{
               marginTop: 8,
