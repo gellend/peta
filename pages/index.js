@@ -113,6 +113,7 @@ export default function LogIn() {
             </Typography>
             <Box component="form" onSubmit={handleSubmit} sx={{ mt: 1 }}>
               <TextField
+                data-cy="login-email"
                 margin="normal"
                 required
                 fullWidth
@@ -122,6 +123,7 @@ export default function LogIn() {
                 onChange={(e) => setEmail(e.target.value)}
               />
               <TextField
+                data-cy="login-password"
                 margin="normal"
                 required
                 fullWidth
@@ -131,6 +133,7 @@ export default function LogIn() {
                 onChange={(e) => setPassword(e.target.value)}
               />
               <Button
+                data-cy="login-submit"
                 type="submit"
                 fullWidth
                 variant="contained"

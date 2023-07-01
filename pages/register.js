@@ -84,6 +84,7 @@ export default function Register() {
         </Typography>
         <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
           <TextField
+            data-cy="register-id"
             margin="normal"
             required
             fullWidth
@@ -94,6 +95,7 @@ export default function Register() {
             onChange={(e) => setId(e.target.value)}
           />
           <TextField
+            data-cy="register-nama"
             margin="normal"
             required
             fullWidth
@@ -103,6 +105,7 @@ export default function Register() {
             onChange={(e) => setNama(e.target.value)}
           />
           <TextField
+            data-cy="register-email"
             margin="normal"
             required
             fullWidth
@@ -113,6 +116,7 @@ export default function Register() {
             onChange={(e) => setEmail(e.target.value)}
           />
           <TextField
+            data-cy="register-password"
             margin="normal"
             required
             fullWidth
@@ -123,6 +127,7 @@ export default function Register() {
             onChange={(e) => setPassword(e.target.value)}
           />
           <Button
+            data-cy="register-submit"
             type="submit"
             fullWidth
             variant="contained"

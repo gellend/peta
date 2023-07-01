@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "cypress": "npx cypress open"
   },
   "dependencies": {
     "@emotion/cache": "11.10.3",
@@ -24,6 +25,7 @@
     "recharts": "^2.1.12"
   },
   "devDependencies": {
+    "cypress": "^12.16.0",
     "eslint": "latest",
     "eslint-config-next": "latest"
   }
