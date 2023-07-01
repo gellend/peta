@@ -113,11 +113,9 @@ export default function Register() {
             inputProps={{ "data-cy": "register-id-input" }}
             FormHelperTextProps={{ "data-cy": "register-id-helper-text" }}
             margin="normal"
-            required
             fullWidth
             label="NRP"
             name="id"
-            autoFocus
             value={values.id}
             onChange={handleChange}
             error={!!errors.id}
@@ -128,7 +126,6 @@ export default function Register() {
             inputProps={{ "data-cy": "register-nama-input" }}
             FormHelperTextProps={{ "data-cy": "register-nama-helper-text" }}
             margin="normal"
-            required
             fullWidth
             label="Nama Lengkap"
             name="nama"
@@ -142,7 +139,6 @@ export default function Register() {
             inputProps={{ "data-cy": "register-email-input" }}
             FormHelperTextProps={{ "data-cy": "register-email-helper-text" }}
             margin="normal"
-            required
             fullWidth
             label="Alamat Email"
             name="email"
@@ -157,7 +153,6 @@ export default function Register() {
             inputProps={{ "data-cy": "register-password-input" }}
             FormHelperTextProps={{ "data-cy": "register-password-helper-text" }}
             margin="normal"
-            required
             fullWidth
             label="Kata Sandi"
             name="password"

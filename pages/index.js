@@ -17,14 +17,33 @@ import { useRouter } from "next/router";
 import { useUser } from "../context/userContext";
 import { useState, useEffect } from "react";
 import { getUserDataByEmail } from "../src/lib/store";
+import isValidEmail from "../src/helper/validateEmail";
+import useForm from "../src/helper/useForm";
 
 export default function LogIn() {
   const app = createFirebaseApp();
   const router = useRouter();
   const auth = getAuth(app);
 
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const initialState = {
+    email: "",
+    password: "",
+  };
+
+  const validationRules = {
+    email: (value) =>
+      !value
+        ? "Alamat Email is required"
+        : !isValidEmail(value)
+        ? "Invalid email format"
+        : "",
+    password: (value) => (!value ? "Kata Sandi is required" : ""),
+  };
+
+  const { values, errors, handleChange, validateForm } = useForm(
+    initialState,
+    validationRules
+  );
 
   const { user, setUser, loadingUser, setLoadingUser } = useUser();
 
@@ -63,21 +82,25 @@ export default function LogIn() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoadingUser(true);
 
-    try {
-      const userCredential = await signInWithEmailAndPassword(
-        auth,
-        email,
-        password
-      );
-      const userData = await getUserDataByEmail(userCredential.user.email);
-      setUser(userData);
-    } catch (error) {
-      handleOpenSnackBar(error.message, "error");
-      setUser(null);
-    } finally {
-      setLoadingUser(false);
+    const isValid = validateForm();
+
+    if (isValid) {
+      try {
+        setLoadingUser(true);
+        const userCredential = await signInWithEmailAndPassword(
+          auth,
+          values.email,
+          values.password
+        );
+        const userData = await getUserDataByEmail(userCredential.user.email);
+        setUser(userData);
+      } catch (error) {
+        handleOpenSnackBar(error.message, "error");
+        setUser(null);
+      } finally {
+        setLoadingUser(false);
+      }
     }
   };
 
@@ -111,26 +134,41 @@ export default function LogIn() {
             <Typography component="h1" variant="h5">
               PETA - Pengajuan Judul TA
             </Typography>
-            <Box component="form" onSubmit={handleSubmit} sx={{ mt: 1 }}>
+            <Box
+              component="form"
+              onSubmit={handleSubmit}
+              noValidate
+              sx={{ mt: 1 }}
+            >
               <TextField
                 data-cy="login-email"
+                inputProps={{ "data-cy": "login-email-input" }}
+                FormHelperTextProps={{ "data-cy": "login-email-helper-text" }}
                 margin="normal"
-                required
                 fullWidth
                 label="Alamat Email"
-                autoFocus
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                name="email"
+                type="email"
+                value={values.email}
+                onChange={handleChange}
+                error={!!errors.email}
+                helperText={errors.email}
               />
               <TextField
                 data-cy="login-password"
+                inputProps={{ "data-cy": "login-password-input" }}
+                FormHelperTextProps={{
+                  "data-cy": "login-password-helper-text",
+                }}
                 margin="normal"
-                required
                 fullWidth
                 label="Kata Sandi"
+                name="password"
                 type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                value={values.password}
+                onChange={handleChange}
+                error={!!errors.password}
+                helperText={errors.password}
               />
               <Button
                 data-cy="login-submit"
