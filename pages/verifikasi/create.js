@@ -20,7 +20,6 @@ import { ThemeProvider, createTheme } from "@mui/material/styles";
 import { ArrowBack } from "@mui/icons-material";
 
 import Navbar from "../../src/components/Navbar";
-import CustomSnackbar from "../../src/components/CustomSnackbar";
 import { createFirebaseApp } from "../../firebase/clientApp";
 import { createUserWithEmailAndPassword, getAuth } from "firebase/auth";
 import { useEffect, useState } from "react";
@@ -32,6 +31,7 @@ import {
   serverTimestamp,
 } from "firebase/firestore";
 import { useRouter } from "next/router";
+import useAppStore from "../../src/store/global";
 
 const mdTheme = createTheme();
 
@@ -52,12 +52,7 @@ export default function CreateUser() {
   const [password, setPassword] = useState("");
   const [role, setRole] = useState("Mahasiswa");
 
-  // Snackbar
-  const [snackbarData, setSnackbarData] = useState({
-    open: false,
-    message: "",
-    type: "",
-  });
+  const { handleOpenSnackBar } = useAppStore((state) => state);
 
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged(async (user) => {
@@ -104,15 +99,6 @@ export default function CreateUser() {
       .finally(() => {
         resetForm();
       });
-  };
-
-  // Handle snackbar
-  const handleOpenSnackBar = (message, type) => {
-    setSnackbarData({ open: true, message, type });
-  };
-
-  const handleCloseSnackBar = () => {
-    setSnackbarData({ ...snackbarData, open: false });
   };
 
   return (
@@ -245,13 +231,6 @@ export default function CreateUser() {
               </Container>
             </Box>
           </Box>
-
-          <CustomSnackbar
-            open={snackbarData.open}
-            message={snackbarData.message}
-            type={snackbarData.type}
-            onClose={handleCloseSnackBar}
-          />
         </>
       )}
     </ThemeProvider>

@@ -9,14 +9,13 @@ import {
 } from "@mui/material";
 import { createUserWithEmailAndPassword, getAuth } from "firebase/auth";
 import { doc, getFirestore, serverTimestamp, setDoc } from "firebase/firestore";
-import { useState } from "react";
 
 import Copyright from "../src/components/Copyright";
-import CustomSnackbar from "../src/components/CustomSnackbar";
 import { createFirebaseApp } from "../firebase/clientApp";
 import { useRouter } from "next/router";
 import useForm from "../src/helper/useForm";
 import isValidEmail from "../src/helper/validateEmail";
+import useAppStore from "../src/store/global";
 
 export default function Register() {
   const router = useRouter();
@@ -49,12 +48,7 @@ export default function Register() {
     validationRules
   );
 
-  // Snackbar
-  const [snackbarData, setSnackbarData] = useState({
-    open: false,
-    message: "",
-    type: "",
-  });
+  const { handleOpenSnackBar } = useAppStore((state) => state);
 
   const handleSubmit = (event) => {
     event.preventDefault();
@@ -78,15 +72,6 @@ export default function Register() {
           handleOpenSnackBar(error.message, "error");
         });
     }
-  };
-
-  // Handle snackbar
-  const handleOpenSnackBar = (message, type) => {
-    setSnackbarData({ open: true, message, type });
-  };
-
-  const handleCloseSnackBar = () => {
-    setSnackbarData({ ...snackbarData, open: false });
   };
 
   return (
@@ -184,13 +169,6 @@ export default function Register() {
         </Box>
       </Box>
       <Copyright sx={{ mt: 8, mb: 4 }} />
-
-      <CustomSnackbar
-        open={snackbarData.open}
-        message={snackbarData.message}
-        type={snackbarData.type}
-        onClose={handleCloseSnackBar}
-      />
     </Container>
   );
 }

@@ -1,14 +1,9 @@
-import CustomSnackbar from "../src/components/CustomSnackbar";
 import useAppStore from "../src/store/global";
 
 export default function Test() {
-  const {
-    isLoading,
-    setIsLoading,
-    snackbarData,
-    handleOpenSnackBar,
-    handleCloseSnackBar,
-  } = useAppStore((state) => state);
+  const { isLoading, setIsLoading, handleOpenSnackBar } = useAppStore(
+    (state) => state
+  );
 
   return (
     <>
@@ -24,12 +19,6 @@ export default function Test() {
           Open CustomSnackbar Without Type
         </button>
       </div>
-      <CustomSnackbar
-        open={snackbarData.open}
-        message={snackbarData.message}
-        type={snackbarData.type}
-        onClose={() => handleCloseSnackBar()}
-      />
     </>
   );
 }

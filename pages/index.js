@@ -10,7 +10,6 @@ import {
 import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
 
 import Copyright from "../src/components/Copyright";
-import CustomSnackbar from "../src/components/CustomSnackbar";
 import { createFirebaseApp } from "../firebase/clientApp";
 import { useRouter } from "next/router";
 import { useUser } from "../context/userContext";
@@ -18,6 +17,7 @@ import { useState, useEffect } from "react";
 import { getUserDataByEmail } from "../src/lib/store";
 import isValidEmail from "../src/helper/validateEmail";
 import useForm from "../src/helper/useForm";
+import useAppStore from "../src/store/global";
 
 export default function LogIn() {
   const app = createFirebaseApp();
@@ -46,11 +46,7 @@ export default function LogIn() {
 
   const { user, setUser, loadingUser, setLoadingUser } = useUser();
 
-  const [snackbarData, setSnackbarData] = useState({
-    open: false,
-    message: "",
-    type: "",
-  });
+  const { handleOpenSnackBar } = useAppStore((state) => state);
 
   // Check if user is already logged in
   useEffect(() => {
@@ -101,15 +97,6 @@ export default function LogIn() {
         setLoadingUser(false);
       }
     }
-  };
-
-  // Handle snackbar
-  const handleOpenSnackBar = (message, type) => {
-    setSnackbarData({ open: true, message, type });
-  };
-
-  const handleCloseSnackBar = () => {
-    setSnackbarData({ ...snackbarData, open: false });
   };
 
   return (
@@ -195,13 +182,6 @@ export default function LogIn() {
           <Copyright sx={{ mt: 8, mb: 4 }} />
         </>
       )}
-
-      <CustomSnackbar
-        open={snackbarData.open}
-        message={snackbarData.message}
-        type={snackbarData.type}
-        onClose={handleCloseSnackBar}
-      />
     </Container>
   );
 }
