@@ -7,22 +7,18 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
+import { signInWithEmailAndPassword } from "firebase/auth";
 
 import Copyright from "../src/components/Copyright";
-import { createFirebaseApp } from "../firebase/clientApp";
 import { useRouter } from "next/router";
-import { useState, useEffect } from "react";
-import { getUserDataByEmail } from "../src/lib/store";
+import { useEffect } from "react";
 import isValidEmail from "../src/helper/validateEmail";
 import useForm from "../src/helper/useForm";
 import useAppStore from "../src/store/global";
-import { observeAuthState } from "../src/lib/auth";
+import { getCurrentLoginUser, auth } from "../src/lib/auth";
 
 export default function LogIn() {
-  const app = createFirebaseApp();
   const router = useRouter();
-  const auth = getAuth(app);
 
   const initialState = {
     email: "",
@@ -47,21 +43,9 @@ export default function LogIn() {
   const { currentUser, fetchCurrentUser, handleOpenSnackBar, setIsLoading } =
     useAppStore((state) => state);
 
-  const getCurrentLoginUser = async () => {
-    try {
-      setIsLoading(true);
-      const user = await observeAuthState(false);
-      if (user) fetchCurrentUser(user.email);
-    } catch (error) {
-      handleOpenSnackBar(error.message, "error");
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
   // Check if user is already logged in
   useEffect(() => {
-    getCurrentLoginUser();
+    getCurrentLoginUser(false);
   }, []);
 
   // Redirect user to dashboard if they are already logged in
