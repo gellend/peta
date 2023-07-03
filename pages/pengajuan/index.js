@@ -36,7 +36,6 @@ export default function Pengajuan() {
 
   const getPengajuan = async (uid) => {
     const rows = await getPengajuanByCurrentUser(uid);
-    console.log(rows);
     setListPengajuan(rows);
   };
 

@@ -7,23 +7,21 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import { createUserWithEmailAndPassword, getAuth } from "firebase/auth";
-import { doc, getFirestore, serverTimestamp, setDoc } from "firebase/firestore";
+import { createUserWithEmailAndPassword } from "firebase/auth";
+import { serverTimestamp } from "firebase/firestore";
 
 import Copyright from "../src/components/Copyright";
-import { createFirebaseApp } from "../firebase/clientApp";
 import { useRouter } from "next/router";
 import useForm from "../src/helper/useForm";
 import isValidEmail from "../src/helper/validateEmail";
 import useAppStore from "../src/store/global";
+import { postData } from "../src/lib/store";
+import { auth, getCurrentLoginUser } from "../src/lib/auth";
+import { useEffect } from "react";
 
 export default function Register() {
   const router = useRouter();
-  const app = createFirebaseApp();
-  const auth = getAuth(app);
-  const db = getFirestore(app);
 
-  // State
   const initialState = {
     id: "",
     nama: "",
@@ -50,29 +48,40 @@ export default function Register() {
 
   const { handleOpenSnackBar } = useAppStore((state) => state);
 
-  const handleSubmit = (event) => {
-    event.preventDefault();
+  const handleSubmit = async (e) => {
+    e.preventDefault();
 
     const isValid = validateForm();
 
     if (isValid) {
-      createUserWithEmailAndPassword(auth, values.email, values.password)
-        .then(async (res) => {
-          await setDoc(doc(db, "users", res.user.uid), {
-            id: values.id,
-            nama: values.nama,
-            email: values.email,
-            role: "Mahasiswa",
-            created_at: serverTimestamp(),
-          });
+      try {
+        const res = await createUserWithEmailAndPassword(
+          auth,
+          values.email,
+          values.password
+        );
 
-          router.push("/dashboard");
-        })
-        .catch((error) => {
-          handleOpenSnackBar(error.message, "error");
-        });
+        const dataToStore = {
+          id: values.id,
+          nama: values.nama,
+          email: values.email,
+          role: "Mahasiswa",
+          created_at: serverTimestamp(),
+        };
+
+        const success = await postData("users", dataToStore, res.user.uid);
+
+        if (success) router.push("/pengajuan");
+      } catch (error) {
+        handleOpenSnackBar(error.message, "error");
+      }
     }
   };
+
+  useEffect(() => {
+    // Check if user is already logged in
+    getCurrentLoginUser(false);
+  }, []);
 
   return (
     <Container component="main" maxWidth="xs">
