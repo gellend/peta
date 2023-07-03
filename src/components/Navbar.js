@@ -1,5 +1,3 @@
-import * as React from "react";
-
 import {
   Avatar,
   Badge,
@@ -17,7 +15,7 @@ import {
   Tooltip,
   Typography,
 } from "@mui/material";
-import { createTheme, styled } from "@mui/material/styles";
+import { styled } from "@mui/material/styles";
 import { getAuth, signOut } from "firebase/auth";
 
 import BarChartIcon from "@mui/icons-material/BarChart";
@@ -83,7 +81,6 @@ const Drawer = styled(MuiDrawer, {
   },
 }));
 
-const mdTheme = createTheme();
 const app = createFirebaseApp();
 const auth = getAuth(app);
 

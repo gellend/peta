@@ -11,14 +11,11 @@ import {
   TableHead,
   TableRow,
 } from "@mui/material";
-import { ThemeProvider, createTheme } from "@mui/material/styles";
 import Link from "next/link";
 import Navbar from "../../src/components/Navbar";
 import { useEffect, useState } from "react";
 import { observeAuthState } from "../../src/lib/auth";
 import { getPengajuanByCurrentUser } from "../../src/lib/store";
-
-const mdTheme = createTheme();
 
 export default function Pengajuan() {
   const [user, setUser] = useState(null);
