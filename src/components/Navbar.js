@@ -34,6 +34,7 @@ import VerifiedUserIcon from "@mui/icons-material/VerifiedUser";
 import { createFirebaseApp } from "../../firebase/clientApp";
 import { useRouter } from "next/router";
 import { useUser } from "../../context/userContext";
+import { useState } from "react";
 
 const drawerWidth = 240;
 
@@ -86,14 +87,14 @@ const auth = getAuth(app);
 
 export default function Navbar() {
   // AppBar
-  const [open, setOpen] = React.useState(true);
+  const [open, setOpen] = useState(true);
   const toggleDrawer = () => {
     setOpen(!open);
   };
   // AppBar
 
   // User Menu
-  const [anchorEl, setAnchorEl] = React.useState(null);
+  const [anchorEl, setAnchorEl] = useState(null);
   const openUserMenu = Boolean(anchorEl);
 
   const handleOpenUserMenu = (e) => setAnchorEl(e.currentTarget);
@@ -102,7 +103,7 @@ export default function Navbar() {
   // User Menu
 
   // Notif
-  const [notifAnchorEl, setNotifAnchorEl] = React.useState(null);
+  const [notifAnchorEl, setNotifAnchorEl] = useState(null);
   const openNotif = Boolean(notifAnchorEl);
   const idNotif = openNotif ? "notif-popover" : undefined;
 
@@ -116,7 +117,7 @@ export default function Navbar() {
   let currentPage = router.pathname;
 
   return (
-    <React.Fragment>
+    <>
       {/* Topbar */}
       <AppBar position="absolute" open={open}>
         <Toolbar
@@ -172,7 +173,7 @@ export default function Navbar() {
                 <ListItemText
                   primary="Brunch this weekend?"
                   secondary={
-                    <React.Fragment>
+                    <>
                       <Typography
                         sx={{ display: "inline" }}
                         component="span"
@@ -182,7 +183,7 @@ export default function Navbar() {
                         Ali Connors
                       </Typography>
                       {" — I'll be in your neighborhood doing errands this…"}
-                    </React.Fragment>
+                    </>
                   }
                 />
               </ListItem>
@@ -197,7 +198,7 @@ export default function Navbar() {
                 <ListItemText
                   primary="Summer BBQ"
                   secondary={
-                    <React.Fragment>
+                    <>
                       <Typography
                         sx={{ display: "inline" }}
                         component="span"
@@ -207,7 +208,7 @@ export default function Navbar() {
                         to Scott, Alex, Jennifer
                       </Typography>
                       {" — Wish I could come, but I'm out of town this…"}
-                    </React.Fragment>
+                    </>
                   }
                 />
               </ListItem>
@@ -219,7 +220,7 @@ export default function Navbar() {
                 <ListItemText
                   primary="Oui Oui"
                   secondary={
-                    <React.Fragment>
+                    <>
                       <Typography
                         sx={{ display: "inline" }}
                         component="span"
@@ -229,7 +230,7 @@ export default function Navbar() {
                         Sandra Adams
                       </Typography>
                       {" — Do you have Paris recommendations? Have you ever…"}
-                    </React.Fragment>
+                    </>
                   }
                 />
               </ListItem>
@@ -353,6 +354,6 @@ export default function Navbar() {
         </List>
       </Drawer>
       {/* Sidebar */}
-    </React.Fragment>
+    </>
   );
 }

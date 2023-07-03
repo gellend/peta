@@ -8,13 +8,16 @@ import createEmotionCache from "../src/createEmotionCache";
 import theme from "../src/theme";
 import CustomSnackbar from "../src/components/CustomSnackbar";
 import useAppStore from "../src/store/global";
+import { Backdrop, CircularProgress } from "@mui/material";
 
 // Client-side cache, shared for the whole session of the user in the browser.
 const clientSideEmotionCache = createEmotionCache();
 
 export default function MyApp(props) {
   const { Component, emotionCache = clientSideEmotionCache, pageProps } = props;
-  const { snackbarData, handleCloseSnackBar } = useAppStore((state) => state);
+  const { snackbarData, handleCloseSnackBar, isLoading } = useAppStore(
+    (state) => state
+  );
 
   return (
     <UserProvider>
@@ -32,6 +35,12 @@ export default function MyApp(props) {
             type={snackbarData.type}
             onClose={handleCloseSnackBar}
           />
+          <Backdrop
+            sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
+            open={isLoading}
+          >
+            <CircularProgress color="inherit" />
+          </Backdrop>
         </ThemeProvider>
       </CacheProvider>
     </UserProvider>

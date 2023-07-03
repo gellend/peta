@@ -12,12 +12,12 @@ import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
 import Copyright from "../src/components/Copyright";
 import { createFirebaseApp } from "../firebase/clientApp";
 import { useRouter } from "next/router";
-import { useUser } from "../context/userContext";
 import { useState, useEffect } from "react";
 import { getUserDataByEmail } from "../src/lib/store";
 import isValidEmail from "../src/helper/validateEmail";
 import useForm from "../src/helper/useForm";
 import useAppStore from "../src/store/global";
+import { observeAuthState } from "../src/lib/auth";
 
 export default function LogIn() {
   const app = createFirebaseApp();
@@ -44,36 +44,39 @@ export default function LogIn() {
     validationRules
   );
 
-  const { user, setUser, loadingUser, setLoadingUser } = useUser();
+  const { currentUser, fetchCurrentUser, handleOpenSnackBar, setIsLoading } =
+    useAppStore((state) => state);
 
-  const { handleOpenSnackBar } = useAppStore((state) => state);
+  const getCurrentLoginUser = async () => {
+    try {
+      setIsLoading(true);
+      const user = await observeAuthState(false);
+      if (user) fetchCurrentUser(user.email);
+    } catch (error) {
+      handleOpenSnackBar(error.message, "error");
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   // Check if user is already logged in
   useEffect(() => {
-    setLoadingUser(true);
-    const unsubscribe = auth.onAuthStateChanged(async (user) => {
-      if (user) {
-        const userData = await getUserDataByEmail(user.email);
-        setUser(userData);
-      }
-
-      setLoadingUser(false);
-    });
-
-    return unsubscribe;
+    getCurrentLoginUser();
   }, []);
 
   // Redirect user to dashboard if they are already logged in
   useEffect(() => {
-    if (user && user.role === "Mahasiswa") {
+    if (currentUser && currentUser.role === "Mahasiswa") {
       router.push("/pengajuan");
     } else if (
-      user &&
-      ["Dosen", "Kepala Prodi", "Koordinator Lab", "Admin"].includes(user.role)
+      currentUser &&
+      ["Dosen", "Kepala Prodi", "Koordinator Lab", "Admin"].includes(
+        currentUser.role
+      )
     ) {
       router.push("/dashboard");
     }
-  }, [user, loadingUser]);
+  }, [currentUser]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -82,19 +85,17 @@ export default function LogIn() {
 
     if (isValid) {
       try {
-        setLoadingUser(true);
+        setIsLoading(true);
         const userCredential = await signInWithEmailAndPassword(
           auth,
           values.email,
           values.password
         );
-        const userData = await getUserDataByEmail(userCredential.user.email);
-        setUser(userData);
+        if (userCredential) fetchCurrentUser(userCredential.user.email);
       } catch (error) {
         handleOpenSnackBar(error.message, "error");
-        setUser(null);
       } finally {
-        setLoadingUser(false);
+        setIsLoading(false);
       }
     }
   };
@@ -152,9 +153,8 @@ export default function LogIn() {
             fullWidth
             variant="contained"
             sx={{ mt: 3, mb: 2 }}
-            disabled={loadingUser}
           >
-            {loadingUser ? "Loading..." : "Masuk"}
+            Masuk
           </Button>
           <Grid container>
             <Grid item xs>

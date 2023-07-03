@@ -1,9 +1,8 @@
 import useAppStore from "../src/store/global";
 
 export default function Test() {
-  const { isLoading, setIsLoading, handleOpenSnackBar } = useAppStore(
-    (state) => state
-  );
+  const { isLoading, setIsLoading, handleOpenSnackBar, isCurrentUserExist } =
+    useAppStore((state) => state);
 
   return (
     <>
@@ -18,6 +17,8 @@ export default function Test() {
         <button onClick={() => handleOpenSnackBar("Halo")}>
           Open CustomSnackbar Without Type
         </button>
+        <br />
+        <h1>is CurrentUserEmpty? {isCurrentUserExist().toString()}</h1>
       </div>
     </>
   );

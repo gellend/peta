@@ -1,9 +1,14 @@
 import { create } from "zustand";
+import { getUserDataByEmail } from "../lib/store";
 
-const useAppStore = create((set) => ({
+const useAppStore = create((set, get) => ({
   // User state
   currentUser: null,
-  setCurrentUser: (user) => set({ currentUser: user }),
+  isCurrentUserExist: () => !!get().currentUser,
+  fetchCurrentUser: async (email) => {
+    const user = await getUserDataByEmail(email);
+    set({ currentUser: user });
+  },
 
   // Snackbar state
   snackbarData: {
