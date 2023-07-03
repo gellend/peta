@@ -101,87 +101,76 @@ export default function LogIn() {
 
   return (
     <Container component="main" maxWidth="xs">
-      {loadingUser ? (
-        <div>Loading...</div>
-      ) : (
-        <>
-          <Box
-            sx={{
-              marginTop: 8,
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
+      <Box
+        sx={{
+          marginTop: 8,
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+        }}
+      >
+        <Typography component="h1" variant="h5">
+          Masuk
+        </Typography>
+        <Typography component="h1" variant="h5">
+          PETA - Pengajuan Judul TA
+        </Typography>
+        <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
+          <TextField
+            data-cy="login-email"
+            inputProps={{ "data-cy": "login-email-input" }}
+            FormHelperTextProps={{ "data-cy": "login-email-helper-text" }}
+            margin="normal"
+            fullWidth
+            label="Alamat Email"
+            name="email"
+            type="email"
+            value={values.email}
+            onChange={handleChange}
+            error={!!errors.email}
+            helperText={errors.email}
+          />
+          <TextField
+            data-cy="login-password"
+            inputProps={{ "data-cy": "login-password-input" }}
+            FormHelperTextProps={{
+              "data-cy": "login-password-helper-text",
             }}
+            margin="normal"
+            fullWidth
+            label="Kata Sandi"
+            name="password"
+            type="password"
+            value={values.password}
+            onChange={handleChange}
+            error={!!errors.password}
+            helperText={errors.password}
+          />
+          <Button
+            data-cy="login-submit"
+            type="submit"
+            fullWidth
+            variant="contained"
+            sx={{ mt: 3, mb: 2 }}
+            disabled={loadingUser}
           >
-            <Typography component="h1" variant="h5">
-              Masuk
-            </Typography>
-            <Typography component="h1" variant="h5">
-              PETA - Pengajuan Judul TA
-            </Typography>
-            <Box
-              component="form"
-              onSubmit={handleSubmit}
-              noValidate
-              sx={{ mt: 1 }}
-            >
-              <TextField
-                data-cy="login-email"
-                inputProps={{ "data-cy": "login-email-input" }}
-                FormHelperTextProps={{ "data-cy": "login-email-helper-text" }}
-                margin="normal"
-                fullWidth
-                label="Alamat Email"
-                name="email"
-                type="email"
-                value={values.email}
-                onChange={handleChange}
-                error={!!errors.email}
-                helperText={errors.email}
-              />
-              <TextField
-                data-cy="login-password"
-                inputProps={{ "data-cy": "login-password-input" }}
-                FormHelperTextProps={{
-                  "data-cy": "login-password-helper-text",
-                }}
-                margin="normal"
-                fullWidth
-                label="Kata Sandi"
-                name="password"
-                type="password"
-                value={values.password}
-                onChange={handleChange}
-                error={!!errors.password}
-                helperText={errors.password}
-              />
-              <Button
-                data-cy="login-submit"
-                type="submit"
-                fullWidth
-                variant="contained"
-                sx={{ mt: 3, mb: 2 }}
-                disabled={loadingUser}
-              >
-                {loadingUser ? "Loading..." : "Masuk"}
-              </Button>
-              <Grid container>
-                <Grid item xs>
-                  <Link href="#" variant="body2">
-                    Lupa kata sandi?
-                  </Link>
-                </Grid>
-                <Grid item>
-                  <Link href="/register" variant="body2">
-                    Buat akun
-                  </Link>
-                </Grid>
-              </Grid>
-            </Box>
-          </Box>
-          <Copyright sx={{ mt: 8, mb: 4 }} />
-        </>
-      )}
+            {loadingUser ? "Loading..." : "Masuk"}
+          </Button>
+          <Grid container>
+            <Grid item xs>
+              <Link href="#" variant="body2">
+                Lupa kata sandi?
+              </Link>
+            </Grid>
+            <Grid item>
+              <Link href="/register" variant="body2">
+                Buat akun
+              </Link>
+            </Grid>
+          </Grid>
+        </Box>
+      </Box>
+      <Copyright sx={{ mt: 8, mb: 4 }} />
     </Container>
   );
 }
