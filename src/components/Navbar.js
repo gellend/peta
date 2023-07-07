@@ -33,8 +33,8 @@ import PersonIcon from "@mui/icons-material/Person";
 import VerifiedUserIcon from "@mui/icons-material/VerifiedUser";
 import { createFirebaseApp } from "../../firebase/clientApp";
 import { useRouter } from "next/router";
-import { useUser } from "../../context/userContext";
 import { useState } from "react";
+import useAppStore from "../store/global";
 
 const drawerWidth = 240;
 
@@ -112,7 +112,7 @@ export default function Navbar() {
   // Notif
 
   const router = useRouter();
-  const { user, setUser } = useUser();
+  const { currentUser, clearCurrentUser } = useAppStore((state) => state);
 
   let currentPage = router.pathname;
 
@@ -263,7 +263,7 @@ export default function Navbar() {
             <MenuItem
               onClick={() => {
                 signOut(auth).then(() => {
-                  setUser(null);
+                  clearCurrentUser();
                   router.push("/");
                 });
               }}
@@ -295,9 +295,9 @@ export default function Navbar() {
         <Divider />
         <List component="nav">
           {/* Dashboard */}
-          {user &&
+          {currentUser &&
           ["Dosen", "Kepala Prodi", "Koordinator Lab", "Admin"].includes(
-            user.role
+            currentUser.role
           ) ? (
             <Link href="/dashboard">
               <ListItemButton>
@@ -322,7 +322,7 @@ export default function Navbar() {
           </Link>
 
           {/* Verifikasi Pengguna */}
-          {user && user.role === "Admin" ? (
+          {currentUser && currentUser.role === "Admin" ? (
             <Link href="/verifikasi">
               <ListItemButton>
                 <ListItemIcon>
@@ -341,7 +341,7 @@ export default function Navbar() {
           <ListItemButton
             onClick={() => {
               signOut(auth).then(() => {
-                setUser(null);
+                clearCurrentUser();
                 router.push("/");
               });
             }}

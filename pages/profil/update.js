@@ -18,10 +18,10 @@ import {
 import { ArrowBack } from "@mui/icons-material";
 import Link from "next/link";
 import Navbar from "../../src/components/Navbar";
-import { useUser } from "../../context/userContext";
+import useAppStore from "../../src/store/global";
 
 export default function UpdateProfil() {
-  const { _, user } = useUser();
+  const { currentUser } = useAppStore((state) => state);
 
   return (
     <Box sx={{ display: "flex" }}>
@@ -63,7 +63,7 @@ export default function UpdateProfil() {
                   <Typography variant="h5">Update profil</Typography>
                 </Stack>
                 <Avatar
-                  alt={user ? user.nama : ""}
+                  alt={currentUser ? currentUser.nama : ""}
                   src="/static/images/avatar/1.jpg"
                   sx={{ width: 128, height: 128, mb: 3 }}
                 />
@@ -74,7 +74,7 @@ export default function UpdateProfil() {
                         <TextField
                           label="Nama"
                           variant="outlined"
-                          value={user ? user.nama : ""}
+                          value={currentUser ? currentUser.nama : ""}
                         />
                       </TableCell>
                     </TableRow>
@@ -83,7 +83,7 @@ export default function UpdateProfil() {
                         <TextField
                           label="Email"
                           variant="outlined"
-                          value={user ? user.email : ""}
+                          value={currentUser ? currentUser.email : ""}
                         />
                       </TableCell>
                     </TableRow>
@@ -92,7 +92,7 @@ export default function UpdateProfil() {
                         <TextField
                           label="Role"
                           variant="outlined"
-                          value={user ? user.role : ""}
+                          value={currentUser ? currentUser.role : ""}
                         />
                       </TableCell>
                     </TableRow>

@@ -11,6 +11,7 @@ const useAppStore = create(
       const user = await getUserDataByEmail(email);
       set({ currentUser: user });
     },
+    clearCurrentUser: () => set({ currentUser: null }),
 
     // Snackbar state
     snackbarData: {
