@@ -1,5 +1,3 @@
-import * as React from "react";
-
 import {
   Avatar,
   Badge,
@@ -17,7 +15,7 @@ import {
   Tooltip,
   Typography,
 } from "@mui/material";
-import { createTheme, styled } from "@mui/material/styles";
+import { styled } from "@mui/material/styles";
 import { getAuth, signOut } from "firebase/auth";
 
 import BarChartIcon from "@mui/icons-material/BarChart";
@@ -35,7 +33,8 @@ import PersonIcon from "@mui/icons-material/Person";
 import VerifiedUserIcon from "@mui/icons-material/VerifiedUser";
 import { createFirebaseApp } from "../../firebase/clientApp";
 import { useRouter } from "next/router";
-import { useUser } from "../../context/userContext";
+import { useState } from "react";
+import useAppStore from "../store/global";
 
 const drawerWidth = 240;
 
@@ -83,20 +82,19 @@ const Drawer = styled(MuiDrawer, {
   },
 }));
 
-const mdTheme = createTheme();
 const app = createFirebaseApp();
 const auth = getAuth(app);
 
 export default function Navbar() {
   // AppBar
-  const [open, setOpen] = React.useState(true);
+  const [open, setOpen] = useState(true);
   const toggleDrawer = () => {
     setOpen(!open);
   };
   // AppBar
 
   // User Menu
-  const [anchorEl, setAnchorEl] = React.useState(null);
+  const [anchorEl, setAnchorEl] = useState(null);
   const openUserMenu = Boolean(anchorEl);
 
   const handleOpenUserMenu = (e) => setAnchorEl(e.currentTarget);
@@ -105,7 +103,7 @@ export default function Navbar() {
   // User Menu
 
   // Notif
-  const [notifAnchorEl, setNotifAnchorEl] = React.useState(null);
+  const [notifAnchorEl, setNotifAnchorEl] = useState(null);
   const openNotif = Boolean(notifAnchorEl);
   const idNotif = openNotif ? "notif-popover" : undefined;
 
@@ -114,12 +112,12 @@ export default function Navbar() {
   // Notif
 
   const router = useRouter();
-  const { user, setUser } = useUser();
+  const { currentUser, clearCurrentUser } = useAppStore((state) => state);
 
   let currentPage = router.pathname;
 
   return (
-    <React.Fragment>
+    <>
       {/* Topbar */}
       <AppBar position="absolute" open={open}>
         <Toolbar
@@ -175,7 +173,7 @@ export default function Navbar() {
                 <ListItemText
                   primary="Brunch this weekend?"
                   secondary={
-                    <React.Fragment>
+                    <>
                       <Typography
                         sx={{ display: "inline" }}
                         component="span"
@@ -185,7 +183,7 @@ export default function Navbar() {
                         Ali Connors
                       </Typography>
                       {" — I'll be in your neighborhood doing errands this…"}
-                    </React.Fragment>
+                    </>
                   }
                 />
               </ListItem>
@@ -200,7 +198,7 @@ export default function Navbar() {
                 <ListItemText
                   primary="Summer BBQ"
                   secondary={
-                    <React.Fragment>
+                    <>
                       <Typography
                         sx={{ display: "inline" }}
                         component="span"
@@ -210,7 +208,7 @@ export default function Navbar() {
                         to Scott, Alex, Jennifer
                       </Typography>
                       {" — Wish I could come, but I'm out of town this…"}
-                    </React.Fragment>
+                    </>
                   }
                 />
               </ListItem>
@@ -222,7 +220,7 @@ export default function Navbar() {
                 <ListItemText
                   primary="Oui Oui"
                   secondary={
-                    <React.Fragment>
+                    <>
                       <Typography
                         sx={{ display: "inline" }}
                         component="span"
@@ -232,7 +230,7 @@ export default function Navbar() {
                         Sandra Adams
                       </Typography>
                       {" — Do you have Paris recommendations? Have you ever…"}
-                    </React.Fragment>
+                    </>
                   }
                 />
               </ListItem>
@@ -265,7 +263,7 @@ export default function Navbar() {
             <MenuItem
               onClick={() => {
                 signOut(auth).then(() => {
-                  setUser(null);
+                  clearCurrentUser();
                   router.push("/");
                 });
               }}
@@ -297,9 +295,9 @@ export default function Navbar() {
         <Divider />
         <List component="nav">
           {/* Dashboard */}
-          {user &&
+          {currentUser &&
           ["Dosen", "Kepala Prodi", "Koordinator Lab", "Admin"].includes(
-            user.role
+            currentUser.role
           ) ? (
             <Link href="/dashboard">
               <ListItemButton>
@@ -324,7 +322,7 @@ export default function Navbar() {
           </Link>
 
           {/* Verifikasi Pengguna */}
-          {user && user.role === "Admin" ? (
+          {currentUser && currentUser.role === "Admin" ? (
             <Link href="/verifikasi">
               <ListItemButton>
                 <ListItemIcon>
@@ -343,7 +341,7 @@ export default function Navbar() {
           <ListItemButton
             onClick={() => {
               signOut(auth).then(() => {
-                setUser(null);
+                clearCurrentUser();
                 router.push("/");
               });
             }}
@@ -356,6 +354,6 @@ export default function Navbar() {
         </List>
       </Drawer>
       {/* Sidebar */}
-    </React.Fragment>
+    </>
   );
 }
