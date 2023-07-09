@@ -10,19 +10,19 @@
     {
       "role": ["Dosen", "Kepala Prodi", "Koordinator Lab", "Admin"],
       "label": "Dashboard",
-      "icon": "DashboardIcon",
+      "icon": "dashboard",
       "path": "/dashboard"
     },
     {
       "role": [],
       "label": "Pengajuan",
-      "icon": "BarChartIcon",
+      "icon": "assignment",
       "path": "/pengajuan"
     },
     {
       "role": ["Admin"],
       "label": "Verifikasi Pengguna",
-      "icon": "VerifiedUserIcon",
+      "icon": "verified_user",
       "path": "/verifikasi"
     }
   ]
