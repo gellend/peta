@@ -84,7 +84,7 @@ export const getUsersByRoles = async (roles) => {
   }
 };
 
-export const getPengajuanByCurrentUser = async (uid) => {
-  const rows = await getDataWithQuery("pengajuan", "userId", "==", uid);
+export const getPengajuanByCurrentUser = async (email) => {
+  const rows = await getDataWithQuery("pengajuan", "email", "==", email);
   return rows;
 };
