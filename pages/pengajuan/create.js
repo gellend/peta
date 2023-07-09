@@ -214,6 +214,11 @@ export default function CreatePengajuan() {
                     <TableRow>
                       <TableCell>
                         <TextField
+                          data-cy="pengajuan-judul"
+                          inputProps={{ "data-cy": "pengajuan-judul-input" }}
+                          FormHelperTextProps={{
+                            "data-cy": "pengajuan-judul-helper-text",
+                          }}
                           label="Judul"
                           variant="outlined"
                           fullWidth
@@ -226,6 +231,11 @@ export default function CreatePengajuan() {
                     <TableRow>
                       <TableCell>
                         <TextField
+                          data-cy="sks-lulus"
+                          inputProps={{ "data-cy": "sks-lulus-input" }}
+                          FormHelperTextProps={{
+                            "data-cy": "sks-lulus-helper-text",
+                          }}
                           label="Total SKS Lulus"
                           variant="outlined"
                           fullWidth
@@ -238,6 +248,11 @@ export default function CreatePengajuan() {
                     <TableRow>
                       <TableCell>
                         <TextField
+                          data-cy="sks-ambil"
+                          inputProps={{ "data-cy": "sks-ambil-input" }}
+                          FormHelperTextProps={{
+                            "data-cy": "sks-ambil-helper-text",
+                          }}
                           label="SKS Ambil Smt. Ini"
                           variant="outlined"
                           fullWidth
@@ -250,6 +265,11 @@ export default function CreatePengajuan() {
                     <TableRow>
                       <TableCell>
                         <TextField
+                          data-cy="sks-mengulang"
+                          inputProps={{ "data-cy": "sks-mengulang-input" }}
+                          FormHelperTextProps={{
+                            "data-cy": "sks-mengulang-helper-text",
+                          }}
                           label="SKS Nilai D & E"
                           variant="outlined"
                           fullWidth
@@ -262,6 +282,11 @@ export default function CreatePengajuan() {
                     <TableRow>
                       <TableCell>
                         <TextField
+                          data-cy="deskripsi"
+                          inputProps={{ "data-cy": "deskripsi-input" }}
+                          FormHelperTextProps={{
+                            "data-cy": "deskripsi-helper-text",
+                          }}
                           label="Deskripsi Singkat"
                           variant="outlined"
                           fullWidth

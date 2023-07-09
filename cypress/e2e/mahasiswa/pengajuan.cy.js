@@ -3,12 +3,20 @@ describe("Pengajuan", () => {
     cy.visit(Cypress.env("host"));
   });
 
-  it("Berhasil mengajukan proposal", () => {
-    // Login
-    cy.login("mahasiswa");
-    // Klik tombol Ajukan Judul
-    // Diarahkan ke pengajuan/create
-    // Isi form
+  it.only("Berhasil mengajukan proposal", () => {
+    cy.fixture("pengajuan.json").as("pengajuan");
+    cy.get("@pengajuan").then((pengajuan) => {
+      cy.login("mahasiswa");
+      // cy.getByData("btn-ajukan-judul").click();
+      cy.visit(Cypress.env("host") + "/pengajuan/create");
+      cy.url().should("include", "/pengajuan/create");
+      cy.getByData("pengajuan-judul").type(pengajuan.judul);
+      cy.getByData("sks-lulus").type(pengajuan.sksLulus);
+      cy.getByData("sks-ambil").type(pengajuan.sksAmbil);
+      cy.getByData("sks-mengulang").type(pengajuan.sksMengulang);
+      cy.getByData("deskripsi").type(pengajuan.deskripsi);
+    });
+
     // Klik tombol Submit
     // Muncul snackbar berhasil
     // Diarahkan ke pengajuan

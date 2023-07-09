@@ -320,6 +320,7 @@ export default function Navbar() {
 
           {/* Keluar */}
           <ListItemButton
+            data-cy="btn-logout"
             onClick={() => {
               signOut(auth).then(() => {
                 clearCurrentUser();

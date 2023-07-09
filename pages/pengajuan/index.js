@@ -17,8 +17,10 @@ import { useEffect, useState } from "react";
 import { getCurrentLoginUser } from "../../src/lib/auth";
 import { getPengajuanByCurrentUser } from "../../src/lib/store";
 import useAppStore from "../../src/store/global";
+import { useRouter } from "next/router";
 
 export default function Pengajuan() {
+  const router = useRouter();
   const { currentUser } = useAppStore((state) => state);
 
   // List pengajuan
@@ -54,11 +56,14 @@ export default function Pengajuan() {
       >
         <Toolbar />
         <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
-          <Link href="/pengajuan/create">
-            <Button variant="contained" sx={{ mb: 3 }}>
-              Ajukan Judul
-            </Button>
-          </Link>
+          <Button
+            data-cy="btn-ajukan-judul"
+            variant="contained"
+            onClick={() => router.push("/pengajuan/create")}
+            sx={{ mb: 3 }}
+          >
+            Ajukan Judul
+          </Button>
           <Grid container spacing={3}>
             <Grid item xs={12}>
               <Paper
