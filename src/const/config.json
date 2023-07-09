@@ -1,0 +1,29 @@
+{
+  "redirectRules": {
+    "Mahasiswa": "/pengajuan",
+    "Dosen": "/dashboard",
+    "Kepala Prodi": "/dashboard",
+    "Koordinator Lab": "/dashboard",
+    "Admin": "/dashboard"
+  },
+  "navbarItems": [
+    {
+      "role": ["Dosen", "Kepala Prodi", "Koordinator Lab", "Admin"],
+      "label": "Dashboard",
+      "icon": "DashboardIcon",
+      "path": "/dashboard"
+    },
+    {
+      "role": [],
+      "label": "Pengajuan",
+      "icon": "BarChartIcon",
+      "path": "/pengajuan"
+    },
+    {
+      "role": ["Admin"],
+      "label": "Verifikasi Pengguna",
+      "icon": "VerifiedUserIcon",
+      "path": "/verifikasi"
+    }
+  ]
+}
