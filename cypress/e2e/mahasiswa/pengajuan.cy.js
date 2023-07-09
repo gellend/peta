@@ -1,6 +1,11 @@
 describe("Pengajuan", () => {
+  beforeEach(() => {
+    cy.visit(Cypress.env("host"));
+  });
+
   it("Berhasil mengajukan proposal", () => {
     // Login
+    cy.login("mahasiswa");
     // Klik tombol Ajukan Judul
     // Diarahkan ke pengajuan/create
     // Isi form
