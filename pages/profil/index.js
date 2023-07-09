@@ -17,24 +17,12 @@ import {
 import { Edit } from "@mui/icons-material";
 import Link from "next/link";
 import Navbar from "../../src/components/Navbar";
-import { useEffect, useState } from "react";
-import { getUserDataByUid } from "../../src/lib/store";
-import { observeAuthState } from "../../src/lib/auth";
+import { useEffect } from "react";
+import { getCurrentLoginUser } from "../../src/lib/auth";
+import useAppStore from "../../src/store/global";
 
 export default function Profil() {
-  const [user, setUser] = useState(null);
-  const [isLoading, setIsLoading] = useState(false);
-
-  const getCurrentLoginUser = async () => {
-    setIsLoading(true);
-    const user = await observeAuthState();
-    const userData = await getUserDataByUid(user.uid);
-
-    if (userData) {
-      setUser(userData);
-      setIsLoading(false);
-    }
-  };
+  const { currentUser } = useAppStore((state) => state);
 
   useEffect(() => {
     getCurrentLoginUser();
@@ -73,7 +61,7 @@ export default function Profil() {
                   sx={{ mb: 3 }}
                 >
                   <Typography variant="h5">
-                    Profil {user ? user.nama : ""}
+                    Profil {currentUser ? currentUser.nama : ""}
                   </Typography>
                   <Link href="/profil/update">
                     <IconButton>
@@ -82,7 +70,7 @@ export default function Profil() {
                   </Link>
                 </Stack>
                 <Avatar
-                  alt={user ? user.nama : ""}
+                  alt={currentUser ? currentUser.nama : ""}
                   src="/static/images/avatar/1.jpg"
                   sx={{ width: 128, height: 128, mb: 3 }}
                 />
@@ -90,19 +78,25 @@ export default function Profil() {
                   <TableBody>
                     <TableRow>
                       <TableCell>ID</TableCell>
-                      <TableCell>{user ? user.id : ""}</TableCell>
+                      <TableCell>{currentUser ? currentUser.id : ""}</TableCell>
                     </TableRow>
                     <TableRow>
                       <TableCell>Nama</TableCell>
-                      <TableCell>{user ? user.nama : ""}</TableCell>
+                      <TableCell>
+                        {currentUser ? currentUser.nama : ""}
+                      </TableCell>
                     </TableRow>
                     <TableRow>
                       <TableCell>Email</TableCell>
-                      <TableCell>{user ? user.email : ""}</TableCell>
+                      <TableCell>
+                        {currentUser ? currentUser.email : ""}
+                      </TableCell>
                     </TableRow>
                     <TableRow>
                       <TableCell>Role</TableCell>
-                      <TableCell>{user ? user.role : ""}</TableCell>
+                      <TableCell>
+                        {currentUser ? currentUser.role : ""}
+                      </TableCell>
                     </TableRow>
                   </TableBody>
                 </Table>

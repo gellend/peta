@@ -2,6 +2,7 @@ import {
   Avatar,
   Badge,
   Divider,
+  Icon,
   List,
   ListItem,
   ListItemAvatar,
@@ -18,23 +19,20 @@ import {
 import { styled } from "@mui/material/styles";
 import { getAuth, signOut } from "firebase/auth";
 
-import BarChartIcon from "@mui/icons-material/BarChart";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
-import DashboardIcon from "@mui/icons-material/Dashboard";
 import IconButton from "@mui/material/IconButton";
 import Link from "next/link";
-import Logout from "@mui/icons-material/Logout";
 import LogoutIcon from "@mui/icons-material/Logout";
 import MenuIcon from "@mui/icons-material/Menu";
 import MuiAppBar from "@mui/material/AppBar";
 import MuiDrawer from "@mui/material/Drawer";
 import NotificationsIcon from "@mui/icons-material/Notifications";
 import PersonIcon from "@mui/icons-material/Person";
-import VerifiedUserIcon from "@mui/icons-material/VerifiedUser";
 import { createFirebaseApp } from "../../firebase/clientApp";
 import { useRouter } from "next/router";
 import { useState } from "react";
 import useAppStore from "../store/global";
+import config from "../const/config.json";
 
 const drawerWidth = 240;
 
@@ -269,7 +267,7 @@ export default function Navbar() {
               }}
             >
               <ListItemIcon>
-                <Logout fontSize="small" />
+                <LogoutIcon fontSize="small" />
               </ListItemIcon>
               Logout
             </MenuItem>
@@ -294,46 +292,29 @@ export default function Navbar() {
         </Toolbar>
         <Divider />
         <List component="nav">
-          {/* Dashboard */}
-          {currentUser &&
-          ["Dosen", "Kepala Prodi", "Koordinator Lab", "Admin"].includes(
-            currentUser.role
-          ) ? (
-            <Link href="/dashboard">
-              <ListItemButton>
-                <ListItemIcon>
-                  <DashboardIcon />
-                </ListItemIcon>
-                <ListItemText primary="Dashboard" />
-              </ListItemButton>
-            </Link>
-          ) : (
-            ""
-          )}
+          {config.navbarItems.map((item, index) => {
+            const { role, label, icon, path } = item;
 
-          {/* Pengajuan */}
-          <Link href="/pengajuan">
-            <ListItemButton>
-              <ListItemIcon>
-                <BarChartIcon />
-              </ListItemIcon>
-              <ListItemText primary="Pengajuan" />
-            </ListItemButton>
-          </Link>
+            // Check if the current user has the required role to display the navigation item
+            const shouldDisplay =
+              role.length === 0 ||
+              (currentUser && role.includes(currentUser.role));
 
-          {/* Verifikasi Pengguna */}
-          {currentUser && currentUser.role === "Admin" ? (
-            <Link href="/verifikasi">
-              <ListItemButton>
-                <ListItemIcon>
-                  <VerifiedUserIcon />
-                </ListItemIcon>
-                <ListItemText primary="Verifikasi Pengguna" />
-              </ListItemButton>
-            </Link>
-          ) : (
-            ""
-          )}
+            if (!shouldDisplay) {
+              return null;
+            }
+
+            return (
+              <Link href={path} key={index}>
+                <ListItemButton>
+                  <ListItemIcon>
+                    <Icon>{icon}</Icon>
+                  </ListItemIcon>
+                  <ListItemText primary={label} />
+                </ListItemButton>
+              </Link>
+            );
+          })}
 
           <Divider sx={{ my: 1 }} />
 

@@ -16,6 +16,7 @@ import isValidEmail from "../src/helper/validateEmail";
 import useForm from "../src/helper/useForm";
 import useAppStore from "../src/store/global";
 import { getCurrentLoginUser, auth } from "../src/lib/auth";
+import config from "../src/const/config.json";
 
 export default function LogIn() {
   const router = useRouter();
@@ -49,17 +50,13 @@ export default function LogIn() {
   }, []);
 
   // Redirect user to dashboard if they are already logged in
+  const redirectUser = (role) => {
+    const redirectPath = config.redirectRules[role];
+    if (redirectPath) router.push(redirectPath);
+  };
+
   useEffect(() => {
-    if (currentUser && currentUser.role === "Mahasiswa") {
-      router.push("/pengajuan");
-    } else if (
-      currentUser &&
-      ["Dosen", "Kepala Prodi", "Koordinator Lab", "Admin"].includes(
-        currentUser.role
-      )
-    ) {
-      router.push("/dashboard");
-    }
+    if (currentUser) redirectUser(currentUser.role);
   }, [currentUser]);
 
   const handleSubmit = async (e) => {

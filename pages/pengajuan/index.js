@@ -14,28 +14,18 @@ import {
 import Link from "next/link";
 import Navbar from "../../src/components/Navbar";
 import { useEffect, useState } from "react";
-import { observeAuthState } from "../../src/lib/auth";
+import { getCurrentLoginUser } from "../../src/lib/auth";
 import { getPengajuanByCurrentUser } from "../../src/lib/store";
+import useAppStore from "../../src/store/global";
 
 export default function Pengajuan() {
-  const [user, setUser] = useState(null);
-  const [isLoading, setIsLoading] = useState(false);
+  const { currentUser } = useAppStore((state) => state);
 
   // List pengajuan
   const [listPengajuan, setListPengajuan] = useState([]);
 
-  const getCurrentLoginUser = async () => {
-    setIsLoading(true);
-    const user = await observeAuthState();
-
-    if (user) {
-      setUser(user);
-      setIsLoading(false);
-    }
-  };
-
-  const getPengajuan = async (uid) => {
-    const rows = await getPengajuanByCurrentUser(uid);
+  const getPengajuan = async (email) => {
+    const rows = await getPengajuanByCurrentUser(email);
     setListPengajuan(rows);
   };
 
@@ -44,8 +34,8 @@ export default function Pengajuan() {
   }, []);
 
   useEffect(() => {
-    if (user) getPengajuan(user.uid);
-  }, [user]);
+    if (currentUser) getPengajuan(currentUser.email);
+  }, [currentUser]);
 
   return (
     <Box sx={{ display: "flex" }}>
