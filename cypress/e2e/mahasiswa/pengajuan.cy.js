@@ -14,7 +14,12 @@ describe("Pengajuan", () => {
       cy.getByData("sks-ambil").type(pengajuan.sksAmbil);
       cy.getByData("sks-mengulang").type(pengajuan.sksMengulang);
       cy.getByData("deskripsi").type(pengajuan.deskripsi);
-      cy.getByData("dospem-1").select(0);
+      cy.getByData("input-dospem-1").click();
+      cy.getByData("select-dospem-1-010050").click();
+      cy.getByData("input-dospem-2").click();
+      cy.getByData("select-dospem-2-010174").click();
+      cy.getByData("input-dospem-3").click();
+      cy.getByData("select-dospem-3-010130").click();
     });
 
     // Klik tombol Submit

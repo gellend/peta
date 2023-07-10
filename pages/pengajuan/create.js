@@ -301,8 +301,7 @@ export default function CreatePengajuan() {
                     <TableRow>
                       <TableCell>
                         <TextField
-                          inputProps={{"data-cy":"dospem-1"}}
-                          SelectProps={{"data-cy":"dospem-1"}}
+                          data-cy="input-dospem-1"
                           select
                           label="Usulan Dosen Pembimbing 1"
                           helperText="Pilih Setidaknya 1 Dosen Pembimbing"
@@ -313,7 +312,11 @@ export default function CreatePengajuan() {
                         >
                           {dosenDropdown &&
                             dosenDropdown.map((dosen) => (
-                              <MenuItem key={dosen.id} value={dosen.id}>
+                              <MenuItem
+                                data-cy={`select-dospem-1-${dosen.id}`}
+                                key={dosen.id}
+                                value={dosen.id}
+                              >
                                 {dosen.nama}
                               </MenuItem>
                             ))}
@@ -323,7 +326,7 @@ export default function CreatePengajuan() {
                     <TableRow>
                       <TableCell>
                         <TextField
-                          data-cy="dospem-2"
+                          data-cy="input-dospem-2"
                           select
                           label="Usulan Dosen Pembimbing 2"
                           fullWidth
@@ -333,7 +336,11 @@ export default function CreatePengajuan() {
                         >
                           {dosenDropdown &&
                             dosenDropdown.map((dosen) => (
-                              <MenuItem key={dosen.id} value={dosen.id}>
+                              <MenuItem
+                                data-cy={`select-dospem-2-${dosen.id}`}
+                                key={dosen.id}
+                                value={dosen.id}
+                              >
                                 {dosen.nama}
                               </MenuItem>
                             ))}
@@ -343,7 +350,7 @@ export default function CreatePengajuan() {
                     <TableRow>
                       <TableCell>
                         <TextField
-                          data-cy="dospem-3"
+                          data-cy="input-dospem-3"
                           select
                           label="Usulan Dosen Pembimbing 3"
                           fullWidth
@@ -353,7 +360,11 @@ export default function CreatePengajuan() {
                         >
                           {dosenDropdown &&
                             dosenDropdown.map((dosen) => (
-                              <MenuItem key={dosen.id} value={dosen.id}>
+                              <MenuItem
+                                data-cy={`select-dospem-3-${dosen.id}`}
+                                key={dosen.id}
+                                value={dosen.id}
+                              >
                                 {dosen.nama}
                               </MenuItem>
                             ))}
