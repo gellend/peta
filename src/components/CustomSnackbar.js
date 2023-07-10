@@ -7,7 +7,7 @@ const CustomSnackbar = ({ open, message, type, onClose }) => {
 
   const snackbarProps = {
     open: true,
-    autoHideDuration: 2000,
+    autoHideDuration: 6000,
     onClose: onClose,
   };
 

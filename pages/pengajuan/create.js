@@ -29,6 +29,7 @@ import {
 import { observeAuthState } from "../../src/lib/auth";
 import { uploadFile } from "../../src/lib/upload";
 import { serverTimestamp } from "firebase/firestore";
+import useAppStore from "../../src/store/global";
 
 export default function CreatePengajuan() {
   const router = useRouter();
@@ -50,6 +51,8 @@ export default function CreatePengajuan() {
     dosenPembimbing2: "",
     dosenPembimbing3: "",
   });
+
+  const { handleOpenSnackBar } = useAppStore((state) => state);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -143,7 +146,7 @@ export default function CreatePengajuan() {
         ...formValues,
         ...fileData,
         ...userData,
-        status: "pending",
+        status: "Pending",
         timestamp: serverTimestamp(),
         userId: userData.uid,
       };
@@ -151,6 +154,14 @@ export default function CreatePengajuan() {
       // Store merged data to Firestore
       const success = await postData("pengajuan", dataToStore);
       if (success) {
+        // Reset form
+        setFormValues((prevValues) =>
+          Object.keys(prevValues).reduce((acc, inputName) => {
+            acc[inputName] = "";
+            return acc;
+          }, {})
+        );
+
         // Reset the file inputs and chip labels
         setFileInputs((prevInputs) =>
           Object.keys(prevInputs).reduce((acc, inputName) => {
@@ -158,6 +169,12 @@ export default function CreatePengajuan() {
             return acc;
           }, {})
         );
+
+        // Display snackbar
+        handleOpenSnackBar("Pengajuan berhasil dibuat!", "success");
+
+        // Redirect to pengajuan page
+        router.push("/pengajuan");
       } else {
         console.log("Failed to store data to Firestore");
       }
@@ -196,9 +213,6 @@ export default function CreatePengajuan() {
               </IconButton>
               <Typography variant="h5">Ajukan Judul Tugas Akhir</Typography>
             </Stack>
-            <Button variant="contained" color="success">
-              Submit
-            </Button>
           </Stack>
           <Paper
             sx={{
@@ -301,6 +315,7 @@ export default function CreatePengajuan() {
                     <TableRow>
                       <TableCell>
                         <TextField
+                          data-cy="input-dospem-1"
                           select
                           label="Usulan Dosen Pembimbing 1"
                           helperText="Pilih Setidaknya 1 Dosen Pembimbing"
@@ -311,7 +326,11 @@ export default function CreatePengajuan() {
                         >
                           {dosenDropdown &&
                             dosenDropdown.map((dosen) => (
-                              <MenuItem key={dosen.id} value={dosen.id}>
+                              <MenuItem
+                                data-cy={`select-dospem-1-${dosen.id}`}
+                                key={dosen.id}
+                                value={dosen.id}
+                              >
                                 {dosen.nama}
                               </MenuItem>
                             ))}
@@ -321,6 +340,7 @@ export default function CreatePengajuan() {
                     <TableRow>
                       <TableCell>
                         <TextField
+                          data-cy="input-dospem-2"
                           select
                           label="Usulan Dosen Pembimbing 2"
                           fullWidth
@@ -330,7 +350,11 @@ export default function CreatePengajuan() {
                         >
                           {dosenDropdown &&
                             dosenDropdown.map((dosen) => (
-                              <MenuItem key={dosen.id} value={dosen.id}>
+                              <MenuItem
+                                data-cy={`select-dospem-2-${dosen.id}`}
+                                key={dosen.id}
+                                value={dosen.id}
+                              >
                                 {dosen.nama}
                               </MenuItem>
                             ))}
@@ -340,6 +364,7 @@ export default function CreatePengajuan() {
                     <TableRow>
                       <TableCell>
                         <TextField
+                          data-cy="input-dospem-3"
                           select
                           label="Usulan Dosen Pembimbing 3"
                           fullWidth
@@ -349,7 +374,11 @@ export default function CreatePengajuan() {
                         >
                           {dosenDropdown &&
                             dosenDropdown.map((dosen) => (
-                              <MenuItem key={dosen.id} value={dosen.id}>
+                              <MenuItem
+                                data-cy={`select-dospem-3-${dosen.id}`}
+                                key={dosen.id}
+                                value={dosen.id}
+                              >
                                 {dosen.nama}
                               </MenuItem>
                             ))}
@@ -366,6 +395,7 @@ export default function CreatePengajuan() {
                       <TableCell>
                         <Stack direction="row" spacing={2} alignItems="center">
                           <Button
+                            data-cy="button-upload-khs"
                             fullWidth={false}
                             variant="contained"
                             component="label"
@@ -396,6 +426,7 @@ export default function CreatePengajuan() {
                       <TableCell>
                         <Stack direction="row" spacing={2} alignItems="center">
                           <Button
+                            data-cy="button-upload-frs"
                             fullWidth={false}
                             variant="contained"
                             component="label"
@@ -426,6 +457,7 @@ export default function CreatePengajuan() {
                       <TableCell>
                         <Stack direction="row" spacing={2} alignItems="center">
                           <Button
+                            data-cy="button-upload-jalurPraCo"
                             fullWidth={false}
                             variant="contained"
                             component="label"
@@ -456,6 +488,7 @@ export default function CreatePengajuan() {
                       <TableCell>
                         <Stack direction="row" spacing={2} alignItems="center">
                           <Button
+                            data-cy="button-upload-toefl"
                             fullWidth={false}
                             variant="contained"
                             component="label"
@@ -486,6 +519,7 @@ export default function CreatePengajuan() {
                       <TableCell>
                         <Stack direction="row" spacing={2} alignItems="center">
                           <Button
+                            data-cy="button-upload-kompetensi"
                             fullWidth={false}
                             variant="contained"
                             component="label"
@@ -518,6 +552,7 @@ export default function CreatePengajuan() {
               <Grid item xs={12}>
                 <Box display="flex" justifyContent="center">
                   <Button
+                    data-cy="button-submit"
                     sx={{ minWidth: 200 }}
                     variant="contained"
                     color="success"

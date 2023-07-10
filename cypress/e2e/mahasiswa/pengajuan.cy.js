@@ -5,21 +5,32 @@ describe("Pengajuan", () => {
 
   it.only("Berhasil mengajukan proposal", () => {
     cy.fixture("pengajuan.json").as("pengajuan");
+    cy.fixture("sample.pdf").as("sampleFile");
     cy.get("@pengajuan").then((pengajuan) => {
       cy.login("mahasiswa");
-      // cy.getByData("btn-ajukan-judul").click();
-      cy.visit(Cypress.env("host") + "/pengajuan/create");
+      cy.getByData("btn-ajukan-judul").click();
       cy.url().should("include", "/pengajuan/create");
       cy.getByData("pengajuan-judul").type(pengajuan.judul);
       cy.getByData("sks-lulus").type(pengajuan.sksLulus);
       cy.getByData("sks-ambil").type(pengajuan.sksAmbil);
       cy.getByData("sks-mengulang").type(pengajuan.sksMengulang);
       cy.getByData("deskripsi").type(pengajuan.deskripsi);
+      cy.getByData("input-dospem-1").click();
+      cy.getByData("select-dospem-1-010050").click();
+      cy.getByData("input-dospem-2").click();
+      cy.getByData("select-dospem-2-010174").click();
+      cy.getByData("input-dospem-3").click();
+      cy.getByData("select-dospem-3-010130").click();
+      cy.getByData("button-upload-khs").selectFile("@sampleFile");
+      cy.getByData("button-upload-frs").selectFile("@sampleFile");
+      cy.getByData("button-upload-jalurPraCo").selectFile("@sampleFile");
+      cy.getByData("button-upload-toefl").selectFile("@sampleFile");
+      cy.getByData("button-upload-kompetensi").selectFile("@sampleFile");
+      cy.getByData("button-submit").click();
+      // Muncul snackbar berhasil
+      cy.url().should("include", "/pengajuan");
     });
 
-    // Klik tombol Submit
-    // Muncul snackbar berhasil
-    // Diarahkan ke pengajuan
     // Tabel pengajuan berisi judul yang diajukan
     // Klik tombol detail
     // Diarahkan ke pengajuan/detail

@@ -28,6 +28,7 @@ export default function MyApp(props) {
         <CssBaseline />
         <Component {...pageProps} />
         <CustomSnackbar
+          data-cy="custom-snackbar"
           open={snackbarData.open}
           message={snackbarData.message}
           type={snackbarData.type}
