@@ -301,6 +301,8 @@ export default function CreatePengajuan() {
                     <TableRow>
                       <TableCell>
                         <TextField
+                          inputProps={{"data-cy":"dospem-1"}}
+                          SelectProps={{"data-cy":"dospem-1"}}
                           select
                           label="Usulan Dosen Pembimbing 1"
                           helperText="Pilih Setidaknya 1 Dosen Pembimbing"
@@ -321,6 +323,7 @@ export default function CreatePengajuan() {
                     <TableRow>
                       <TableCell>
                         <TextField
+                          data-cy="dospem-2"
                           select
                           label="Usulan Dosen Pembimbing 2"
                           fullWidth
@@ -340,6 +343,7 @@ export default function CreatePengajuan() {
                     <TableRow>
                       <TableCell>
                         <TextField
+                          data-cy="dospem-3"
                           select
                           label="Usulan Dosen Pembimbing 3"
                           fullWidth

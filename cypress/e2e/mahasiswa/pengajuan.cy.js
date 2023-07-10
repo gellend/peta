@@ -7,14 +7,14 @@ describe("Pengajuan", () => {
     cy.fixture("pengajuan.json").as("pengajuan");
     cy.get("@pengajuan").then((pengajuan) => {
       cy.login("mahasiswa");
-      // cy.getByData("btn-ajukan-judul").click();
-      cy.visit(Cypress.env("host") + "/pengajuan/create");
+      cy.getByData("btn-ajukan-judul").click();
       cy.url().should("include", "/pengajuan/create");
       cy.getByData("pengajuan-judul").type(pengajuan.judul);
       cy.getByData("sks-lulus").type(pengajuan.sksLulus);
       cy.getByData("sks-ambil").type(pengajuan.sksAmbil);
       cy.getByData("sks-mengulang").type(pengajuan.sksMengulang);
       cy.getByData("deskripsi").type(pengajuan.deskripsi);
+      cy.getByData("dospem-1").select(0);
     });
 
     // Klik tombol Submit
