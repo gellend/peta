@@ -99,7 +99,15 @@ export default function Pengajuan() {
                           <TableCell>{row.nama}</TableCell>
                           <TableCell>{row.id}</TableCell>
                           <TableCell>{row.status}</TableCell>
-                          <TableCell>Aksi</TableCell>
+                          <TableCell>
+                            <Button
+                              onClick={() =>
+                                router.push(`/pengajuan/detail/${row.docId}`)
+                              }
+                            >
+                              Detail
+                            </Button>
+                          </TableCell>
                         </TableRow>
                       ))
                     )}

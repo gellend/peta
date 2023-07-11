@@ -8,6 +8,7 @@ import {
   doc,
   setDoc,
   getDoc,
+  documentId,
 } from "firebase/firestore";
 
 const app = createFirebaseApp();
@@ -86,5 +87,16 @@ export const getUsersByRoles = async (roles) => {
 
 export const getPengajuanByCurrentUser = async (email) => {
   const rows = await getDataWithQuery("pengajuan", "email", "==", email);
+  return rows;
+};
+
+export const getDetailPengajuan = async (docId) => {
+  const rows = await getDataWithQuery(
+    "pengajuan",
+    documentId(),
+    "==",
+    docId,
+    true
+  );
   return rows;
 };
