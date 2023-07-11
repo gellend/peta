@@ -98,5 +98,5 @@ export const getDetailPengajuan = async (docId) => {
     docId,
     true
   );
-  return rows;
+  return rows[0];
 };

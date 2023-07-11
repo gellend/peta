@@ -29,6 +29,12 @@ export default function DetailPengajuan() {
     setPengajuan(rows);
   };
 
+  const getStatus = (status) => {
+    if (status === "Pending") {
+      return <Chip label="Pending" color="warning" sx={{ maxWidth: 100 }} />;
+    }
+  };
+
   useEffect(() => {
     getCurrentLoginUser();
     if (docId) getPengajuan(docId);
@@ -78,18 +84,17 @@ export default function DetailPengajuan() {
                   <Typography variant="h5">
                     {pengajuan ? pengajuan.judul : ""}
                   </Typography>
-                  <Typography variant="subtitle1">Oleh Bimo</Typography>
-                  <Chip label="Status" sx={{ maxWidth: 100 }} />
+                  <Typography variant="subtitle1">
+                    Oleh {pengajuan ? pengajuan.nama : ""}
+                  </Typography>
+                  {pengajuan ? getStatus(pengajuan.status) : ""}
                   <Button variant="contained" sx={{ maxWidth: 200 }}>
                     Unduh Berkas
                   </Button>
                 </Stack>
                 <Stack spacing={2} sx={{ mb: 3 }}>
                   <Typography variant="body1">
-                    Lorem ipsum dolor, sit amet consectetur adipisicing elit.
-                    Tempora repellendus iusto beatae laborum delectus aliquid
-                    blanditiis eligendi, aspernatur ut nobis officiis itaque aut
-                    debitis incidunt.
+                    {pengajuan ? pengajuan.deskripsi : ""}
                   </Typography>
                 </Stack>
                 <Stack direction="row" spacing={1}>
