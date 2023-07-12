@@ -13,3 +13,14 @@ export const uploadFile = async (file, path) => {
     throw error;
   }
 };
+
+export const downloadFile = async (path) => {
+  try {
+    const storageRef = ref(storage, path);
+    const url = await storageRef.getDownloadURL();
+    return url;
+  } catch (error) {
+    console.error(`downloadFile: Error downloading ${path}:`, error);
+    throw error;
+  }
+};

@@ -4,7 +4,9 @@ import {
   Button,
   Chip,
   Container,
+  Divider,
   Grid,
+  Icon,
   IconButton,
   Paper,
   Stack,
@@ -17,6 +19,7 @@ import Navbar from "../../../src/components/Navbar";
 import { useEffect, useState } from "react";
 import { getCurrentLoginUser } from "../../../src/lib/auth";
 import { getDetailPengajuan } from "../../../src/lib/store";
+import { downloadFile } from "../../../src/lib/upload";
 
 export default function DetailPengajuan() {
   const router = useRouter();
@@ -26,6 +29,7 @@ export default function DetailPengajuan() {
 
   const getPengajuan = async (docId) => {
     const rows = await getDetailPengajuan(docId);
+    console.log(rows);
     setPengajuan(rows);
   };
 
@@ -71,15 +75,16 @@ export default function DetailPengajuan() {
               <Typography variant="h5">Detail Pengajuan</Typography>
             </Stack>
           </Stack>
-          <Paper
-            sx={{
-              p: 2,
-              display: "flex",
-              flexDirection: "column",
-            }}
-          >
-            <Grid container spacing={3}>
-              <Grid item xs={12} md={6}>
+
+          <Grid container spacing={3}>
+            <Grid item xs={12}>
+              <Paper
+                sx={{
+                  p: 2,
+                  display: "flex",
+                  flexDirection: "column",
+                }}
+              >
                 <Stack spacing={2} sx={{ mb: 3 }}>
                   <Typography variant="h5">
                     {pengajuan ? pengajuan.judul : ""}
@@ -87,15 +92,62 @@ export default function DetailPengajuan() {
                   <Typography variant="subtitle1">
                     Oleh {pengajuan ? pengajuan.nama : ""}
                   </Typography>
-                  {pengajuan ? getStatus(pengajuan.status) : ""}
-                  <Button variant="contained" sx={{ maxWidth: 200 }}>
-                    Unduh Berkas
-                  </Button>
+                  <Divider />
+                  <Typography variant="body2">
+                    Status{"  "}
+                    {pengajuan ? getStatus(pengajuan.status) : ""}
+                  </Typography>
                 </Stack>
                 <Stack spacing={2} sx={{ mb: 3 }}>
                   <Typography variant="body1">
                     {pengajuan ? pengajuan.deskripsi : ""}
                   </Typography>
+                  <Divider />
+                  <Typography variant="body2">Berkas</Typography>
+                  <Stack direction="row" spacing={1}>
+                    <Chip
+                      icon={<Icon>download</Icon>}
+                      label="Berkas Pengajuan"
+                      variant="outlined"
+                      color="primary"
+                      onClick={() => console.log("ok")}
+                    />
+                    <Chip
+                      icon={<Icon>download</Icon>}
+                      label="KHS"
+                      variant="outlined"
+                      color="primary"
+                      onClick={() => downloadFile(pengajuan.khsFile)}
+                    />
+                    <Chip
+                      icon={<Icon>download</Icon>}
+                      label="FRS"
+                      variant="outlined"
+                      color="primary"
+                      onClick={() => console.log("ok")}
+                    />
+                    <Chip
+                      icon={<Icon>download</Icon>}
+                      label="Jalur Pra & Co"
+                      variant="outlined"
+                      color="primary"
+                      onClick={() => console.log("ok")}
+                    />
+                    <Chip
+                      icon={<Icon>download</Icon>}
+                      label="TOEFL"
+                      variant="outlined"
+                      color="primary"
+                      onClick={() => console.log("ok")}
+                    />
+                    <Chip
+                      icon={<Icon>download</Icon>}
+                      label="Kompetensi"
+                      variant="outlined"
+                      color="primary"
+                      onClick={() => console.log("ok")}
+                    />
+                  </Stack>
                 </Stack>
                 <Stack direction="row" spacing={1}>
                   <Button variant="contained" color="success">
@@ -105,9 +157,9 @@ export default function DetailPengajuan() {
                     Tolak
                   </Button>
                 </Stack>
-              </Grid>
+              </Paper>
             </Grid>
-          </Paper>
+          </Grid>
         </Container>
       </Box>
     </Box>
