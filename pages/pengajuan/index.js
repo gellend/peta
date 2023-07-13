@@ -64,15 +64,15 @@ export default function Pengajuan() {
           >
             Ajukan Judul
           </Button>
-          <Grid container spacing={3}>
-            <Grid item xs={12}>
-              <Paper
-                sx={{
-                  p: 2,
-                  display: "flex",
-                  flexDirection: "column",
-                }}
-              >
+          <Paper
+            sx={{
+              p: 2,
+              display: "flex",
+              flexDirection: "column",
+            }}
+          >
+            <Grid container spacing={3}>
+              <Grid item xs={12}>
                 <Table>
                   <TableHead>
                     <TableRow>
@@ -113,9 +113,9 @@ export default function Pengajuan() {
                     )}
                   </TableBody>
                 </Table>
-              </Paper>
+              </Grid>
             </Grid>
-          </Grid>
+          </Paper>
         </Container>
       </Box>
     </Box>

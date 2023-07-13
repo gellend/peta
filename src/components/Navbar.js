@@ -85,7 +85,7 @@ const auth = getAuth(app);
 
 export default function Navbar() {
   // AppBar
-  const [open, setOpen] = useState(true);
+  const [open, setOpen] = useState(false);
   const toggleDrawer = () => {
     setOpen(!open);
   };
