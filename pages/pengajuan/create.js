@@ -26,6 +26,7 @@ import { getCurrentLoginUser } from "../../src/lib/auth";
 import { uploadFile } from "../../src/lib/upload";
 import { serverTimestamp } from "firebase/firestore";
 import useAppStore from "../../src/store/global";
+import useForm from "../../src/helper/useForm";
 
 export default function CreatePengajuan() {
   const router = useRouter();
@@ -34,7 +35,7 @@ export default function CreatePengajuan() {
   const [dosenDropdown, setDosenDropdown] = useState([]);
 
   // Form states
-  const [formValues, setFormValues] = useState({
+  const initialState = {
     judul: "",
     totalSksLulus: "",
     sksAmbil: "",
@@ -43,29 +44,24 @@ export default function CreatePengajuan() {
     dosenPembimbing1: "",
     dosenPembimbing2: "",
     dosenPembimbing3: "",
-  });
-
-  const { currentUser, handleOpenSnackBar } = useAppStore((state) => state);
-
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormValues((prevValues) => ({
-      ...prevValues,
-      [name]: value,
-    }));
   };
 
-  // Destructure form values for easier access
-  const {
-    judul,
-    totalSksLulus,
-    sksAmbil,
-    sksMengulang,
-    deskripsi,
-    dosenPembimbing1,
-    dosenPembimbing2,
-    dosenPembimbing3,
-  } = formValues;
+  const validationRules = {
+    judul: (value) => (!value ? "Judul harus diisi" : ""),
+    totalSksLulus: (value) => (!value ? "Total SKS lulus harus diisi" : ""),
+    sksAmbil: (value) => (!value ? "SKS ambil harus diisi" : ""),
+    sksMengulang: (value) => (!value ? "SKS mengulang harus diisi" : ""),
+    deskripsi: (value) => (!value ? "Deskripsi harus diisi" : ""),
+    dosenPembimbing1: (value) =>
+      !value ? "Dosen pembimbing 1 harus diisi" : "",
+  };
+
+  const { values, errors, handleChange, validateForm, resetForm } = useForm(
+    initialState,
+    validationRules
+  );
+
+  const { currentUser, handleOpenSnackBar } = useAppStore((state) => state);
 
   // File map
   const FILE_MAP = {
@@ -106,65 +102,66 @@ export default function CreatePengajuan() {
     fetchDataDosen();
   }, []);
 
-  const handleFormSubmit = async () => {
-    try {
-      // Upload files
-      const fileData = {};
-      for (const [inputName, input] of Object.entries(fileInputs)) {
-        const { file } = input;
-        if (file) {
-          const fileName = FILE_MAP[inputName];
-          if (fileName) {
-            try {
-              let path = `user/${currentUser.uid}/raw/${fileName}`;
-              await uploadFile(file, path);
-              fileData[inputName] = path; // Store filepath
-            } catch (error) {
-              console.error(`Failed to upload file '${fileName}', ${error}`);
-              // Handle the error here (e.g., show an error message to the user)
+  const handleFormSubmit = async (e) => {
+    e.preventDefault();
+
+    const isValid = validateForm();
+
+    if (isValid) {
+      try {
+        // Upload files
+        const fileData = {};
+        for (const [inputName, input] of Object.entries(fileInputs)) {
+          const { file } = input;
+          if (file) {
+            const fileName = FILE_MAP[inputName];
+            if (fileName) {
+              try {
+                let path = `user/${currentUser.uid}/raw/${fileName}`;
+                await uploadFile(file, path);
+                fileData[inputName] = path; // Store filepath
+              } catch (error) {
+                console.error(`Failed to upload file '${fileName}', ${error}`);
+                // Handle the error here (e.g., show an error message to the user)
+              }
             }
           }
         }
+
+        // Merge formValues with fileData
+        const dataToStore = {
+          ...values,
+          ...fileData,
+          ...currentUser,
+          status: "Pending",
+          timestamp: serverTimestamp(),
+        };
+
+        // Store merged data to Firestore
+        const success = await postData("pengajuan", dataToStore);
+        if (success) {
+          // Reset form
+          resetForm();
+
+          // Reset the file inputs and chip labels
+          setFileInputs((prevInputs) =>
+            Object.keys(prevInputs).reduce((acc, inputName) => {
+              acc[inputName] = { file: null, chipLabel: "" };
+              return acc;
+            }, {})
+          );
+
+          // Display snackbar
+          handleOpenSnackBar("Pengajuan berhasil dibuat!", "success");
+
+          // Redirect to pengajuan page
+          router.push("/pengajuan");
+        } else {
+          console.log("Failed to store data to Firestore");
+        }
+      } catch (error) {
+        console.error("Error:", error);
       }
-
-      // Merge formValues with fileData
-      const dataToStore = {
-        ...formValues,
-        ...fileData,
-        ...currentUser,
-        status: "Pending",
-        timestamp: serverTimestamp(),
-      };
-
-      // Store merged data to Firestore
-      const success = await postData("pengajuan", dataToStore);
-      if (success) {
-        // Reset form
-        setFormValues((prevValues) =>
-          Object.keys(prevValues).reduce((acc, inputName) => {
-            acc[inputName] = "";
-            return acc;
-          }, {})
-        );
-
-        // Reset the file inputs and chip labels
-        setFileInputs((prevInputs) =>
-          Object.keys(prevInputs).reduce((acc, inputName) => {
-            acc[inputName] = { file: null, chipLabel: "" };
-            return acc;
-          }, {})
-        );
-
-        // Display snackbar
-        handleOpenSnackBar("Pengajuan berhasil dibuat!", "success");
-
-        // Redirect to pengajuan page
-        router.push("/pengajuan");
-      } else {
-        console.log("Failed to store data to Firestore");
-      }
-    } catch (error) {
-      console.error("Error:", error);
     }
   };
 
@@ -221,9 +218,9 @@ export default function CreatePengajuan() {
                           label="Judul"
                           variant="outlined"
                           fullWidth
-                          value={judul}
+                          value={values.judul}
                           name="judul"
-                          onChange={handleInputChange}
+                          onChange={handleChange}
                         />
                       </TableCell>
                     </TableRow>
@@ -238,9 +235,9 @@ export default function CreatePengajuan() {
                           label="Total SKS Lulus"
                           variant="outlined"
                           fullWidth
-                          value={totalSksLulus}
+                          value={values.totalSksLulus}
                           name="totalSksLulus"
-                          onChange={handleInputChange}
+                          onChange={handleChange}
                         />
                       </TableCell>
                     </TableRow>
@@ -255,9 +252,9 @@ export default function CreatePengajuan() {
                           label="SKS Ambil Smt. Ini"
                           variant="outlined"
                           fullWidth
-                          value={sksAmbil}
+                          value={values.sksAmbil}
                           name="sksAmbil"
-                          onChange={handleInputChange}
+                          onChange={handleChange}
                         />
                       </TableCell>
                     </TableRow>
@@ -272,9 +269,9 @@ export default function CreatePengajuan() {
                           label="SKS Nilai D & E"
                           variant="outlined"
                           fullWidth
-                          value={sksMengulang}
+                          value={values.sksMengulang}
                           name="sksMengulang"
-                          onChange={handleInputChange}
+                          onChange={handleChange}
                         />
                       </TableCell>
                     </TableRow>
@@ -291,9 +288,9 @@ export default function CreatePengajuan() {
                           fullWidth
                           multiline
                           rows={4}
-                          value={deskripsi}
+                          value={values.deskripsi}
                           name="deskripsi"
-                          onChange={handleInputChange}
+                          onChange={handleChange}
                         />
                       </TableCell>
                     </TableRow>
@@ -305,9 +302,9 @@ export default function CreatePengajuan() {
                           label="Usulan Dosen Pembimbing 1"
                           helperText="Pilih Setidaknya 1 Dosen Pembimbing"
                           fullWidth
-                          value={dosenPembimbing1}
+                          value={values.dosenPembimbing1}
                           name="dosenPembimbing1"
-                          onChange={handleInputChange}
+                          onChange={handleChange}
                         >
                           {dosenDropdown &&
                             dosenDropdown.map((dosen) => (
@@ -329,9 +326,9 @@ export default function CreatePengajuan() {
                           select
                           label="Usulan Dosen Pembimbing 2"
                           fullWidth
-                          value={dosenPembimbing2}
+                          value={values.dosenPembimbing2}
                           name="dosenPembimbing2"
-                          onChange={handleInputChange}
+                          onChange={handleChange}
                         >
                           {dosenDropdown &&
                             dosenDropdown.map((dosen) => (
@@ -353,9 +350,9 @@ export default function CreatePengajuan() {
                           select
                           label="Usulan Dosen Pembimbing 3"
                           fullWidth
-                          value={dosenPembimbing3}
+                          value={values.dosenPembimbing3}
                           name="dosenPembimbing3"
-                          onChange={handleInputChange}
+                          onChange={handleChange}
                         >
                           {dosenDropdown &&
                             dosenDropdown.map((dosen) => (

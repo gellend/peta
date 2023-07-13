@@ -9,6 +9,11 @@ const useForm = (initialState, validationRules) => {
     setValues((prevValues) => ({ ...prevValues, [name]: value }));
   };
 
+  const resetForm = () => {
+    setValues(initialState);
+    setErrors({});
+  };
+
   const validateForm = () => {
     const newErrors = {};
     Object.entries(validationRules).forEach(([fieldName, validationFn]) => {
@@ -22,7 +27,7 @@ const useForm = (initialState, validationRules) => {
     return Object.keys(newErrors).length === 0;
   };
 
-  return { values, errors, handleChange, validateForm };
+  return { values, errors, handleChange, validateForm, resetForm };
 };
 
 export default useForm;
