@@ -53,7 +53,7 @@ export default function CreatePengajuan() {
     sksMengulang: (value) => (!value ? "SKS mengulang harus diisi" : ""),
     deskripsi: (value) => (!value ? "Deskripsi harus diisi" : ""),
     dosenPembimbing1: (value) =>
-      !value ? "Dosen pembimbing 1 harus diisi" : "",
+      !value ? "Minimal harus memiliki 1 dosen pembimbing" : "",
   };
 
   const { values, errors, handleChange, validateForm, resetForm } = useForm(
@@ -221,6 +221,8 @@ export default function CreatePengajuan() {
                           value={values.judul}
                           name="judul"
                           onChange={handleChange}
+                          error={!!errors.judul}
+                          helperText={errors.judul}
                         />
                       </TableCell>
                     </TableRow>
@@ -238,6 +240,8 @@ export default function CreatePengajuan() {
                           value={values.totalSksLulus}
                           name="totalSksLulus"
                           onChange={handleChange}
+                          error={!!errors.totalSksLulus}
+                          helperText={errors.totalSksLulus}
                         />
                       </TableCell>
                     </TableRow>
@@ -255,6 +259,8 @@ export default function CreatePengajuan() {
                           value={values.sksAmbil}
                           name="sksAmbil"
                           onChange={handleChange}
+                          error={!!errors.sksAmbil}
+                          helperText={errors.sksAmbil}
                         />
                       </TableCell>
                     </TableRow>
@@ -272,6 +278,8 @@ export default function CreatePengajuan() {
                           value={values.sksMengulang}
                           name="sksMengulang"
                           onChange={handleChange}
+                          error={!!errors.sksMengulang}
+                          helperText={errors.sksMengulang}
                         />
                       </TableCell>
                     </TableRow>
@@ -291,6 +299,8 @@ export default function CreatePengajuan() {
                           value={values.deskripsi}
                           name="deskripsi"
                           onChange={handleChange}
+                          error={!!errors.deskripsi}
+                          helperText={errors.deskripsi}
                         />
                       </TableCell>
                     </TableRow>
@@ -300,11 +310,12 @@ export default function CreatePengajuan() {
                           data-cy="input-dospem-1"
                           select
                           label="Usulan Dosen Pembimbing 1"
-                          helperText="Pilih Setidaknya 1 Dosen Pembimbing"
                           fullWidth
                           value={values.dosenPembimbing1}
                           name="dosenPembimbing1"
                           onChange={handleChange}
+                          error={!!errors.dosenPembimbing1}
+                          helperText={errors.dosenPembimbing1}
                         >
                           {dosenDropdown &&
                             dosenDropdown.map((dosen) => (
