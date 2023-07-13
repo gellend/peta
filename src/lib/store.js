@@ -54,8 +54,12 @@ export const getDataWithQuery = async (
 };
 
 export const getUserDataByEmail = async (email) => {
-  const rows = await getDataWithQuery("users", "email", "==", email, false);
-  return rows[0];
+  const rows = await getDataWithQuery("users", "email", "==", email);
+  const mappedRows = rows.map((row) => {
+    const { docId, ...rest } = row;
+    return { uid: docId, ...rest };
+  });
+  return mappedRows[0];
 };
 
 export const getUserDataByUid = async (uid) => {

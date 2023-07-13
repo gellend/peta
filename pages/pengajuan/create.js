@@ -21,21 +21,14 @@ import {
 import Navbar from "../../src/components/Navbar";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
-import {
-  getUserDataByEmail,
-  getUsersByRoles,
-  postData,
-} from "../../src/lib/store";
-import { observeAuthState } from "../../src/lib/auth";
+import { getUsersByRoles, postData } from "../../src/lib/store";
+import { getCurrentLoginUser } from "../../src/lib/auth";
 import { uploadFile } from "../../src/lib/upload";
 import { serverTimestamp } from "firebase/firestore";
 import useAppStore from "../../src/store/global";
 
 export default function CreatePengajuan() {
   const router = useRouter();
-
-  // User
-  const [userData, setUserData] = useState({});
 
   // Dosen dropdown
   const [dosenDropdown, setDosenDropdown] = useState([]);
@@ -52,7 +45,7 @@ export default function CreatePengajuan() {
     dosenPembimbing3: "",
   });
 
-  const { handleOpenSnackBar } = useAppStore((state) => state);
+  const { currentUser, handleOpenSnackBar } = useAppStore((state) => state);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -99,13 +92,6 @@ export default function CreatePengajuan() {
     }));
   };
 
-  const getCurrentLoginUser = async () => {
-    const user = await observeAuthState();
-    const userData = await getUserDataByEmail(user.email);
-
-    if (user || userData) setUserData({ ...user, ...userData });
-  };
-
   const fetchDataDosen = async () => {
     try {
       const data = await getUsersByRoles(["Dosen"]);
@@ -130,7 +116,7 @@ export default function CreatePengajuan() {
           const fileName = FILE_MAP[inputName];
           if (fileName) {
             try {
-              let path = `user/${userData.uid}/raw/${fileName}`;
+              let path = `user/${currentUser.uid}/raw/${fileName}`;
               await uploadFile(file, path);
               fileData[inputName] = path; // Store filepath
             } catch (error) {
@@ -145,10 +131,9 @@ export default function CreatePengajuan() {
       const dataToStore = {
         ...formValues,
         ...fileData,
-        ...userData,
+        ...currentUser,
         status: "Pending",
         timestamp: serverTimestamp(),
-        userId: userData.uid,
       };
 
       // Store merged data to Firestore
@@ -493,7 +478,7 @@ export default function CreatePengajuan() {
                             variant="contained"
                             component="label"
                           >
-                            Upload Sertifikat TOEFL (Jika Ada)
+                            Upload Sertifikat TOEFL
                             <input
                               hidden
                               accept=".pdf"
@@ -524,7 +509,7 @@ export default function CreatePengajuan() {
                             variant="contained"
                             component="label"
                           >
-                            Upload Sertifikat Kompetensi (Jika Ada)
+                            Upload Sertifikat Kompetensi
                             <input
                               hidden
                               accept=".pdf"
