@@ -29,7 +29,6 @@ export default function DetailPengajuan() {
 
   const getPengajuan = async (docId) => {
     const rows = await getDetailPengajuan(docId);
-    console.log(rows);
     setPengajuan(rows);
   };
 
@@ -117,35 +116,35 @@ export default function DetailPengajuan() {
                       label="KHS"
                       variant="outlined"
                       color="primary"
-                      onClick={() => downloadFile(pengajuan.khsFile)}
+                      onClick={() => downloadFile(pengajuan.khsFile, "khs.pdf")}
                     />
                     <Chip
                       icon={<Icon>download</Icon>}
                       label="FRS"
                       variant="outlined"
                       color="primary"
-                      onClick={() => console.log("ok")}
+                      onClick={() => downloadFile(pengajuan.frsFile, "frs.pdf")}
                     />
                     <Chip
                       icon={<Icon>download</Icon>}
                       label="Jalur Pra & Co"
                       variant="outlined"
                       color="primary"
-                      onClick={() => console.log("ok")}
+                      onClick={() => downloadFile(pengajuan.jalurPraCoFile, "jalurpraco.pdf")}
                     />
                     <Chip
                       icon={<Icon>download</Icon>}
                       label="TOEFL"
                       variant="outlined"
                       color="primary"
-                      onClick={() => console.log("ok")}
+                      onClick={() => downloadFile(pengajuan.toeflFile, "toefl.pdf")}
                     />
                     <Chip
                       icon={<Icon>download</Icon>}
                       label="Kompetensi"
                       variant="outlined"
                       color="primary"
-                      onClick={() => console.log("ok")}
+                      onClick={() => downloadFile(pengajuan.kompetensiFile, "kompetensi.pdf")}
                     />
                   </Stack>
                 </Stack>
