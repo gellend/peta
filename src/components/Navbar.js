@@ -240,7 +240,9 @@ export default function Navbar() {
               color="inherit"
               sx={{ ml: 2 }}
             >
-              <Avatar sx={{ width: 28, height: 28 }}>G</Avatar>
+              <Avatar sx={{ width: 28, height: 28 }}>
+                {currentUser?.nama?.charAt(0).toUpperCase()}
+              </Avatar>
             </IconButton>
           </Tooltip>
           <Menu
