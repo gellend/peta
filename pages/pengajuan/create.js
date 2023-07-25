@@ -27,7 +27,6 @@ import { uploadFile } from "../../src/lib/upload";
 import { serverTimestamp } from "firebase/firestore";
 import useAppStore from "../../src/store/global";
 import useForm from "../../src/helper/useForm";
-import html2pdf from "html2pdf.js";
 
 export default function CreatePengajuan() {
   const router = useRouter();
@@ -101,6 +100,17 @@ export default function CreatePengajuan() {
   useEffect(() => {
     getCurrentLoginUser();
     fetchDataDosen();
+  }, []);
+
+  useEffect(() => {
+    // Dynamically import html2pdf.js only on the client-side
+    const importHtml2pdf = async () => {
+      const html2pdf = (await import("html2pdf.js")).default;
+      // Add the html2pdf object to the window object so it's available globally
+      window.html2pdf = html2pdf;
+    };
+
+    importHtml2pdf();
   }, []);
 
   // Function to generate the PDF from HTML using html2pdf.js
