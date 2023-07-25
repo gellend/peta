@@ -27,6 +27,7 @@ import { uploadFile } from "../../src/lib/upload";
 import { serverTimestamp } from "firebase/firestore";
 import useAppStore from "../../src/store/global";
 import useForm from "../../src/helper/useForm";
+import html2pdf from "html2pdf.js";
 
 export default function CreatePengajuan() {
   const router = useRouter();
@@ -102,6 +103,63 @@ export default function CreatePengajuan() {
     fetchDataDosen();
   }, []);
 
+  // Function to generate the PDF from HTML using html2pdf.js
+  const generatePdf = async (html) => {
+    const options = {
+      margin: [10, 10],
+      filename: "pengajuan.pdf",
+      image: { type: "jpeg", quality: 0.98 },
+      html2canvas: { scale: 2 },
+      jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
+    };
+
+    return new Promise((resolve, reject) => {
+      html2pdf()
+        .from(html)
+        .set(options)
+        .toPdf()
+        .output("blob")
+        .then(resolve)
+        .catch(reject);
+    });
+  };
+
+  const generateFormAsHtml = (formData) => {
+    return `
+    <html>
+      <head>
+        <style>
+          /* Add any custom styling here */
+        </style>
+      </head>
+      <body>
+        <h2>Judul Tugas Akhir</h2>
+        <p>${formData.judul}</p>
+        <h2>Total SKS Lulus</h2>
+        <p>${formData.totalSksLulus}</p>
+        <h2>SKS Ambil Smt. Ini</h2>
+        <p>${formData.sksAmbil}</p>
+        <h2>SKS Nilai D & E</h2>
+        <p>${formData.sksMengulang}</p>
+        <h2>Deskripsi Singkat</h2>
+        <p>${formData.deskripsi}</p>
+        <h2>Usulan Dosen Pembimbing 1</h2>
+        <p>${getDosenName(formData.dosenPembimbing1)}</p>
+        <h2>Usulan Dosen Pembimbing 2</h2>
+        <p>${getDosenName(formData.dosenPembimbing2)}</p>
+        <h2>Usulan Dosen Pembimbing 3</h2>
+        <p>${getDosenName(formData.dosenPembimbing3)}</p>
+      </body>
+    </html>
+  `;
+  };
+
+  // Helper function to get Dosen name from the dropdown data
+  const getDosenName = (dosenId) => {
+    const dosen = dosenDropdown.find((dosen) => dosen.id === dosenId);
+    return dosen ? dosen.nama : "";
+  };
+
   const handleFormSubmit = async (e) => {
     e.preventDefault();
 
@@ -109,8 +167,23 @@ export default function CreatePengajuan() {
 
     if (isValid) {
       try {
-        // Upload files
         const fileData = {};
+
+        // Generate the PDF from form values
+        const formAsHtml = generateFormAsHtml(values); // Implement this function to generate the HTML representation of the form data
+        const pdfBlob = await generatePdf(formAsHtml);
+
+        // Upload the PDF to Firebase Storage
+        const pdfPath = `user/${currentUser.uid}/raw/pengajuan.pdf`;
+
+        try {
+          await uploadFile(pdfBlob, pdfPath);
+          fileData["pengajuanFile"] = pdfPath; // Store filepath
+        } catch (error) {
+          console.error(`Failed to upload file 'pengajuan.pdf', ${error}`);
+        }
+
+        // Upload files
         for (const [inputName, input] of Object.entries(fileInputs)) {
           const { file } = input;
           if (file) {

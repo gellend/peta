@@ -106,10 +106,12 @@ export default function DetailPengajuan() {
                   <Stack direction="row" spacing={1}>
                     <Chip
                       icon={<Icon>download</Icon>}
-                      label="Berkas Pengajuan"
+                      label="Pengajuan"
                       variant="outlined"
                       color="primary"
-                      onClick={() => console.log("ok")}
+                      onClick={() =>
+                        downloadFile(pengajuan.pengajuanFile, "pengajuan.pdf")
+                      }
                     />
                     <Chip
                       icon={<Icon>download</Icon>}
@@ -130,21 +132,27 @@ export default function DetailPengajuan() {
                       label="Jalur Pra & Co"
                       variant="outlined"
                       color="primary"
-                      onClick={() => downloadFile(pengajuan.jalurPraCoFile, "jalurpraco.pdf")}
+                      onClick={() =>
+                        downloadFile(pengajuan.jalurPraCoFile, "jalurpraco.pdf")
+                      }
                     />
                     <Chip
                       icon={<Icon>download</Icon>}
                       label="TOEFL"
                       variant="outlined"
                       color="primary"
-                      onClick={() => downloadFile(pengajuan.toeflFile, "toefl.pdf")}
+                      onClick={() =>
+                        downloadFile(pengajuan.toeflFile, "toefl.pdf")
+                      }
                     />
                     <Chip
                       icon={<Icon>download</Icon>}
                       label="Kompetensi"
                       variant="outlined"
                       color="primary"
-                      onClick={() => downloadFile(pengajuan.kompetensiFile, "kompetensi.pdf")}
+                      onClick={() =>
+                        downloadFile(pengajuan.kompetensiFile, "kompetensi.pdf")
+                      }
                     />
                   </Stack>
                 </Stack>
