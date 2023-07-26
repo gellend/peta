@@ -61,7 +61,9 @@ export default function CreatePengajuan() {
     validationRules
   );
 
-  const { currentUser, handleOpenSnackBar } = useAppStore((state) => state);
+  const { currentUser, setIsLoading, handleOpenSnackBar } = useAppStore(
+    (state) => state
+  );
 
   // File map
   const FILE_MAP = {
@@ -177,6 +179,7 @@ export default function CreatePengajuan() {
 
     if (isValid) {
       try {
+        setIsLoading(true);
         const fileData = {};
 
         // Generate the PDF from form values
@@ -244,6 +247,8 @@ export default function CreatePengajuan() {
         }
       } catch (error) {
         console.error("Error:", error);
+      } finally {
+        setIsLoading(false);
       }
     }
   };
