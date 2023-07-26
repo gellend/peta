@@ -180,67 +180,25 @@ export default function CreatePengajuan() {
     if (isValid) {
       try {
         setIsLoading(true);
-        const fileData = {};
+        const pdfPath = await uploadPdfToStorage();
+        const fileData = await uploadFilesToStorage();
+        const mergedData = mergeFormAndFileData(pdfPath, fileData);
 
-        // Generate the PDF from form values
-        const formAsHtml = generateFormAsHtml(values); // Implement this function to generate the HTML representation of the form data
-        const pdfBlob = await generatePdf(formAsHtml);
+        const success = await storeDataToFirestore(mergedData);
 
-        // Upload the PDF to Firebase Storage
-        const pdfPath = `user/${currentUser.uid}/raw/pengajuan.pdf`;
-
-        try {
-          await uploadFile(pdfBlob, pdfPath);
-          fileData["pengajuanFile"] = pdfPath; // Store filepath
-        } catch (error) {
-          console.error(`Failed to upload file 'pengajuan.pdf', ${error}`);
-        }
-
-        // Upload files
-        for (const [inputName, input] of Object.entries(fileInputs)) {
-          const { file } = input;
-          if (file) {
-            const fileName = FILE_MAP[inputName];
-            if (fileName) {
-              try {
-                let path = `user/${currentUser.uid}/raw/${fileName}`;
-                await uploadFile(file, path);
-                fileData[inputName] = path; // Store filepath
-              } catch (error) {
-                console.error(`Failed to upload file '${fileName}', ${error}`);
-                // Handle the error here (e.g., show an error message to the user)
-              }
-            }
-          }
-        }
-
-        // Merge formValues with fileData
-        const dataToStore = {
-          ...values,
-          ...fileData,
-          ...currentUser,
-          status: "Pending",
-          timestamp: serverTimestamp(),
-        };
-
-        // Store merged data to Firestore
-        const success = await postData("pengajuan", dataToStore);
         if (success) {
-          // Reset form
+          // Reset form and file inputs
           resetForm();
+          setFileInputs((prevInputs) => ({
+            ...Object.fromEntries(
+              Object.keys(prevInputs).map((name) => [
+                name,
+                { file: null, chipLabel: "" },
+              ])
+            ),
+          }));
 
-          // Reset the file inputs and chip labels
-          setFileInputs((prevInputs) =>
-            Object.keys(prevInputs).reduce((acc, inputName) => {
-              acc[inputName] = { file: null, chipLabel: "" };
-              return acc;
-            }, {})
-          );
-
-          // Display snackbar
           handleOpenSnackBar("Pengajuan berhasil dibuat!", "success");
-
-          // Redirect to pengajuan page
           router.push("/pengajuan");
         } else {
           console.log("Failed to store data to Firestore");
@@ -250,6 +208,68 @@ export default function CreatePengajuan() {
       } finally {
         setIsLoading(false);
       }
+    }
+  };
+
+  // Helper function to upload the generated PDF to Firebase Storage
+  const uploadPdfToStorage = async () => {
+    const formAsHtml = generateFormAsHtml(values);
+    const pdfBlob = await generatePdf(formAsHtml);
+    const pdfPath = `user/${currentUser.uid}/raw/pengajuan.pdf`;
+
+    try {
+      await uploadFile(pdfBlob, pdfPath);
+      return pdfPath;
+    } catch (error) {
+      console.error(`Failed to upload file 'pengajuan.pdf', ${error}`);
+      throw error; // Rethrow the error to handle it in the main function
+    }
+  };
+
+  // Helper function to upload each file to Firebase Storage
+  const uploadFilesToStorage = async () => {
+    const fileData = {};
+
+    for (const [inputName, input] of Object.entries(fileInputs)) {
+      const { file } = input;
+      if (file) {
+        const fileName = FILE_MAP[inputName];
+        if (fileName) {
+          try {
+            const path = `user/${currentUser.uid}/raw/${fileName}`;
+            await uploadFile(file, path);
+            fileData[inputName] = path;
+          } catch (error) {
+            console.error(`Failed to upload file '${fileName}', ${error}`);
+            // Handle the error here (e.g., show an error message to the user)
+          }
+        }
+      }
+    }
+
+    return fileData;
+  };
+
+  // Helper function to merge form data with file data and other necessary data
+  const mergeFormAndFileData = (pdfPath, fileData) => {
+    return {
+      ...values,
+      ...fileData,
+      pengajuanFile: pdfPath,
+      ...currentUser,
+      status: "Pending",
+      timestamp: serverTimestamp(),
+    };
+  };
+
+  // Helper function to store merged data to Firestore
+  const storeDataToFirestore = async (dataToStore) => {
+    try {
+      const success = await postData("pengajuan", dataToStore);
+      return success;
+    } catch (error) {
+      console.error("Failed to store data to Firestore", error);
+      return false;
     }
   };
 
