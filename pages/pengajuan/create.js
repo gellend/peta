@@ -20,7 +20,7 @@ import {
 
 import Navbar from "../../src/components/Navbar";
 import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { getUsersByRoles, postData } from "../../src/lib/store";
 import { getCurrentLoginUser } from "../../src/lib/auth";
 import { uploadFile } from "../../src/lib/upload";
@@ -136,7 +136,7 @@ export default function CreatePengajuan() {
     });
   };
 
-  const generateFormAsHtml = (formData) => {
+  const generateFormAsHtml = (formData, signature) => {
     return `
     <html>
       <head>
@@ -161,6 +161,8 @@ export default function CreatePengajuan() {
         <p>${getDosenName(formData.dosenPembimbing2)}</p>
         <h2>Usulan Dosen Pembimbing 3</h2>
         <p>${getDosenName(formData.dosenPembimbing3)}</p>
+        <h2>Signature</h2>
+        <img src="${signature}" alt="Signature" />
       </body>
     </html>
   `;
@@ -180,7 +182,7 @@ export default function CreatePengajuan() {
     if (isValid) {
       try {
         setIsLoading(true);
-        const pdfPath = await uploadPdfToStorage();
+        const pdfPath = await uploadPdfToStorage(signature);
         const fileData = await uploadFilesToStorage();
         const mergedData = mergeFormAndFileData(pdfPath, fileData);
 
@@ -212,8 +214,8 @@ export default function CreatePengajuan() {
   };
 
   // Helper function to upload the generated PDF to Firebase Storage
-  const uploadPdfToStorage = async () => {
-    const formAsHtml = generateFormAsHtml(values);
+  const uploadPdfToStorage = async (signature) => {
+    const formAsHtml = generateFormAsHtml(values, signature);
     const pdfBlob = await generatePdf(formAsHtml);
     const pdfPath = `user/${currentUser.uid}/raw/pengajuan.pdf`;
 
@@ -271,6 +273,55 @@ export default function CreatePengajuan() {
       console.error("Failed to store data to Firestore", error);
       return false;
     }
+  };
+
+  // Signature states
+  const [signature, setSignature] = useState(null);
+  const canvasRef = useRef(null);
+  const isDrawing = useRef(false);
+
+  // Function to clear the signature
+  const clearSignature = () => {
+    const canvas = canvasRef.current;
+    const ctx = canvas.getContext("2d");
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    setSignature(null);
+  };
+
+  // Function to save the signature as an image (you can also use toDataURL)
+  const saveSignature = () => {
+    const canvas = canvasRef.current;
+    const signatureImage = canvas.toDataURL(); // This will give you the signature as a base64 data URI
+    setSignature(signatureImage);
+  };
+
+  // Function to handle mouse down event on the canvas
+  const handleMouseDown = (e) => {
+    isDrawing.current = true;
+    const canvas = canvasRef.current;
+    const ctx = canvas.getContext("2d");
+    const rect = canvas.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    ctx.beginPath();
+    ctx.moveTo(x, y);
+  };
+
+  // Function to handle mouse move event on the canvas
+  const handleMouseMove = (e) => {
+    if (!isDrawing.current) return;
+    const canvas = canvasRef.current;
+    const ctx = canvas.getContext("2d");
+    const rect = canvas.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    ctx.lineTo(x, y);
+    ctx.stroke();
+  };
+
+  // Function to handle mouse up event on the canvas
+  const handleMouseUp = () => {
+    isDrawing.current = false;
   };
 
   return (
@@ -644,6 +695,37 @@ export default function CreatePengajuan() {
                               variant="outlined"
                             />
                           )}
+                        </Stack>
+                      </TableCell>
+                    </TableRow>
+                    <TableRow>
+                      <TableCell>
+                        <Stack direction="row" spacing={2} alignItems="center">
+                          {/* Signature Canvas */}
+                          <canvas
+                            ref={canvasRef}
+                            width={400}
+                            height={200}
+                            style={{ border: "1px solid black" }}
+                            onMouseDown={handleMouseDown}
+                            onMouseMove={handleMouseMove}
+                            onMouseUp={handleMouseUp}
+                          />
+                          {/* Buttons for signature */}
+                          <Button
+                            data-cy="button-clear-signature"
+                            variant="contained"
+                            onClick={clearSignature}
+                          >
+                            Clear
+                          </Button>
+                          <Button
+                            data-cy="button-save-signature"
+                            variant="contained"
+                            onClick={saveSignature}
+                          >
+                            Save
+                          </Button>
                         </Stack>
                       </TableCell>
                     </TableRow>
