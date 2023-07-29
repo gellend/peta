@@ -18,6 +18,7 @@ import {
   TableRow,
 } from "@mui/material";
 import { PDFDocument } from "pdf-lib";
+import SignatureCanvas from "react-signature-canvas";
 
 import Navbar from "../../src/components/Navbar";
 import { useRouter } from "next/router";
@@ -272,51 +273,18 @@ export default function CreatePengajuan() {
 
   // Signature states
   const [signature, setSignature] = useState(null);
-  const canvasRef = useRef(null);
-  const isDrawing = useRef(false);
+  const signatureCanvasRef = useRef();
 
   // Function to clear the signature
   const clearSignature = () => {
-    const canvas = canvasRef.current;
-    const ctx = canvas.getContext("2d");
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    signatureCanvasRef.current.clear();
     setSignature(null);
   };
 
   // Function to save the signature as an image (you can also use toDataURL)
   const saveSignature = () => {
-    const canvas = canvasRef.current;
-    const signatureImage = canvas.toDataURL(); // This will give you the signature as a base64 data URI
+    const signatureImage = signatureCanvasRef.current.toDataURL();
     setSignature(signatureImage);
-  };
-
-  // Function to handle mouse down event on the canvas
-  const handleMouseDown = (e) => {
-    isDrawing.current = true;
-    const canvas = canvasRef.current;
-    const ctx = canvas.getContext("2d");
-    const rect = canvas.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
-    ctx.beginPath();
-    ctx.moveTo(x, y);
-  };
-
-  // Function to handle mouse move event on the canvas
-  const handleMouseMove = (e) => {
-    if (!isDrawing.current) return;
-    const canvas = canvasRef.current;
-    const ctx = canvas.getContext("2d");
-    const rect = canvas.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
-    ctx.lineTo(x, y);
-    ctx.stroke();
-  };
-
-  // Function to handle mouse up event on the canvas
-  const handleMouseUp = () => {
-    isDrawing.current = false;
   };
 
   return (
@@ -695,32 +663,37 @@ export default function CreatePengajuan() {
                     </TableRow>
                     <TableRow>
                       <TableCell>
-                        <Stack direction="row" spacing={2} alignItems="center">
-                          {/* Signature Canvas */}
-                          <canvas
-                            ref={canvasRef}
-                            width={400}
-                            height={200}
-                            style={{ border: "1px solid black" }}
-                            onMouseDown={handleMouseDown}
-                            onMouseMove={handleMouseMove}
-                            onMouseUp={handleMouseUp}
-                          />
-                          {/* Buttons for signature */}
-                          <Button
-                            data-cy="button-clear-signature"
-                            variant="contained"
-                            onClick={clearSignature}
-                          >
-                            Clear
-                          </Button>
-                          <Button
-                            data-cy="button-save-signature"
-                            variant="contained"
-                            onClick={saveSignature}
-                          >
-                            Save
-                          </Button>
+                        <Stack direction="column" spacing={2} alignItems="left">
+                          <Typography variant="subtitle2">
+                            Tanda tangan
+                          </Typography>
+                          <div style={{ border: "1px solid black" }}>
+                            <SignatureCanvas
+                              ref={signatureCanvasRef}
+                              penColor="black"
+                              canvasProps={{
+                                width: 400,
+                                height: 200,
+                              }}
+                            />
+                          </div>
+
+                          <Stack direction="row" spacing={2}>
+                            <Button
+                              data-cy="button-clear-signature"
+                              variant="contained"
+                              onClick={clearSignature}
+                            >
+                              Hapus
+                            </Button>
+                            <Button
+                              data-cy="button-save-signature"
+                              variant="contained"
+                              onClick={saveSignature}
+                            >
+                              Simpan
+                            </Button>
+                          </Stack>
                         </Stack>
                       </TableCell>
                     </TableRow>
