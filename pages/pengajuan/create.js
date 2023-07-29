@@ -17,6 +17,7 @@ import {
   TableCell,
   TableRow,
 } from "@mui/material";
+import { PDFDocument } from "pdf-lib";
 
 import Navbar from "../../src/components/Navbar";
 import { useRouter } from "next/router";
@@ -104,68 +105,63 @@ export default function CreatePengajuan() {
     fetchDataDosen();
   }, []);
 
-  useEffect(() => {
-    // Dynamically import html2pdf.js only on the client-side
-    const importHtml2pdf = async () => {
-      const html2pdf = (await import("html2pdf.js")).default;
-      // Add the html2pdf object to the window object so it's available globally
-      window.html2pdf = html2pdf;
+  // Function to generate the PDF
+  const generatePdf = async (formData, signature) => {
+    const pdfDoc = await PDFDocument.create();
+    const page = pdfDoc.addPage();
+
+    const { width, height } = page.getSize();
+    const margin = 50;
+    const textHeight = 20;
+
+    const drawText = (x, y, text, options = {}) => {
+      page.drawText(text, {
+        x: x + margin,
+        y: height - y - margin,
+        ...options,
+      });
     };
 
-    importHtml2pdf();
-  }, []);
+    // Draw the form data and signature on the PDF
+    drawText(0, 0, "Judul Tugas Akhir:");
+    drawText(0, textHeight, formData.judul);
 
-  // Function to generate the PDF from HTML using html2pdf.js
-  const generatePdf = async (html) => {
-    const options = {
-      margin: [10, 10],
-      filename: "pengajuan.pdf",
-      image: { type: "jpeg", quality: 0.98 },
-      html2canvas: { scale: 2 },
-      jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
-    };
+    drawText(0, textHeight * 3, "Total SKS Lulus:");
+    drawText(0, textHeight * 4, formData.totalSksLulus);
 
-    return new Promise((resolve, reject) => {
-      html2pdf()
-        .from(html)
-        .set(options)
-        .toPdf()
-        .output("blob")
-        .then(resolve)
-        .catch(reject);
-    });
-  };
+    drawText(0, textHeight * 6, "SKS Ambil:");
+    drawText(0, textHeight * 7, formData.sksAmbil);
 
-  const generateFormAsHtml = (formData, signature) => {
-    return `
-    <html>
-      <head>
-        <style>
-          /* Add any custom styling here */
-        </style>
-      </head>
-      <body>
-        <h2>Judul Tugas Akhir</h2>
-        <p>${formData.judul}</p>
-        <h2>Total SKS Lulus</h2>
-        <p>${formData.totalSksLulus}</p>
-        <h2>SKS Ambil Smt. Ini</h2>
-        <p>${formData.sksAmbil}</p>
-        <h2>SKS Nilai D & E</h2>
-        <p>${formData.sksMengulang}</p>
-        <h2>Deskripsi Singkat</h2>
-        <p>${formData.deskripsi}</p>
-        <h2>Usulan Dosen Pembimbing 1</h2>
-        <p>${getDosenName(formData.dosenPembimbing1)}</p>
-        <h2>Usulan Dosen Pembimbing 2</h2>
-        <p>${getDosenName(formData.dosenPembimbing2)}</p>
-        <h2>Usulan Dosen Pembimbing 3</h2>
-        <p>${getDosenName(formData.dosenPembimbing3)}</p>
-        <h2>Signature</h2>
-        <img src="${signature}" alt="Signature" />
-      </body>
-    </html>
-  `;
+    drawText(0, textHeight * 9, "SKS Mengulang:");
+    drawText(0, textHeight * 10, formData.sksMengulang);
+
+    drawText(0, textHeight * 12, "Deskripsi:");
+    drawText(0, textHeight * 13, formData.deskripsi);
+
+    drawText(0, textHeight * 15, "Dosen Pembimbing 1:");
+    drawText(0, textHeight * 16, getDosenName(formData.dosenPembimbing1));
+
+    drawText(0, textHeight * 18, "Dosen Pembimbing 2:");
+    drawText(0, textHeight * 19, getDosenName(formData.dosenPembimbing2));
+
+    drawText(0, textHeight * 21, "Dosen Pembimbing 3:");
+    drawText(0, textHeight * 22, getDosenName(formData.dosenPembimbing3));
+
+    // Draw the signature image
+    if (signature) {
+      const signatureImage = await pdfDoc.embedPng(signature);
+      const imageSize = { width: 100, height: 50 };
+      page.drawImage(signatureImage, {
+        x: width - imageSize.width - margin,
+        y: margin,
+        width: imageSize.width,
+        height: imageSize.height,
+      });
+    }
+
+    // Save the PDF to a blob
+    const pdfBytes = await pdfDoc.save();
+    return new Blob([pdfBytes], { type: "application/pdf" });
   };
 
   // Helper function to get Dosen name from the dropdown data
@@ -215,12 +211,11 @@ export default function CreatePengajuan() {
 
   // Helper function to upload the generated PDF to Firebase Storage
   const uploadPdfToStorage = async (signature) => {
-    const formAsHtml = generateFormAsHtml(values, signature);
-    const pdfBlob = await generatePdf(formAsHtml);
+    const formPdfBlob = await generatePdf(values, signature);
     const pdfPath = `user/${currentUser.uid}/raw/pengajuan.pdf`;
 
     try {
-      await uploadFile(pdfBlob, pdfPath);
+      await uploadFile(formPdfBlob, pdfPath);
       return pdfPath;
     } catch (error) {
       console.error(`Failed to upload file 'pengajuan.pdf', ${error}`);
