@@ -1,10 +1,39 @@
-import { useEffect } from "react";
-import socketInitializer from "../src/lib/socket";
+import { useEffect, useState } from "react";
+import io from "socket.io-client";
+let socket;
 
-export default function TestSocket() {
+const TestSocket = () => {
+  const [input, setInput] = useState("");
+
   useEffect(() => {
-    socketInitializer();
+    const socketSetup = async () => {
+      await fetch("/api/socket");
+      socket = io();
+
+      socket.on("connect", () => {
+        console.log("connected");
+      });
+
+      socket.on("update-input", (msg) => {
+        setInput(msg);
+      });
+    };
+
+    socketSetup();
   }, []);
 
-  return <h1>Hello Socket.io</h1>;
-}
+  const onChangeHandler = (e) => {
+    setInput(e.target.value);
+    socket.emit("input-change", e.target.value);
+  };
+
+  return (
+    <input
+      placeholder="Type something"
+      value={input}
+      onChange={onChangeHandler}
+    />
+  );
+};
+
+export default TestSocket;
