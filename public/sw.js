@@ -6,10 +6,12 @@ self.addEventListener("install", function (event) {
 
 self.addEventListener("push", function (event) {
   if (event.data) {
+    let message = event.data.json().msg;
+
     let options = {
-      body: event.data.text(),
+      body: message.body,
     };
 
-    self.registration.showNotification("Test Push", options);
+    self.registration.showNotification(message.title, options);
   }
 });
