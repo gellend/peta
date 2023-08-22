@@ -199,6 +199,8 @@ export default function CreatePengajuan() {
 
           handleOpenSnackBar("Pengajuan berhasil dibuat!", "success");
           router.push("/pengajuan");
+
+          // Send push notification
         } else {
           console.log("Failed to store data to Firestore");
         }
