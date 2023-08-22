@@ -23,12 +23,19 @@ import SignatureCanvas from "react-signature-canvas";
 import Navbar from "../../src/components/Navbar";
 import { useRouter } from "next/router";
 import { useEffect, useState, useRef } from "react";
-import { getUsersByRoles, postData } from "../../src/lib/store";
+import {
+  getPushSubscription,
+  getUsersByRoles,
+  postData,
+} from "../../src/lib/store";
 import { getCurrentLoginUser } from "../../src/lib/auth";
 import { uploadFile } from "../../src/lib/upload";
 import { serverTimestamp } from "firebase/firestore";
 import useAppStore from "../../src/store/global";
 import useForm from "../../src/helper/useForm";
+import io from "socket.io-client";
+
+let socket;
 
 export default function CreatePengajuan() {
   const router = useRouter();
@@ -104,6 +111,17 @@ export default function CreatePengajuan() {
   useEffect(() => {
     getCurrentLoginUser();
     fetchDataDosen();
+
+    const socketSetup = async () => {
+      await fetch("/api/socket");
+      socket = io();
+
+      socket.on("connect", () => {
+        console.log("connected");
+      });
+    };
+
+    socketSetup();
   }, []);
 
   // Function to generate the PDF
@@ -201,6 +219,21 @@ export default function CreatePengajuan() {
           router.push("/pengajuan");
 
           // Send push notification
+          let dosenPembimbing1 = dosenDropdown.find(
+            (dosen) => dosen.id === values.dosenPembimbing1
+          );
+
+          const data = await getPushSubscription(dosenPembimbing1.docId);
+          const subscription = data.subscription;
+          console.log("subscription", subscription);
+
+          if (subscription) {
+            socket.emit("send-notification", {
+              title: "Hello",
+              body: "This is a notification",
+              subscription: JSON.stringify(subscription),
+            });
+          }
         } else {
           console.log("Failed to store data to Firestore");
         }

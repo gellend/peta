@@ -72,16 +72,6 @@ export const getUserDataByUid = async (uid) => {
   }
 };
 
-export const getUserPushSubscriptionByUid = async (uid) => {
-  try {
-    const user = await getDoc(doc(db, "subscription", uid));
-    return user.data();
-  } catch (error) {
-    console.error("getUserDataByUid:", error);
-    throw error;
-  }
-};
-
 export const getUsersByRoles = async (roles) => {
   try {
     const users = await getDataWithQuery("users", "role", "in", roles);
