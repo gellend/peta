@@ -17,6 +17,8 @@ import useForm from "../src/helper/useForm";
 import useAppStore from "../src/store/global";
 import { getCurrentLoginUser, auth } from "../src/lib/auth";
 import config from "../src/const/config.json";
+import { getPushSubscription, storePushSubscription } from "../src/lib/store";
+import { urlBase64ToUint8Array } from "../src/lib/converter";
 
 export default function LogIn() {
   const router = useRouter();
@@ -44,6 +46,46 @@ export default function LogIn() {
   const { currentUser, fetchCurrentUser, handleOpenSnackBar, setIsLoading } =
     useAppStore((state) => state);
 
+  // Handle push notification subscription
+  const handlePushSubscription = async (uid) => {
+    const pushSubscription = await getPushSubscription(uid);
+
+    if (pushSubscription) {
+      localStorage.setItem("pushSubscription", pushSubscription.subscription);
+      return;
+    }
+
+    try {
+      if ("serviceWorker" in navigator) {
+        const registration = await navigator.serviceWorker.ready;
+        const subscription = await registration.pushManager.subscribe({
+          userVisibleOnly: true,
+          applicationServerKey: urlBase64ToUint8Array(
+            "BOh_S4oYQixcLVaX_7bAT5XJvblY5-hPCCz_T0fiQTp1gsi8nJ7rnrcEjZta_ZzzS8rySimDtuuSttdRe6fMKic"
+          ),
+        });
+
+        // save to firebase
+        const res = await storePushSubscription(
+          uid,
+          JSON.stringify(subscription)
+        );
+
+        if (res) {
+          // save to local storage
+          localStorage.setItem(
+            "pushSubscription",
+            JSON.stringify(subscription)
+          );
+
+          console.info("Push subscription successful!");
+        }
+      }
+    } catch (err) {
+      console.error("push subscription err", err);
+    }
+  };
+
   // Check if user is already logged in
   useEffect(() => {
     getCurrentLoginUser(false);
@@ -56,7 +98,10 @@ export default function LogIn() {
   };
 
   useEffect(() => {
-    if (currentUser) redirectUser(currentUser.role);
+    if (currentUser) {
+      redirectUser(currentUser.role);
+      handlePushSubscription(currentUser.uid);
+    }
   }, [currentUser]);
 
   const handleSubmit = async (e) => {

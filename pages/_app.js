@@ -8,7 +8,6 @@ import CustomSnackbar from "../src/components/CustomSnackbar";
 import useAppStore from "../src/store/global";
 import { Backdrop, CircularProgress } from "@mui/material";
 import { useEffect } from "react";
-import { urlBase64ToUint8Array } from "../src/lib/converter";
 
 // Client-side cache, shared for the whole session of the user in the browser.
 const clientSideEmotionCache = createEmotionCache();
@@ -38,11 +37,6 @@ export default function MyApp(props) {
     const requestNotificationPermission = async () => {
       try {
         if ("PushManager" in window) {
-          console.info(
-            "Push notification status: ",
-            window.Notification.permission
-          );
-
           // check if already granted
           if (window.Notification.permission === "granted") return;
 
@@ -53,36 +47,8 @@ export default function MyApp(props) {
       }
     };
 
-    const handlePushSubscription = async () => {
-      // check if already subscribed
-      if (localStorage.getItem("pushSubscription")) return;
-
-      try {
-        if ("serviceWorker" in navigator) {
-          const registration = await navigator.serviceWorker.ready;
-          const subscription = await registration.pushManager.subscribe({
-            userVisibleOnly: true,
-            applicationServerKey: urlBase64ToUint8Array(
-              "BOh_S4oYQixcLVaX_7bAT5XJvblY5-hPCCz_T0fiQTp1gsi8nJ7rnrcEjZta_ZzzS8rySimDtuuSttdRe6fMKic"
-            ),
-          });
-
-          // save to local storage
-          localStorage.setItem(
-            "pushSubscription",
-            JSON.stringify(subscription)
-          );
-
-          console.info("Push subscription successful!");
-        }
-      } catch (err) {
-        console.error("push subscription err", err);
-      }
-    };
-
     registerServiceWorker();
     requestNotificationPermission();
-    handlePushSubscription();
   }, []);
 
   return (

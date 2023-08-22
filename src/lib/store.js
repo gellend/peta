@@ -104,3 +104,31 @@ export const getDetailPengajuan = async (docId) => {
   );
   return rows[0];
 };
+
+// Store user's push subscription in Firestore
+export const storePushSubscription = async (userId, subscription) => {
+  try {
+    const documentRef = doc(db, "subscriptions", userId);
+    await setDoc(documentRef, { subscription });
+    return true;
+  } catch (error) {
+    console.error("storePushSubscription:", error);
+    return false;
+  }
+};
+
+export const getPushSubscription = async (userId) => {
+  try {
+    const rows = await getDataWithQuery(
+      "subscriptions",
+      documentId(),
+      "==",
+      userId,
+      false
+    );
+    return rows[0];
+  } catch (error) {
+    console.error("getPushSubscription:", error);
+    return null;
+  }
+};
