@@ -35,8 +35,14 @@ jobs:
           NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID: ${{ secrets.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID }}
           NEXT_PUBLIC_FIREBASE_APP_ID: ${{ secrets.NEXT_PUBLIC_FIREBASE_APP_ID }}
 
+      - name: Create temporary directory
+        run: mkdir temp
+
+      - name: Move files to temporary directory
+        run: mv * temp/
+
       - name: Create archive
-        run: tar -czf node-app.tar.gz .
+        run: tar --exclude=node_modules --exclude=.git -czf node-app.tar.gz -C temp .
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v2
