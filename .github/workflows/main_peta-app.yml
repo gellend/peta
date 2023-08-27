@@ -35,11 +35,14 @@ jobs:
           NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID: ${{ secrets.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID }}
           NEXT_PUBLIC_FIREBASE_APP_ID: ${{ secrets.NEXT_PUBLIC_FIREBASE_APP_ID }}
 
+      - name: Create archive
+        run: tar -czf node-app.tar.gz .
+
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v2
         with:
           name: node-app
-          path: .
+          path: node-app.tar.gz
 
   deploy:
     runs-on: ubuntu-latest
@@ -53,6 +56,9 @@ jobs:
         uses: actions/download-artifact@v2
         with:
           name: node-app
+
+      - name: Extract archive
+        run: tar -xzf node-app.tar.gz
 
       - name: "Deploy to Azure Web App"
         id: deploy-to-webapp
