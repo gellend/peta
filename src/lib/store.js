@@ -74,13 +74,7 @@ export const getUserDataByUid = async (uid) => {
 
 export const getUsersByRoles = async (roles) => {
   try {
-    const q = query(collection(db, "users"), where("role", "in", roles));
-    const querySnapshot = await getDocs(q);
-    const users = [];
-
-    querySnapshot.forEach((doc) => {
-      users.push(doc.data());
-    });
+    const users = await getDataWithQuery("users", "role", "in", roles);
 
     return users;
   } catch (error) {
@@ -103,4 +97,32 @@ export const getDetailPengajuan = async (docId) => {
     true
   );
   return rows[0];
+};
+
+// Store user's push subscription in Firestore
+export const storePushSubscription = async (userId, subscription) => {
+  try {
+    const documentRef = doc(db, "subscriptions", userId);
+    await setDoc(documentRef, { subscription });
+    return true;
+  } catch (error) {
+    console.error("storePushSubscription:", error);
+    return false;
+  }
+};
+
+export const getPushSubscription = async (userId) => {
+  try {
+    const rows = await getDataWithQuery(
+      "subscriptions",
+      documentId(),
+      "==",
+      userId,
+      false
+    );
+    return rows[0];
+  } catch (error) {
+    console.error("getPushSubscription:", error);
+    return null;
+  }
 };

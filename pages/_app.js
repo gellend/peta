@@ -1,13 +1,13 @@
 import { CacheProvider } from "@emotion/react";
 import CssBaseline from "@mui/material/CssBaseline";
 import Head from "next/head";
-import PropTypes from "prop-types";
 import { ThemeProvider } from "@mui/material/styles";
 import createEmotionCache from "../src/createEmotionCache";
 import theme from "../src/theme";
 import CustomSnackbar from "../src/components/CustomSnackbar";
 import useAppStore from "../src/store/global";
 import { Backdrop, CircularProgress } from "@mui/material";
+import { useEffect } from "react";
 
 // Client-side cache, shared for the whole session of the user in the browser.
 const clientSideEmotionCache = createEmotionCache();
@@ -17,6 +17,39 @@ export default function MyApp(props) {
   const { snackbarData, handleCloseSnackBar, isLoading } = useAppStore(
     (state) => state
   );
+
+  useEffect(() => {
+    const registerServiceWorker = async () => {
+      try {
+        if ("serviceWorker" in navigator) {
+          // check if already registered
+          const registration = await navigator.serviceWorker.getRegistration();
+          if (registration) return;
+
+          await navigator.serviceWorker.register("/sw.js");
+          console.info("Service worker successfully registered!");
+        }
+      } catch (err) {
+        console.error("Service worker registration failed:", err);
+      }
+    };
+
+    const requestNotificationPermission = async () => {
+      try {
+        if ("PushManager" in window) {
+          // check if already granted
+          if (window.Notification.permission === "granted") return;
+
+          await window.Notification.requestPermission();
+        }
+      } catch (err) {
+        console.error("push notification err", err);
+      }
+    };
+
+    registerServiceWorker();
+    requestNotificationPermission();
+  }, []);
 
   return (
     <CacheProvider value={emotionCache}>
@@ -44,9 +77,3 @@ export default function MyApp(props) {
     </CacheProvider>
   );
 }
-
-MyApp.propTypes = {
-  Component: PropTypes.elementType.isRequired,
-  emotionCache: PropTypes.object,
-  pageProps: PropTypes.object.isRequired,
-};

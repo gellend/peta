@@ -71,7 +71,7 @@ export default function Register() {
 
         const success = await postData("users", dataToStore, res.user.uid);
 
-        if (success) router.push("/pengajuan");
+        if (success) router.push("/");
       } catch (error) {
         handleOpenSnackBar(error.message, "error");
       }

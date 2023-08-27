@@ -1,3 +1,4 @@
+import { Button, Container, Stack, TextField } from "@mui/material";
 import { useEffect, useState } from "react";
 import io from "socket.io-client";
 let socket;
@@ -27,12 +28,27 @@ const TestSocket = () => {
     socket.emit("input-change", e.target.value);
   };
 
+  const handleSendNotification = () => {
+    socket.emit("send-notification", {
+      title: "Hello",
+      body: "This is a notification",
+      subscription: localStorage.getItem("pushSubscription"),
+    });
+  };
+
   return (
-    <input
-      placeholder="Type something"
-      value={input}
-      onChange={onChangeHandler}
-    />
+    <Container sx={{ maxWidth: "400px" }}>
+      <Stack direction="column">
+        <TextField
+          sx={{ my: 2 }}
+          placeholder="Type something"
+          value={input}
+          onChange={onChangeHandler}
+        />
+
+        <Button onClick={handleSendNotification}>Send Notification</Button>
+      </Stack>
+    </Container>
   );
 };
 
