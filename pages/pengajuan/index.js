@@ -11,7 +11,6 @@ import {
   TableHead,
   TableRow,
 } from "@mui/material";
-import Link from "next/link";
 import Navbar from "../../src/components/Navbar";
 import { useEffect, useState } from "react";
 import { getCurrentLoginUser } from "../../src/lib/auth";
@@ -56,14 +55,17 @@ export default function Pengajuan() {
       >
         <Toolbar />
         <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
-          <Button
-            data-cy="btn-ajukan-judul"
-            variant="contained"
-            onClick={() => router.push("/pengajuan/create")}
-            sx={{ mb: 3 }}
-          >
-            Ajukan Judul
-          </Button>
+          {/* scope: only Mahasiswa can see this button */}
+          {currentUser && currentUser.role === "Mahasiswa" && (
+            <Button
+              data-cy="btn-ajukan-judul"
+              variant="contained"
+              onClick={() => router.push("/pengajuan/create")}
+              sx={{ mb: 3 }}
+            >
+              Ajukan Judul
+            </Button>
+          )}
           <Paper
             sx={{
               p: 2,
