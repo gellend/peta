@@ -229,9 +229,9 @@ export default function CreatePengajuan() {
 
           if (subscription) {
             socket.emit("send-notification", {
-              title: "Hello",
-              body: "This is a notification",
-              subscription: JSON.stringify(subscription),
+              title: "Pengajuan Baru",
+              body: `Oleh ${currentUser.nama}`,
+              subscription: subscription,
             });
           }
         } else {

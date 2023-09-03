@@ -48,13 +48,6 @@ export default function LogIn() {
 
   // Handle push notification subscription
   const handlePushSubscription = async (uid) => {
-    const pushSubscription = await getPushSubscription(uid);
-
-    if (pushSubscription) {
-      localStorage.setItem("pushSubscription", pushSubscription.subscription);
-      return;
-    }
-
     try {
       if ("serviceWorker" in navigator) {
         const registration = await navigator.serviceWorker.ready;
@@ -72,13 +65,7 @@ export default function LogIn() {
         );
 
         if (res) {
-          // save to local storage
-          localStorage.setItem(
-            "pushSubscription",
-            JSON.stringify(subscription)
-          );
-
-          console.info("Push subscription successful!");
+          console.info("Push subscription success!");
         }
       }
     } catch (err) {

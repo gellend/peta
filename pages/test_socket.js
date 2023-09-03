@@ -32,7 +32,7 @@ const TestSocket = () => {
     socket.emit("send-notification", {
       title: "Hello",
       body: "This is a notification",
-      subscription: localStorage.getItem("pushSubscription"),
+      subscription: input,
     });
   };
 

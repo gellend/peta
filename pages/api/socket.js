@@ -26,10 +26,25 @@ export default async (req, res) => {
       });
 
       socket.on("send-notification", (msg) => {
-        webpush.sendNotification(
-          JSON.parse(msg.subscription),
-          JSON.stringify({ msg })
-        );
+        if (!msg && msg.length === 0) {
+          console.log("No message to send");
+          return;
+        }
+
+        const subscription = msg.subscription;
+        const message = JSON.stringify({
+          title: msg.title,
+          body: msg.body,
+        });
+
+        console.log("subscription", subscription);
+        console.log("msg", message);
+
+        try {
+          webpush.sendNotification(subscription, message);
+        } catch (error) {
+          console.error("Error sending notification:", error);
+        }
       });
     });
   }
