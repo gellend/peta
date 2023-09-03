@@ -14,7 +14,13 @@ import {
 import Navbar from "../../src/components/Navbar";
 import { useEffect, useState } from "react";
 import { getCurrentLoginUser } from "../../src/lib/auth";
-import { getPengajuanByCurrentUser } from "../../src/lib/store";
+import {
+  getPengajuanByAdmin,
+  getPengajuanByDosen,
+  getPengajuanByKepalaProdi,
+  getPengajuanByKoordinator,
+  getPengajuanByMahasiswa,
+} from "../../src/lib/store";
 import useAppStore from "../../src/store/global";
 import { useRouter } from "next/router";
 
@@ -25,8 +31,22 @@ export default function Pengajuan() {
   // List pengajuan
   const [listPengajuan, setListPengajuan] = useState([]);
 
-  const getPengajuan = async (email) => {
-    const rows = await getPengajuanByCurrentUser(email);
+  const getPengajuan = async () => {
+    let rows = [];
+    const role = currentUser.role;
+
+    if (role === "Mahasiswa") {
+      rows = await getPengajuanByMahasiswa(currentUser.email);
+    } else if (role === "Dosen") {
+      rows = await getPengajuanByDosen(currentUser.id);
+    } else if (role === "Kepala Prodi") {
+      rows = await getPengajuanByKepalaProdi();
+    } else if (role === "Koordinator Lab") {
+      rows = await getPengajuanByKoordinator();
+    } else if (role === "Admin") {
+      rows = await getPengajuanByAdmin();
+    }
+
     setListPengajuan(rows);
   };
 
@@ -35,7 +55,7 @@ export default function Pengajuan() {
   }, []);
 
   useEffect(() => {
-    if (currentUser) getPengajuan(currentUser.email);
+    if (currentUser) getPengajuan();
   }, [currentUser]);
 
   return (

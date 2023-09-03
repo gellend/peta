@@ -83,8 +83,46 @@ export const getUsersByRoles = async (roles) => {
   }
 };
 
-export const getPengajuanByCurrentUser = async (email) => {
+export const getPengajuanByMahasiswa = async (email) => {
   const rows = await getDataWithQuery("pengajuan", "email", "==", email);
+  return rows;
+};
+
+export const getPengajuanByDosen = async (id) => {
+  const rows1 = await getDataWithQuery(
+    "pengajuan",
+    "dosenPembimbing1",
+    "==",
+    id
+  );
+  const rows2 = await getDataWithQuery(
+    "pengajuan",
+    "dosenPembimbing2",
+    "==",
+    id
+  );
+  const rows3 = await getDataWithQuery(
+    "pengajuan",
+    "dosenPembimbing3",
+    "==",
+    id
+  );
+  const rows = [...rows1, ...rows2, ...rows3];
+  return rows;
+};
+
+export const getPengajuanByKepalaProdi = async (email) => {
+  const rows = await getDataWithQuery("pengajuan", "status", "==", "Menunggu");
+  return rows;
+};
+
+export const getPengajuanByKoordinator = async (email) => {
+  const rows = await getDataWithQuery("pengajuan", "status", "==", "Menunggu");
+  return rows;
+};
+
+export const getPengajuanByAdmin = async (email) => {
+  const rows = await getDataWithQuery("pengajuan", "status", "==", "Menunggu");
   return rows;
 };
 
