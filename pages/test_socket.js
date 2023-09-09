@@ -29,6 +29,8 @@ const TestSocket = () => {
   };
 
   const handleSendNotification = () => {
+    if (!input) return;
+
     socket.emit("send-notification", {
       title: "Hello",
       body: "This is a notification",

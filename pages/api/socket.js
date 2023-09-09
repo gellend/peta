@@ -27,11 +27,17 @@ export default async (req, res) => {
 
       socket.on("send-notification", (msg) => {
         if (!msg && msg.length === 0) {
-          console.log("No message to send");
+          console.log("No payload");
           return;
         }
 
         const subscription = msg.subscription;
+
+        if (!subscription || subscription.length === 0) {
+          console.log("No subscription");
+          return;
+        }
+
         const message = JSON.stringify({
           title: msg.title,
           body: msg.body,
