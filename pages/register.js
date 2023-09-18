@@ -6,6 +6,7 @@ import {
   Link,
   TextField,
   Typography,
+  MenuItem,
 } from "@mui/material";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { serverTimestamp } from "firebase/firestore";
@@ -18,27 +19,30 @@ import useAppStore from "../src/store/global";
 import { postData } from "../src/lib/store";
 import { auth, getCurrentLoginUser } from "../src/lib/auth";
 import { useEffect } from "react";
+import config from "../src/const/config.json";
 
 export default function Register() {
   const router = useRouter();
 
   const initialState = {
     id: "",
+    prodi: "",
     nama: "",
     email: "",
     password: "",
   };
 
   const validationRules = {
-    id: (value) => (!value ? "NRP is required" : ""),
-    nama: (value) => (!value ? "Nama Lengkap is required" : ""),
+    id: (value) => (!value ? "NRP tidak boleh kosong" : ""),
+    prodi: (value) => (!value ? "Program Studi tidak boleh kosong" : ""),
+    nama: (value) => (!value ? "Nama Lengkap tidak boleh kosong" : ""),
     email: (value) =>
       !value
-        ? "Alamat Email is required"
+        ? "Alamat email tidak boleh kosong"
         : !isValidEmail(value)
-        ? "Invalid email format"
+        ? "Alamat email tidak valid"
         : "",
-    password: (value) => (!value ? "Kata Sandi is required" : ""),
+    password: (value) => (!value ? "Kata Sandi tidak boleh kosong" : ""),
   };
 
   const { values, errors, handleChange, validateForm } = useForm(
@@ -63,6 +67,7 @@ export default function Register() {
 
         const dataToStore = {
           id: values.id,
+          prodi: values.prodi,
           nama: values.nama,
           email: values.email,
           role: "Mahasiswa",
@@ -71,7 +76,10 @@ export default function Register() {
 
         const success = await postData("users", dataToStore, res.user.uid);
 
-        if (success) router.push("/");
+        if (success) {
+          handleOpenSnackBar("Registrasi berhasil", "success");
+          router.push("/");
+        }
       } catch (error) {
         handleOpenSnackBar(error.message, "error");
       }
@@ -113,6 +121,31 @@ export default function Register() {
             error={!!errors.id}
             helperText={errors.id}
           />
+          <TextField
+            data-cy="register-prodi"
+            inputProps={{ "data-cy": "register-prodi-input" }}
+            FormHelperTextProps={{ "data-cy": "register-prodi-helper-text" }}
+            select
+            margin="normal"
+            fullWidth
+            label="Program Studi"
+            name="prodi"
+            value={values.prodi}
+            onChange={handleChange}
+            error={!!errors.prodi}
+            helperText={errors.prodi}
+          >
+            {config.prodi &&
+              config.prodi.map((option, i) => (
+                <MenuItem
+                  key={option}
+                  value={option}
+                  data-cy={`register-prodi-option-${i}`}
+                >
+                  {option}
+                </MenuItem>
+              ))}
+          </TextField>
           <TextField
             data-cy="register-nama"
             inputProps={{ "data-cy": "register-nama-input" }}

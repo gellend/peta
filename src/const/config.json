@@ -1,4 +1,10 @@
 {
+  "prodi": [
+    "Teknik Informatika",
+    "Sistem Informasi",
+    "Desain Komunikasi Visual",
+    "Manajemen Informatika"
+  ],
   "redirectRules": {
     "Mahasiswa": "/pengajuan",
     "Dosen": "/dashboard",
