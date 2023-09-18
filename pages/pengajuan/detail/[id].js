@@ -20,10 +20,12 @@ import { useEffect, useState } from "react";
 import { getCurrentLoginUser } from "../../../src/lib/auth";
 import { getDetailPengajuan } from "../../../src/lib/store";
 import { downloadFile } from "../../../src/lib/upload";
+import useAppStore from "../../../src/store/global";
 
 export default function DetailPengajuan() {
   const router = useRouter();
   const docId = router.query.id;
+  const { currentUser } = useAppStore((state) => state);
 
   const [pengajuan, setPengajuan] = useState(null);
 
@@ -156,14 +158,17 @@ export default function DetailPengajuan() {
                     />
                   </Stack>
                 </Stack>
-                <Stack direction="row" spacing={1}>
-                  <Button variant="contained" color="success">
-                    Setujui
-                  </Button>
-                  <Button variant="contained" color="error">
-                    Tolak
-                  </Button>
-                </Stack>
+                {/* scope: only Dosen can see this button */}
+                {currentUser && currentUser.role === "Dosen" && (
+                  <Stack direction="row" spacing={1}>
+                    <Button variant="contained" color="success">
+                      Setujui
+                    </Button>
+                    <Button variant="contained" color="error">
+                      Tolak
+                    </Button>
+                  </Stack>
+                )}
               </Paper>
             </Grid>
           </Grid>
