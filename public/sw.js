@@ -4,14 +4,20 @@ self.addEventListener("install", function (event) {
   console.log("Hello from service worker!");
 });
 
+self.addEventListener("activate", function (event) {
+  console.log("Service worker activating...");
+});
+
 self.addEventListener("push", function (event) {
   if (event.data) {
-    let message = event.data.json().msg;
+    console.log("New push notification");
+
+    let payload = event.data.json();
 
     let options = {
-      body: message.body,
+      body: payload.body,
     };
 
-    self.registration.showNotification(message.title, options);
+    event.waitUntil(self.registration.showNotification(payload.title, options));
   }
 });

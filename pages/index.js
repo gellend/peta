@@ -54,7 +54,7 @@ export default function LogIn() {
         const subscription = await registration.pushManager.subscribe({
           userVisibleOnly: true,
           applicationServerKey: urlBase64ToUint8Array(
-            "BOh_S4oYQixcLVaX_7bAT5XJvblY5-hPCCz_T0fiQTp1gsi8nJ7rnrcEjZta_ZzzS8rySimDtuuSttdRe6fMKic"
+            process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY
           ),
         });
 

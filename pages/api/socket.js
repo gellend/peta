@@ -10,7 +10,7 @@ export default async (req, res) => {
     res.socket.server.io = io;
 
     const vapidKeys = {
-      publicKey: process.env.NEXT_VAPID_PUBLIC_KEY,
+      publicKey: process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY,
       privateKey: process.env.NEXT_VAPID_PRIVATE_KEY,
     };
 
@@ -26,15 +26,17 @@ export default async (req, res) => {
       });
 
       socket.on("send-notification", (msg) => {
-        if (!msg && msg.length === 0) {
-          console.log("No payload");
+        console.log("send-notification", msg);
+
+        if (!msg || !msg.subscription) {
+          console.log("No payload or subscription");
           return;
         }
 
-        const subscription = msg.subscription;
+        const subscription = JSON.parse(msg.subscription);
 
-        if (!subscription || subscription.length === 0) {
-          console.log("No subscription");
+        if (!subscription || !subscription.endpoint) {
+          console.log("Invalid subscription");
           return;
         }
 
@@ -43,14 +45,19 @@ export default async (req, res) => {
           body: msg.body,
         });
 
-        console.log("subscription", subscription);
-        console.log("msg", message);
-
-        try {
-          webpush.sendNotification(subscription, message);
-        } catch (error) {
-          console.error("Error sending notification:", error);
-        }
+        webpush
+          .sendNotification(subscription, message)
+          .then(
+            (result) => {
+              console.log("sendNotification result", result);
+            },
+            (error) => {
+              console.error("sendNotification error", error);
+            }
+          )
+          .catch((err) => {
+            console.error("sendNotification catch", err);
+          });
       });
     });
   }

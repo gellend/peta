@@ -22,10 +22,6 @@ export default function MyApp(props) {
     const registerServiceWorker = async () => {
       try {
         if ("serviceWorker" in navigator) {
-          // check if already registered
-          const registration = await navigator.serviceWorker.getRegistration();
-          if (registration) return;
-
           await navigator.serviceWorker.register("/sw.js");
           console.info("Service worker successfully registered!");
         }
