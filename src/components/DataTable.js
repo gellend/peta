@@ -1,10 +1,14 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Box, Container, Grid, Paper, TextField } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 
 export default function DataTable({ columns, rows }) {
   const [filteredRows, setFilteredRows] = useState(rows);
   const [search, setSearch] = useState("");
+
+  useEffect(() => {
+    setFilteredRows(rows);
+  }, [rows]);
 
   const handleSearchChange = (event) => {
     const { value } = event.target;
@@ -41,9 +45,7 @@ export default function DataTable({ columns, rows }) {
               <DataGrid
                 rows={filteredRows}
                 columns={columns}
-                autoPageSize
-                autoHeight
-                disableColumnSelector
+                pageSizeOptions={[5, 10, 20, 50, 100]}
               />
             </Paper>
           </Grid>
