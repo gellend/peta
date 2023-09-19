@@ -53,6 +53,20 @@ export const getDataWithQuery = async (
   }
 };
 
+export const getDataFromCollection = async (path) => {
+  let data = [];
+  try {
+    const querySnapshot = await getDocs(collection(db, path));
+    querySnapshot.forEach((doc) => {
+      data.push({ ...doc.data(), docId: doc.id });
+    });
+    return data;
+  } catch (error) {
+    console.error("getDataFromCollection:", error);
+    return data;
+  }
+};
+
 export const getUserDataByEmail = async (email) => {
   const rows = await getDataWithQuery("users", "email", "==", email);
   const mappedRows = rows.map((row) => {

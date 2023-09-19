@@ -14,49 +14,23 @@ import {
 
 import Link from "next/link";
 import Navbar from "../../src/components/Navbar";
-import { createFirebaseApp } from "../../firebase/clientApp";
-import { getAuth } from "firebase/auth";
 import { useEffect, useState } from "react";
-import {
-  collection,
-  doc,
-  getDoc,
-  getDocs,
-  getFirestore,
-} from "firebase/firestore";
-import { useRouter } from "next/router";
+import { getCurrentLoginUser } from "../../src/lib/auth";
+import { getDataFromCollection } from "../../src/lib/store";
 
 export default function Verifikasi() {
-  const app = createFirebaseApp();
-  const auth = getAuth(app);
-  const db = getFirestore(app);
-  const router = useRouter();
-
-  const [user, setUser] = useState(null);
-  const [isLoggingIn, setIsLoggingIn] = useState(true);
-
-  useEffect(() => {
-    const unsubscribe = auth.onAuthStateChanged(async (user) => {
-      if (user) {
-        const userData = await getDoc(doc(db, "users", user.uid));
-        setUser(userData.data());
-        setIsLoggingIn(false);
-      } else {
-        router.push("/");
-      }
-    });
-
-    return unsubscribe;
-  }, []);
-
-  // Retrive data users from firebase
   const [listUsers, setListUsers] = useState([]);
+
   useEffect(() => {
     const getUsers = async () => {
-      const userData = await getDocs(collection(db, "users"));
-      setListUsers(userData.docs.map((doc) => ({ ...doc.data() })));
+      const userData = await getDataFromCollection("users");
+      setListUsers(userData);
     };
     getUsers();
+  }, []);
+
+  useEffect(() => {
+    getCurrentLoginUser();
   }, []);
 
   return (
@@ -102,7 +76,6 @@ export default function Verifikasi() {
                       <TableCell>Nama</TableCell>
                       <TableCell>Email</TableCell>
                       <TableCell>Role</TableCell>
-                      <TableCell>Status</TableCell>
                       <TableCell>Aksi</TableCell>
                     </TableRow>
                   </TableHead>
@@ -115,7 +88,6 @@ export default function Verifikasi() {
                           <TableCell>{user.nama}</TableCell>
                           <TableCell>{user.email}</TableCell>
                           <TableCell>{user.role}</TableCell>
-                          <TableCell>{user.isVerified}</TableCell>
                           <TableCell>
                             <Button>Test</Button>
                           </TableCell>
