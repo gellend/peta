@@ -1,16 +1,4 @@
-import {
-  Box,
-  Button,
-  Container,
-  Grid,
-  Paper,
-  Toolbar,
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableRow,
-} from "@mui/material";
+import { Box, Button, Container, Grid, Paper, Toolbar } from "@mui/material";
 import Navbar from "../../src/components/Navbar";
 import { useEffect, useState } from "react";
 import { getCurrentLoginUser } from "../../src/lib/auth";
@@ -23,6 +11,7 @@ import {
 } from "../../src/lib/store";
 import useAppStore from "../../src/store/global";
 import { useRouter } from "next/router";
+import DataTable from "../../src/components/DataTable";
 
 export default function Pengajuan() {
   const router = useRouter();
@@ -30,6 +19,28 @@ export default function Pengajuan() {
 
   // List pengajuan
   const [listPengajuan, setListPengajuan] = useState([]);
+
+  const columns = [
+    { field: "id", headerName: "NRP", width: 150 },
+    { field: "nama", headerName: "Nama", width: 200 },
+    { field: "judul", headerName: "Judul", width: 200 },
+    { field: "status", headerName: "Status", width: 150 },
+    {
+      field: "action",
+      headerName: "Action",
+      width: 150,
+      renderCell: (params) => (
+        <Button
+          variant="contained"
+          color="primary"
+          size="small"
+          onClick={() => router.push(`/pengajuan/detail/${params.row.docId}`)}
+        >
+          Detail
+        </Button>
+      ),
+    },
+  ];
 
   const getPengajuan = async () => {
     let rows = [];
@@ -47,7 +58,25 @@ export default function Pengajuan() {
       rows = await getPengajuanByAdmin();
     }
 
-    setListPengajuan(rows);
+    const mappedRows = rows.map((row) => ({
+      docId: row.docId,
+      judul: row.judul,
+      nama: row.nama,
+      id: row.id,
+      status: row.status,
+      action: (
+        <Button
+          variant="contained"
+          color="primary"
+          size="small"
+          onClick={() => router.push(`/pengajuan/detail/${row.docId}`)}
+        >
+          Detail
+        </Button>
+      ),
+    }));
+
+    setListPengajuan(mappedRows);
   };
 
   useEffect(() => {
@@ -95,46 +124,11 @@ export default function Pengajuan() {
           >
             <Grid container spacing={3}>
               <Grid item xs={12}>
-                <Table>
-                  <TableHead>
-                    <TableRow>
-                      <TableCell>No</TableCell>
-                      <TableCell>Judul</TableCell>
-                      <TableCell>Nama</TableCell>
-                      <TableCell>NRP</TableCell>
-                      <TableCell>Status</TableCell>
-                      <TableCell />
-                    </TableRow>
-                  </TableHead>
-                  <TableBody>
-                    {listPengajuan && listPengajuan.length === 0 ? (
-                      <TableRow>
-                        <TableCell colSpan={6}>
-                          Tidak ada pengajuan judul
-                        </TableCell>
-                      </TableRow>
-                    ) : (
-                      listPengajuan.map((row, index) => (
-                        <TableRow key={row.docId}>
-                          <TableCell>{index + 1}</TableCell>
-                          <TableCell>{row.judul}</TableCell>
-                          <TableCell>{row.nama}</TableCell>
-                          <TableCell>{row.id}</TableCell>
-                          <TableCell>{row.status}</TableCell>
-                          <TableCell>
-                            <Button
-                              onClick={() =>
-                                router.push(`/pengajuan/detail/${row.docId}`)
-                              }
-                            >
-                              Detail
-                            </Button>
-                          </TableCell>
-                        </TableRow>
-                      ))
-                    )}
-                  </TableBody>
-                </Table>
+                {listPengajuan.length > 0 ? (
+                  <DataTable columns={columns} rows={listPengajuan} />
+                ) : (
+                  <div>Tidak ada pengajuan judul</div>
+                )}
               </Grid>
             </Grid>
           </Paper>

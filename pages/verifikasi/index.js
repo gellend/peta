@@ -104,7 +104,7 @@ export default function Verifikasi() {
                 {rows.length > 0 ? (
                   <DataTable columns={columns} rows={rows} />
                 ) : (
-                  <div>Loading...</div>
+                  <div>Tidak ada user terdaftar</div>
                 )}
               </Paper>
             </Grid>

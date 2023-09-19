@@ -125,18 +125,18 @@ export const getPengajuanByDosen = async (id) => {
   return rows;
 };
 
-export const getPengajuanByKepalaProdi = async (email) => {
-  const rows = await getDataWithQuery("pengajuan", "status", "==", "Menunggu");
+export const getPengajuanByKepalaProdi = async (prodi) => {
+  const rows = await getDataWithQuery("pengajuan", "prodi", "==", prodi);
   return rows;
 };
 
-export const getPengajuanByKoordinator = async (email) => {
-  const rows = await getDataWithQuery("pengajuan", "status", "==", "Menunggu");
+export const getPengajuanByKoordinator = async (lab) => {
+  const rows = await getDataWithQuery("pengajuan", "lab", "==", lab);
   return rows;
 };
 
 export const getPengajuanByAdmin = async (email) => {
-  const rows = await getDataWithQuery("pengajuan", "status", "==", "Menunggu");
+  const rows = await getDataFromCollection("pengajuan");
   return rows;
 };
 
