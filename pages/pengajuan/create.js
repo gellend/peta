@@ -706,8 +706,11 @@ export default function CreatePengajuan() {
                             <SignatureCanvas
                               ref={signatureCanvasRef}
                               penColor="black"
+                              onEnd={() => {
+                                saveSignature();
+                              }}
                               canvasProps={{
-                                width: 400,
+                                width: 600,
                                 height: 200,
                               }}
                             />
@@ -718,15 +721,10 @@ export default function CreatePengajuan() {
                               data-cy="button-clear-signature"
                               variant="contained"
                               onClick={clearSignature}
+                              color="error"
+                              disabled={!signature}
                             >
-                              Hapus
-                            </Button>
-                            <Button
-                              data-cy="button-save-signature"
-                              variant="contained"
-                              onClick={saveSignature}
-                            >
-                              Simpan
+                              Reset Tanda Tangan
                             </Button>
                           </Stack>
                         </Stack>
