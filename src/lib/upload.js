@@ -35,3 +35,15 @@ export const downloadFile = async (path) => {
     throw error;
   }
 };
+
+export const generateDownloadUrl = async (path, callback) => {
+  try {
+    const storageRef = ref(storage, path);
+    const url = await getDownloadURL(storageRef);
+
+    callback(url);
+  } catch (error) {
+    console.error(`generateDownloadUrl error`, error);
+    throw error;
+  }
+};

@@ -1,4 +1,4 @@
-import { ArrowBack } from "@mui/icons-material";
+import { ArrowBack, OpenInNew } from "@mui/icons-material";
 import {
   Box,
   Button,
@@ -6,7 +6,6 @@ import {
   Container,
   Divider,
   Grid,
-  Icon,
   IconButton,
   Paper,
   Stack,
@@ -19,7 +18,7 @@ import Navbar from "../../../src/components/Navbar";
 import { useEffect, useState } from "react";
 import { getCurrentLoginUser } from "../../../src/lib/auth";
 import { getDetailPengajuan } from "../../../src/lib/store";
-import { downloadFile } from "../../../src/lib/upload";
+import { generateDownloadUrl } from "../../../src/lib/upload";
 import useAppStore from "../../../src/store/global";
 
 export default function DetailPengajuan() {
@@ -38,6 +37,12 @@ export default function DetailPengajuan() {
     if (status === "Pending") {
       return <Chip label="Pending" color="warning" sx={{ maxWidth: 100 }} />;
     }
+  };
+
+  const getUrl = (path) => {
+    generateDownloadUrl(path, (url) => {
+      window.open(url, "_blank");
+    });
   };
 
   useEffect(() => {
@@ -107,54 +112,46 @@ export default function DetailPengajuan() {
                   <Typography variant="body2">Berkas</Typography>
                   <Stack direction="row" spacing={1}>
                     <Chip
-                      icon={<Icon>download</Icon>}
+                      icon={<OpenInNew />}
                       label="Pengajuan"
                       variant="outlined"
                       color="primary"
-                      onClick={() =>
-                        downloadFile(pengajuan.pengajuanFile, "pengajuan.pdf")
-                      }
+                      onClick={() => getUrl(pengajuan.pengajuanFile)}
                     />
                     <Chip
-                      icon={<Icon>download</Icon>}
+                      icon={<OpenInNew />}
                       label="KHS"
                       variant="outlined"
                       color="primary"
-                      onClick={() => downloadFile(pengajuan.khsFile, "khs.pdf")}
+                      onClick={() => getUrl(pengajuan.khsFile)}
                     />
                     <Chip
-                      icon={<Icon>download</Icon>}
+                      icon={<OpenInNew />}
                       label="FRS"
                       variant="outlined"
                       color="primary"
-                      onClick={() => downloadFile(pengajuan.frsFile, "frs.pdf")}
+                      onClick={() => getUrl(pengajuan.frsFile)}
                     />
                     <Chip
-                      icon={<Icon>download</Icon>}
+                      icon={<OpenInNew />}
                       label="Jalur Pra & Co"
                       variant="outlined"
                       color="primary"
-                      onClick={() =>
-                        downloadFile(pengajuan.jalurPraCoFile, "jalurpraco.pdf")
-                      }
+                      onClick={() => getUrl(pengajuan.jalurPraCoFile)}
                     />
                     <Chip
-                      icon={<Icon>download</Icon>}
+                      icon={<OpenInNew />}
                       label="TOEFL"
                       variant="outlined"
                       color="primary"
-                      onClick={() =>
-                        downloadFile(pengajuan.toeflFile, "toefl.pdf")
-                      }
+                      onClick={() => getUrl(pengajuan.toeflFile)}
                     />
                     <Chip
-                      icon={<Icon>download</Icon>}
+                      icon={<OpenInNew />}
                       label="Kompetensi"
                       variant="outlined"
                       color="primary"
-                      onClick={() =>
-                        downloadFile(pengajuan.kompetensiFile, "kompetensi.pdf")
-                      }
+                      onClick={() => getUrl(pengajuan.kompetensiFile)}
                     />
                   </Stack>
                 </Stack>
