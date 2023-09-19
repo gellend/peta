@@ -1,30 +1,63 @@
-import {
-  Box,
-  Container,
-  Grid,
-  Paper,
-  Table,
-  TableBody,
-  TableCell,
-  TableRow,
-  Toolbar,
-  Button,
-  TableHead,
-} from "@mui/material";
-
+import { Box, Container, Grid, Paper, Toolbar, Button } from "@mui/material";
 import Link from "next/link";
 import Navbar from "../../src/components/Navbar";
 import { useEffect, useState } from "react";
 import { getCurrentLoginUser } from "../../src/lib/auth";
 import { getDataFromCollection } from "../../src/lib/store";
+import { useRouter } from "next/router";
+import DataTable from "../../src/components/DataTable";
 
 export default function Verifikasi() {
-  const [listUsers, setListUsers] = useState([]);
+  const router = useRouter();
+
+  const [rows, setRows] = useState([]);
+
+  const columns = [
+    { field: "id", headerName: "ID", width: 100 },
+    { field: "nama", headerName: "Nama", width: 200 },
+    { field: "email", headerName: "Email", width: 200 },
+    { field: "role", headerName: "Role", width: 150 },
+    {
+      field: "action",
+      headerName: "Action",
+      width: 150,
+      renderCell: (params) => (
+        <Button
+          variant="contained"
+          color="primary"
+          size="small"
+          onClick={() => router.push(`/verifikasi/edit/${params.row.docId}`)}
+        >
+          Edit
+        </Button>
+      ),
+    },
+  ];
 
   useEffect(() => {
     const getUsers = async () => {
       const userData = await getDataFromCollection("users");
-      setListUsers(userData);
+
+      const mappedRows = userData.map((user) => ({
+        id: user.id,
+        nama: user.nama || "",
+        email: user.email || "",
+        role: user.role || "",
+        docId: user.docId,
+        action: user.docId ? (
+          <Button
+            color="primary"
+            size="small"
+            onClick={() => router.push(`/verifikasi/edit/${user.docId}`)}
+          >
+            Edit
+          </Button>
+        ) : (
+          ""
+        ),
+      }));
+
+      setRows(mappedRows);
     };
     getUsers();
   }, []);
@@ -68,33 +101,11 @@ export default function Verifikasi() {
                   flexDirection: "column",
                 }}
               >
-                <Table>
-                  <TableHead>
-                    <TableRow>
-                      <TableCell>No</TableCell>
-                      <TableCell>ID</TableCell>
-                      <TableCell>Nama</TableCell>
-                      <TableCell>Email</TableCell>
-                      <TableCell>Role</TableCell>
-                      <TableCell>Aksi</TableCell>
-                    </TableRow>
-                  </TableHead>
-                  <TableBody>
-                    {listUsers &&
-                      listUsers.map((user, index) => (
-                        <TableRow key={user.id}>
-                          <TableCell>{index + 1}</TableCell>
-                          <TableCell>{user.id}</TableCell>
-                          <TableCell>{user.nama}</TableCell>
-                          <TableCell>{user.email}</TableCell>
-                          <TableCell>{user.role}</TableCell>
-                          <TableCell>
-                            <Button>Test</Button>
-                          </TableCell>
-                        </TableRow>
-                      ))}
-                  </TableBody>
-                </Table>
+                {rows.length > 0 ? (
+                  <DataTable columns={columns} rows={rows} />
+                ) : (
+                  <div>Loading...</div>
+                )}
               </Paper>
             </Grid>
           </Grid>
