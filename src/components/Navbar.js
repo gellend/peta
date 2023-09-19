@@ -308,7 +308,7 @@ export default function Navbar() {
 
             return (
               <Link href={path} key={index}>
-                <ListItemButton>
+                <ListItemButton data-cy={`btn-nav-sidebar-${index}`}>
                   <ListItemIcon>
                     <Icon>{icon}</Icon>
                   </ListItemIcon>

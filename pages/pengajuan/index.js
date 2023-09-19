@@ -40,9 +40,9 @@ export default function Pengajuan() {
     } else if (role === "Dosen") {
       rows = await getPengajuanByDosen(currentUser.id);
     } else if (role === "Kepala Prodi") {
-      rows = await getPengajuanByKepalaProdi();
+      rows = await getPengajuanByKepalaProdi(currentUser.prodi);
     } else if (role === "Koordinator Lab") {
-      rows = await getPengajuanByKoordinator();
+      rows = await getPengajuanByKoordinator(currentUser.lab);
     } else if (role === "Admin") {
       rows = await getPengajuanByAdmin();
     }

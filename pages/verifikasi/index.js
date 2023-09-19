@@ -77,7 +77,11 @@ export default function Verifikasi() {
         <Toolbar />
         <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
           <Link href="/verifikasi/create">
-            <Button variant="contained" sx={{ mb: 3 }}>
+            <Button
+              data-cy="btn-tambah-pengguna"
+              variant="contained"
+              sx={{ mb: 3 }}
+            >
               Tambah Pengguna
             </Button>
           </Link>

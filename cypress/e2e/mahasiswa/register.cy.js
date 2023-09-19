@@ -75,9 +75,9 @@ describe("Register", () => {
     cy.fixture("mahasiswa/user.json").as("userMahasiswa");
     cy.get("@userMahasiswa").then((user) => {
       cy.getByData("register-id").type(user.id);
+      cy.getByData("register-id-input").should("have.value", user.id);
       cy.getByData("register-prodi").click();
       cy.getByData("register-prodi-option-0").click();
-      cy.getByData("register-id-input").should("have.value", user.id);
       cy.getByData("register-nama").type(user.nama);
       cy.getByData("register-nama-input").should("have.value", user.nama);
       cy.getByData("register-email").type(user.email);

@@ -5,6 +5,8 @@
     "Desain Komunikasi Visual",
     "Manajemen Informatika"
   ],
+  "roles": ["Mahasiswa", "Dosen", "Kepala Prodi", "Koordinator Lab", "Admin"],
+  "lab": ["Development", "Artificial Intelligence"],
   "redirectRules": {
     "Mahasiswa": "/pengajuan",
     "Dosen": "/dashboard",

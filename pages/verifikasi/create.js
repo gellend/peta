@@ -18,84 +18,101 @@ import {
 import { ArrowBack } from "@mui/icons-material";
 
 import Navbar from "../../src/components/Navbar";
-import { createFirebaseApp } from "../../firebase/clientApp";
-import { createUserWithEmailAndPassword, getAuth } from "firebase/auth";
-import { useEffect, useState } from "react";
-import {
-  doc,
-  getDoc,
-  getFirestore,
-  setDoc,
-  serverTimestamp,
-} from "firebase/firestore";
+import { createUserWithEmailAndPassword } from "firebase/auth";
+import { useEffect } from "react";
+import { serverTimestamp } from "firebase/firestore";
 import { useRouter } from "next/router";
 import useAppStore from "../../src/store/global";
+import config from "../../src/const/config.json";
+import useForm from "../../src/helper/useForm";
+import { auth, getCurrentLoginUser } from "../../src/lib/auth";
+import { postData } from "../../src/lib/store";
+import isValidEmail from "../../src/helper/validateEmail";
 
 export default function CreateUser() {
-  const app = createFirebaseApp();
-  const auth = getAuth(app);
-  const db = getFirestore(app);
   const router = useRouter();
 
-  // Global
-  const [user, setUser] = useState(null);
-  const [isLoggingIn, setIsLoggingIn] = useState(true);
-
-  // Form
-  const [id, setId] = useState("");
-  const [nama, setNama] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [role, setRole] = useState("Mahasiswa");
-
-  const { handleOpenSnackBar } = useAppStore((state) => state);
-
-  useEffect(() => {
-    const unsubscribe = auth.onAuthStateChanged(async (user) => {
-      if (user) {
-        const userData = await getDoc(doc(db, "users", user.uid));
-        setUser(userData.data());
-        setIsLoggingIn(false);
-      } else {
-        router.push("/");
-      }
-    });
-
-    return unsubscribe;
-  }, []);
-
-  const resetForm = () => {
-    setId("");
-    setNama("");
-    setEmail("");
-    setPassword("");
-    setRole("");
+  const initialState = {
+    id: "",
+    prodi: "",
+    lab: "",
+    nama: "",
+    email: "",
+    role: "Mahasiswa",
+    password: "",
   };
 
-  const handleSubmit = (e) => {
+  const validationRules = {
+    id: (value) => (!value ? "NRP tidak boleh kosong" : ""),
+    prodi: (value) =>
+      (values.role === "Mahasiswa" || values.role === "Kepala Prodi") && !value
+        ? "Program Studi tidak boleh kosong"
+        : "",
+    nama: (value) => (!value ? "Nama Lengkap tidak boleh kosong" : ""),
+    lab: (value) =>
+      values.role === "Koordinator Lab" && !value
+        ? "Lab tidak boleh kosong"
+        : "",
+    email: (value) =>
+      !value
+        ? "Alamat email tidak boleh kosong"
+        : !isValidEmail(value)
+        ? "Alamat email tidak valid"
+        : "",
+    role: (value) => (!value ? "Role tidak boleh kosong" : ""),
+    password: (value) => (!value ? "Kata Sandi tidak boleh kosong" : ""),
+  };
+
+  const { values, errors, handleChange, validateForm, resetForm } = useForm(
+    initialState,
+    validationRules
+  );
+
+  const { handleOpenSnackBar, setIsLoading } = useAppStore((state) => state);
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
-    createUserWithEmailAndPassword(auth, email, password)
-      .then(async (res) => {
-        await setDoc(doc(db, "users", res.user.uid), {
-          id: id,
-          nama: nama,
-          email: email,
-          role: role,
+    const isValid = validateForm();
+
+    if (isValid) {
+      try {
+        setIsLoading(true);
+
+        const res = await createUserWithEmailAndPassword(
+          auth,
+          values.email,
+          values.password
+        );
+
+        const dataToStore = {
+          id: values.id,
+          prodi: values.prodi,
+          lab: values.lab,
+          nama: values.nama,
+          email: values.email,
+          role: values.role,
           created_at: serverTimestamp(),
-        });
+        };
 
-        handleOpenSnackBar(`${id} berhasil di daftarkan!`, "success");
+        const success = await postData("users", dataToStore, res.user.uid);
 
-        router.push("/verifikasi");
-      })
-      .catch((error) => {
+        if (success) {
+          handleOpenSnackBar(`${values.id} berhasil di daftarkan!`, "success");
+          router.push("/verifikasi");
+        }
+      } catch (error) {
         handleOpenSnackBar(error.message, "error");
-      })
-      .finally(() => {
+      } finally {
         resetForm();
-      });
+        setIsLoading(false);
+      }
+    }
   };
+
+  useEffect(() => {
+    getCurrentLoginUser();
+  }, []);
 
   return (
     <Box sx={{ display: "flex" }}>
@@ -136,59 +153,191 @@ export default function CreateUser() {
                     <TableRow>
                       <TableCell>
                         <TextField
-                          label={role === "Mahasiswa" ? "NRP" : "NIDN"}
-                          variant="outlined"
-                          fullWidth
-                          value={id}
-                          onChange={(e) => setId(e.target.value)}
-                        />
-                      </TableCell>
-                    </TableRow>
-                    <TableRow>
-                      <TableCell>
-                        <TextField
-                          label="Nama Lengkap"
-                          variant="outlined"
-                          fullWidth
-                          value={nama}
-                          onChange={(e) => setNama(e.target.value)}
-                        />
-                      </TableCell>
-                    </TableRow>
-                    <TableRow>
-                      <TableCell>
-                        <TextField
-                          label="Alamat Email"
-                          variant="outlined"
-                          fullWidth
-                          value={email}
-                          onChange={(e) => setEmail(e.target.value)}
-                        />
-                      </TableCell>
-                    </TableRow>
-                    <TableRow>
-                      <TableCell>
-                        <TextField
+                          data-cy="verifikasi-create-role"
+                          inputProps={{
+                            "data-cy": "verifikasi-create-role-input",
+                          }}
+                          FormHelperTextProps={{
+                            "data-cy": "verifikasi-create-role-helper-text",
+                          }}
                           select
-                          label="Role"
+                          margin="normal"
                           fullWidth
-                          value={role}
-                          onChange={(e) => setRole(e.target.value)}
+                          label="Role"
+                          name="role"
+                          value={values.role}
+                          onChange={handleChange}
+                          error={!!errors.role}
+                          helperText={errors.role}
                         >
-                          <MenuItem value="Mahasiswa">Mahasiswa</MenuItem>
-                          <MenuItem value="Dosen">Dosen</MenuItem>
+                          {config.roles &&
+                            config.roles.map((option, i) => (
+                              <MenuItem
+                                key={option}
+                                value={option}
+                                data-cy={`verifikasi-create-role-option-${i}`}
+                              >
+                                {option}
+                              </MenuItem>
+                            ))}
                         </TextField>
                       </TableCell>
                     </TableRow>
                     <TableRow>
                       <TableCell>
                         <TextField
-                          label="Kata Sandi"
-                          variant="outlined"
+                          data-cy="verifikasi-create-id"
+                          inputProps={{
+                            "data-cy": "verifikasi-create-id-input",
+                          }}
+                          FormHelperTextProps={{
+                            "data-cy": "verifikasi-create-id-helper-text",
+                          }}
+                          margin="normal"
                           fullWidth
+                          label={values.role === "Mahasiswa" ? "NRP" : "NIDN"}
+                          name="id"
+                          value={values.id}
+                          onChange={handleChange}
+                          error={!!errors.id}
+                          helperText={errors.id}
+                        />
+                      </TableCell>
+                    </TableRow>
+                    {(values.role === "Mahasiswa" ||
+                      values.role === "Kepala Prodi") && (
+                      <TableRow>
+                        <TableCell>
+                          <TextField
+                            data-cy="verifikasi-create-prodi"
+                            inputProps={{
+                              "data-cy": "verifikasi-create-prodi-input",
+                            }}
+                            FormHelperTextProps={{
+                              "data-cy": "verifikasi-create-prodi-helper-text",
+                            }}
+                            select
+                            margin="normal"
+                            fullWidth
+                            label="Program Studi"
+                            name="prodi"
+                            value={values.prodi}
+                            onChange={handleChange}
+                            error={!!errors.prodi}
+                            helperText={errors.prodi}
+                          >
+                            {config.prodi &&
+                              config.prodi.map((option, i) => (
+                                <MenuItem
+                                  key={option}
+                                  value={option}
+                                  data-cy={`verifikasi-create-prodi-option-${i}`}
+                                >
+                                  {option}
+                                </MenuItem>
+                              ))}
+                          </TextField>
+                        </TableCell>
+                      </TableRow>
+                    )}
+                    {values.role === "Koordinator Lab" && (
+                      <TableRow>
+                        <TableCell>
+                          <TextField
+                            data-cy="verifikasi-create-lab"
+                            inputProps={{
+                              "data-cy": "verifikasi-create-lab-input",
+                            }}
+                            FormHelperTextProps={{
+                              "data-cy": "verifikasi-create-lab-helper-text",
+                            }}
+                            select
+                            margin="normal"
+                            fullWidth
+                            label="Lab"
+                            name="lab"
+                            value={values.lab}
+                            onChange={handleChange}
+                            error={!!errors.lab}
+                            helperText={errors.lab}
+                          >
+                            {config.lab &&
+                              config.lab.map((option, i) => (
+                                <MenuItem
+                                  key={option}
+                                  value={option}
+                                  data-cy={`verifikasi-create-lab-option-${i}`}
+                                >
+                                  {option}
+                                </MenuItem>
+                              ))}
+                          </TextField>
+                        </TableCell>
+                      </TableRow>
+                    )}
+                    <TableRow>
+                      <TableCell>
+                        <TextField
+                          data-cy="verifikasi-create-nama"
+                          inputProps={{
+                            "data-cy": "verifikasi-create-nama-input",
+                          }}
+                          FormHelperTextProps={{
+                            "data-cy": "verifikasi-create-nama-helper-text",
+                          }}
+                          margin="normal"
+                          fullWidth
+                          label="Nama Lengkap"
+                          name="nama"
+                          value={values.nama}
+                          onChange={handleChange}
+                          error={!!errors.nama}
+                          helperText={errors.nama}
+                        />
+                      </TableCell>
+                    </TableRow>
+                    <TableRow>
+                      <TableCell>
+                        <TextField
+                          data-cy="verifikasi-create-email"
+                          inputProps={{
+                            "data-cy": "verifikasi-create-email-input",
+                          }}
+                          FormHelperTextProps={{
+                            "data-cy": "verifikasi-create-email-helper-text",
+                          }}
+                          margin="normal"
+                          fullWidth
+                          label="Alamat Email"
+                          name="email"
+                          type="email"
+                          value={values.email}
+                          onChange={handleChange}
+                          error={!!errors.email}
+                          helperText={errors.email}
+                        />
+                      </TableCell>
+                    </TableRow>
+
+                    <TableRow>
+                      <TableCell>
+                        <TextField
+                          data-cy="verifikasi-create-password"
+                          inputProps={{
+                            "data-cy": "verifikasi-create-password-input",
+                          }}
+                          FormHelperTextProps={{
+                            "data-cy": "verifikasi-create-password-helper-text",
+                          }}
+                          margin="normal"
+                          fullWidth
+                          label="Kata Sandi"
+                          name="password"
                           type="password"
-                          value={password}
-                          onChange={(e) => setPassword(e.target.value)}
+                          value={values.password}
+                          onChange={handleChange}
+                          error={!!errors.password}
+                          helperText={errors.password}
                         />
                       </TableCell>
                     </TableRow>
@@ -196,6 +345,7 @@ export default function CreateUser() {
                       <TableCell sx={{ borderBottom: "none" }}>
                         <Box display="flex" justifyContent="center">
                           <Button
+                            data-cy="verifikasi-create-submit"
                             sx={{ minWidth: 200 }}
                             variant="contained"
                             color="success"
