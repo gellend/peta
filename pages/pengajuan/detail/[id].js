@@ -20,12 +20,13 @@ import { getCurrentLoginUser } from "../../../src/lib/auth";
 import { getDetailPengajuan } from "../../../src/lib/store";
 import { generateDownloadUrl } from "../../../src/lib/upload";
 import useAppStore from "../../../src/store/global";
+import useSocket from "../../../src/lib/socket";
 
 export default function DetailPengajuan() {
   const router = useRouter();
   const docId = router.query.id;
   const { currentUser, handleOpenDialog } = useAppStore((state) => state);
-
+  const socket = useSocket();
   const [pengajuan, setPengajuan] = useState(null);
 
   const getPengajuan = async (docId) => {
@@ -43,6 +44,12 @@ export default function DetailPengajuan() {
     generateDownloadUrl(path, (url) => {
       window.open(url, "_blank");
     });
+  };
+
+  const approvePengajuan = (v) => {
+    if (socket) {
+      socket.emit("input-change", v);
+    }
   };
 
   useEffect(() => {
@@ -162,9 +169,7 @@ export default function DetailPengajuan() {
                       variant="contained"
                       color="success"
                       onClick={() =>
-                        handleOpenDialog("Setujui pengajuan?", (v) => {
-                          console.log(v);
-                        })
+                        handleOpenDialog("Setujui pengajuan?", approvePengajuan)
                       }
                     >
                       Setujui
