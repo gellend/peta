@@ -27,6 +27,17 @@ const useAppStore = create(
     // Loading state
     isLoading: false,
     setIsLoading: (isLoading) => set({ isLoading }),
+
+    // Dialog state
+    dialogData: {
+      open: false,
+      title: "",
+      onSubmit: () => {},
+    },
+    handleOpenDialog: (title, onSubmit) =>
+      set({ dialogData: { open: true, title, onSubmit } }),
+    handleCloseDialog: () =>
+      set({ dialogData: { open: false, title: "", onSubmit: () => {} } }),
   }))
 );
 

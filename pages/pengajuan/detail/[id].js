@@ -24,7 +24,7 @@ import useAppStore from "../../../src/store/global";
 export default function DetailPengajuan() {
   const router = useRouter();
   const docId = router.query.id;
-  const { currentUser } = useAppStore((state) => state);
+  const { currentUser, handleOpenDialog } = useAppStore((state) => state);
 
   const [pengajuan, setPengajuan] = useState(null);
 
@@ -99,10 +99,10 @@ export default function DetailPengajuan() {
                     Oleh {pengajuan ? pengajuan.nama : ""}
                   </Typography>
                   <Divider />
-                  <Typography variant="body2">
-                    Status{"  "}
+                  <Stack direction="row" spacing={2} alignItems="center">
+                    <Typography variant="body2">Status</Typography>
                     {pengajuan ? getStatus(pengajuan.status) : ""}
-                  </Typography>
+                  </Stack>
                 </Stack>
                 <Stack spacing={2} sx={{ mb: 3 }}>
                   <Typography variant="body1">
@@ -158,7 +158,15 @@ export default function DetailPengajuan() {
                 {/* scope: only Dosen can see this button */}
                 {currentUser && currentUser.role === "Dosen" && (
                   <Stack direction="row" spacing={1}>
-                    <Button variant="contained" color="success">
+                    <Button
+                      variant="contained"
+                      color="success"
+                      onClick={() =>
+                        handleOpenDialog("Setujui pengajuan?", (v) => {
+                          console.log(v);
+                        })
+                      }
+                    >
                       Setujui
                     </Button>
                     <Button variant="contained" color="error">

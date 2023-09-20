@@ -8,15 +8,20 @@ import CustomSnackbar from "../src/components/CustomSnackbar";
 import useAppStore from "../src/store/global";
 import { Backdrop, CircularProgress } from "@mui/material";
 import { useEffect } from "react";
+import CustomDialog from "../src/components/CustomDialog";
 
 // Client-side cache, shared for the whole session of the user in the browser.
 const clientSideEmotionCache = createEmotionCache();
 
 export default function MyApp(props) {
   const { Component, emotionCache = clientSideEmotionCache, pageProps } = props;
-  const { snackbarData, handleCloseSnackBar, isLoading } = useAppStore(
-    (state) => state
-  );
+  const {
+    snackbarData,
+    handleCloseSnackBar,
+    isLoading,
+    dialogData,
+    handleCloseDialog,
+  } = useAppStore((state) => state);
 
   useEffect(() => {
     const registerServiceWorker = async () => {
@@ -69,6 +74,12 @@ export default function MyApp(props) {
         >
           <CircularProgress color="inherit" />
         </Backdrop>
+        <CustomDialog
+          open={dialogData.open}
+          title={dialogData.title}
+          onSubmit={dialogData.onSubmit}
+          onClose={handleCloseDialog}
+        />
       </ThemeProvider>
     </CacheProvider>
   );
