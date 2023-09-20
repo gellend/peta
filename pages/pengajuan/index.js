@@ -1,4 +1,12 @@
-import { Box, Button, Container, Grid, Paper, Toolbar } from "@mui/material";
+import {
+  Alert,
+  Box,
+  Button,
+  Container,
+  Grid,
+  Paper,
+  Toolbar,
+} from "@mui/material";
 import Navbar from "../../src/components/Navbar";
 import { useEffect, useState } from "react";
 import { getCurrentLoginUser } from "../../src/lib/auth";
@@ -12,6 +20,7 @@ import {
 import useAppStore from "../../src/store/global";
 import { useRouter } from "next/router";
 import DataTable from "../../src/components/DataTable";
+import Link from "next/link";
 
 export default function Pengajuan() {
   const router = useRouter();
@@ -123,7 +132,15 @@ export default function Pengajuan() {
               flexDirection: "column",
             }}
           >
-            <Grid container spacing={3}>
+            <Grid container spacing={1}>
+              {!currentUser?.signature && (
+                <Grid item xs={12}>
+                  <Alert severity="error">
+                    Anda belum menambahkan tanda tangan. Silahkan{" "}
+                    <Link href="/profile/update">update disini</Link>
+                  </Alert>
+                </Grid>
+              )}
               <Grid item xs={12}>
                 {listPengajuan.length > 0 ? (
                   <DataTable columns={columns} rows={listPengajuan} />

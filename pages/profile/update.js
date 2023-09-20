@@ -118,7 +118,7 @@ export default function UpdateProfile() {
                   <Typography variant="h5">Update profile</Typography>
                 </Stack>
                 <Avatar
-                  alt={currentUser ? currentUser.nama : ""}
+                  alt={currentUser?.nama}
                   src="/static/images/avatar/1.jpg"
                   sx={{ width: 128, height: 128, mb: 3 }}
                 />
@@ -129,7 +129,7 @@ export default function UpdateProfile() {
                         <TextField
                           label="Nama"
                           variant="outlined"
-                          value={currentUser ? currentUser.nama : ""}
+                          value={currentUser?.nama}
                         />
                       </TableCell>
                     </TableRow>
@@ -138,7 +138,7 @@ export default function UpdateProfile() {
                         <TextField
                           label="Email"
                           variant="outlined"
-                          value={currentUser ? currentUser.email : ""}
+                          value={currentUser?.email}
                         />
                       </TableCell>
                     </TableRow>
@@ -147,7 +147,17 @@ export default function UpdateProfile() {
                         <TextField
                           label="Role"
                           variant="outlined"
-                          value={currentUser ? currentUser.role : ""}
+                          value={currentUser?.role}
+                          disabled
+                        />
+                      </TableCell>
+                    </TableRow>
+                    <TableRow>
+                      <TableCell>
+                        <TextField
+                          label="Program Studi"
+                          variant="outlined"
+                          value={currentUser?.prodi}
                           disabled
                         />
                       </TableCell>

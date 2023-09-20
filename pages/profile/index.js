@@ -20,6 +20,7 @@ import Navbar from "../../src/components/Navbar";
 import { useEffect } from "react";
 import { getCurrentLoginUser } from "../../src/lib/auth";
 import useAppStore from "../../src/store/global";
+import Image from "next/image";
 
 export default function Profile() {
   const { currentUser } = useAppStore((state) => state);
@@ -61,7 +62,7 @@ export default function Profile() {
                   sx={{ mb: 3 }}
                 >
                   <Typography variant="h5">
-                    Profile {currentUser ? currentUser.nama : ""}
+                    Profile {currentUser?.nama}
                   </Typography>
                   <Link href="/profile/update">
                     <IconButton>
@@ -70,7 +71,7 @@ export default function Profile() {
                   </Link>
                 </Stack>
                 <Avatar
-                  alt={currentUser ? currentUser.nama : ""}
+                  alt={currentUser?.nama}
                   src="/static/images/avatar/1.jpg"
                   sx={{ width: 128, height: 128, mb: 3 }}
                 />
@@ -78,24 +79,33 @@ export default function Profile() {
                   <TableBody>
                     <TableRow>
                       <TableCell>ID</TableCell>
-                      <TableCell>{currentUser ? currentUser.id : ""}</TableCell>
+                      <TableCell>{currentUser?.id}</TableCell>
                     </TableRow>
                     <TableRow>
                       <TableCell>Nama</TableCell>
-                      <TableCell>
-                        {currentUser ? currentUser.nama : ""}
-                      </TableCell>
+                      <TableCell>{currentUser?.nama}</TableCell>
                     </TableRow>
                     <TableRow>
                       <TableCell>Email</TableCell>
-                      <TableCell>
-                        {currentUser ? currentUser.email : ""}
-                      </TableCell>
+                      <TableCell>{currentUser?.email}</TableCell>
                     </TableRow>
                     <TableRow>
                       <TableCell>Role</TableCell>
+                      <TableCell>{currentUser?.role}</TableCell>
+                    </TableRow>
+                    <TableRow>
+                      <TableCell>Program Studi</TableCell>
+                      <TableCell>{currentUser?.prodi}</TableCell>
+                    </TableRow>
+                    <TableRow>
+                      <TableCell>Tanda Tangan</TableCell>
                       <TableCell>
-                        {currentUser ? currentUser.role : ""}
+                        <Image
+                          src={currentUser?.signature}
+                          alt={`Tanda tangan ${currentUser?.nama}`}
+                          width={200}
+                          height={128}
+                        />
                       </TableCell>
                     </TableRow>
                   </TableBody>
