@@ -225,7 +225,6 @@ export default function CreatePengajuan() {
 
           const data = await getPushSubscription(dosenPembimbing1.docId);
           const subscription = data.subscription;
-          console.log("subscription", subscription);
 
           if (subscription) {
             socket.emit("send-notification", {

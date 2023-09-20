@@ -30,7 +30,7 @@ import useSocket, { emitNotification } from "../../../src/lib/socket";
 export default function DetailPengajuan() {
   const router = useRouter();
   const docId = router.query.id;
-  const { currentUser, handleOpenDialog, handleOpenSnackbar, setIsLoading } =
+  const { currentUser, handleOpenDialog, handleOpenSnackBar, setIsLoading } =
     useAppStore((state) => state);
   const socket = useSocket();
   const [pengajuan, setPengajuan] = useState(null);
@@ -138,8 +138,8 @@ export default function DetailPengajuan() {
       const success = await postData("pengajuan", dataToStore, pengajuan.docId);
 
       if (success) {
-        handleOpenSnackbar("Pengajuan berhasil disetujui!", "success");
-        const nextReceiverUid = getNextReceiverUid();
+        handleOpenSnackBar("Pengajuan berhasil disetujui!", "success");
+        const nextReceiverUid = await getNextReceiverUid();
         const data = await getPushSubscription(nextReceiverUid);
         const subscription = data.subscription;
 

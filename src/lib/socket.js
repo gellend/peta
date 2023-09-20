@@ -35,6 +35,7 @@ const useSocket = () => {
 export const emitNotification = (socket, title, body, subscription) => {
   if (socket) {
     try {
+      console.log("sending notification");
       socket.emit("send-notification", {
         title,
         body,
