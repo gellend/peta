@@ -1,6 +1,7 @@
 import {
   Avatar,
   Box,
+  Button,
   Container,
   Grid,
   IconButton,
@@ -15,13 +16,67 @@ import {
   Typography,
 } from "@mui/material";
 
-import { ArrowBack } from "@mui/icons-material";
+import { ArrowBack, Delete } from "@mui/icons-material";
 import Link from "next/link";
 import Navbar from "../../src/components/Navbar";
 import useAppStore from "../../src/store/global";
+import { useEffect, useRef, useState } from "react";
+import SignatureCanvas from "react-signature-canvas";
+import { getCurrentLoginUser } from "../../src/lib/auth";
+import { postData } from "../../src/lib/store";
 
 export default function UpdateProfile() {
-  const { currentUser } = useAppStore((state) => state);
+  const { currentUser, handleOpenSnackBar, setIsLoading } = useAppStore(
+    (state) => state
+  );
+
+  // Signature states
+  const [signature, setSignature] = useState(null);
+  const signatureCanvasRef = useRef();
+
+  // Function to clear the signature
+  const clearSignature = () => {
+    signatureCanvasRef.current.clear();
+    setSignature(null);
+  };
+
+  // Function to save the signature as an image
+  const saveSignature = () => {
+    const signatureImage = signatureCanvasRef.current.toDataURL();
+    setSignature(signatureImage);
+  };
+
+  const handleUpdateProfile = async () => {
+    let dataToStore = { ...currentUser, signature: signature };
+    delete dataToStore.uid;
+
+    try {
+      setIsLoading(true);
+      const isUpdated = await postData("users", dataToStore, currentUser.uid);
+
+      if (isUpdated) {
+        handleOpenSnackBar("Update profile berhasil", "success");
+      } else {
+        handleOpenSnackBar("Update profile gagal", "error");
+      }
+    } catch (error) {
+      console.error("handleUpdateProfile:", error);
+      handleOpenSnackBar("Update profile gagal", "error");
+    } finally {
+      getCurrentLoginUser();
+    }
+  };
+
+  useEffect(() => {
+    if (currentUser) {
+      setSignature(currentUser.signature);
+      signatureCanvasRef.current.fromDataURL(currentUser.signature);
+    }
+  }, [currentUser]);
+
+  useEffect(() => {
+    getCurrentLoginUser();
+  }, []);
 
   return (
     <Box sx={{ display: "flex" }}>
@@ -93,7 +148,55 @@ export default function UpdateProfile() {
                           label="Role"
                           variant="outlined"
                           value={currentUser ? currentUser.role : ""}
+                          disabled
                         />
+                      </TableCell>
+                    </TableRow>
+                    <TableRow>
+                      <TableCell>
+                        <Stack direction="column" spacing={2} alignItems="left">
+                          <Stack
+                            direction="row"
+                            alignItems="center"
+                            spacing={2}
+                          >
+                            <Typography variant="subtitle2">
+                              Tanda tangan
+                            </Typography>
+                            <IconButton
+                              size="small"
+                              variant="contained"
+                              onClick={clearSignature}
+                              color="error"
+                              disabled={!signature}
+                            >
+                              <Delete />
+                            </IconButton>
+                          </Stack>
+                          <div style={{ border: "1px solid black" }}>
+                            <SignatureCanvas
+                              ref={signatureCanvasRef}
+                              penColor="black"
+                              onEnd={() => {
+                                saveSignature();
+                              }}
+                              canvasProps={{
+                                width: 450,
+                                height: 200,
+                              }}
+                            />
+                          </div>
+                        </Stack>
+                      </TableCell>
+                    </TableRow>
+                    <TableRow>
+                      <TableCell>
+                        <Button
+                          variant="contained"
+                          onClick={handleUpdateProfile}
+                        >
+                          Update
+                        </Button>
                       </TableCell>
                     </TableRow>
                   </TableBody>
