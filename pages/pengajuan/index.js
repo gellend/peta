@@ -21,7 +21,8 @@ export default function Pengajuan() {
   const [listPengajuan, setListPengajuan] = useState([]);
 
   const columns = [
-    { field: "id", headerName: "NRP", width: 150 },
+    { field: "id", headerName: "ID" },
+    { field: "nrp", headerName: "NRP", width: 150 },
     { field: "nama", headerName: "Nama", width: 200 },
     { field: "judul", headerName: "Judul", width: 200 },
     { field: "status", headerName: "Status", width: 150 },
@@ -34,7 +35,7 @@ export default function Pengajuan() {
           variant="contained"
           color="primary"
           size="small"
-          onClick={() => router.push(`/pengajuan/detail/${params.row.docId}`)}
+          onClick={() => router.push(`/pengajuan/detail/${params.row.id}`)}
         >
           Detail
         </Button>
@@ -59,17 +60,17 @@ export default function Pengajuan() {
     }
 
     const mappedRows = rows.map((row) => ({
-      docId: row.docId,
+      id: row.docId,
       judul: row.judul,
       nama: row.nama,
-      id: row.id,
+      nrp: row.id,
       status: row.status,
       action: (
         <Button
           variant="contained"
           color="primary"
           size="small"
-          onClick={() => router.push(`/pengajuan/detail/${row.docId}`)}
+          onClick={() => router.push(`/pengajuan/detail/${row.id}`)}
         >
           Detail
         </Button>

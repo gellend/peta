@@ -17,15 +17,21 @@ import { useRouter } from "next/router";
 import Navbar from "../../../src/components/Navbar";
 import { useEffect, useState } from "react";
 import { getCurrentLoginUser } from "../../../src/lib/auth";
-import { getDetailPengajuan } from "../../../src/lib/store";
+import {
+  getDetailPengajuan,
+  getPushSubscription,
+  getUserDataById,
+  postData,
+} from "../../../src/lib/store";
 import { generateDownloadUrl } from "../../../src/lib/upload";
 import useAppStore from "../../../src/store/global";
-import useSocket from "../../../src/lib/socket";
+import useSocket, { emitNotification } from "../../../src/lib/socket";
 
 export default function DetailPengajuan() {
   const router = useRouter();
   const docId = router.query.id;
-  const { currentUser, handleOpenDialog } = useAppStore((state) => state);
+  const { currentUser, handleOpenDialog, handleOpenSnackbar, setIsLoading } =
+    useAppStore((state) => state);
   const socket = useSocket();
   const [pengajuan, setPengajuan] = useState(null);
 
@@ -34,21 +40,123 @@ export default function DetailPengajuan() {
     setPengajuan(rows);
   };
 
-  const getStatus = (status) => {
-    if (status === "Pending") {
-      return <Chip label="Pending" color="warning" sx={{ maxWidth: 100 }} />;
+  const getStatusChip = (status) => {
+    const statusMap = {
+      Pending: { label: "Pending", color: "warning" },
+      "Disetujui oleh Dosen Pembimbing 1": {
+        label: "Disetujui oleh Dosen Pembimbing 1",
+        color: "success",
+      },
+      "Disetujui oleh Dosen Pembimbing 2": {
+        label: "Disetujui oleh Dosen Pembimbing 2",
+        color: "success",
+      },
+      "Disetujui oleh Dosen Pembimbing 3": {
+        label: "Disetujui oleh Dosen Pembimbing 3",
+        color: "success",
+      },
+      "Ditolak oleh Dosen Pembimbing 1": {
+        label: "Ditolak oleh Dosen Pembimbing 1",
+        color: "error",
+      },
+      "Ditolak oleh Dosen Pembimbing 2": {
+        label: "Ditolak oleh Dosen Pembimbing 2",
+        color: "error",
+      },
+      "Ditolak oleh Dosen Pembimbing 3": {
+        label: "Ditolak oleh Dosen Pembimbing 3",
+        color: "error",
+      },
+    };
+
+    const statusInfo = statusMap[status];
+
+    if (!statusInfo) {
+      return "";
     }
+
+    return (
+      <Chip
+        label={statusInfo.label}
+        color={statusInfo.color}
+        sx={{ maxWidth: 100 }}
+      />
+    );
   };
 
-  const getUrl = (path) => {
+  const openUrlInNewTab = (path) => {
     generateDownloadUrl(path, (url) => {
       window.open(url, "_blank");
     });
   };
 
-  const approvePengajuan = (v) => {
-    if (socket) {
-      socket.emit("input-change", v);
+  const getUrutanDosen = (dosenId) => {
+    const dosenPembimbingKeys = [
+      "",
+      pengajuan.dosenPembimbing1,
+      pengajuan.dosenPembimbing2,
+      pengajuan.dosenPembimbing3,
+    ];
+    return dosenPembimbingKeys.indexOf(dosenId);
+  };
+
+  const getNextReceiverUid = async () => {
+    let data;
+    let key = `dosenPembimbing${getUrutanDosen(currentUser.id) + 1}`;
+    let nextReceiverId = pengajuan[key];
+
+    if (!nextReceiverId) {
+      if (!pengajuan.signatureDosenKoordinatorLab) {
+        nextReceiverId = pengajuan.dosenKoordinatorLab;
+      } else {
+        nextReceiverId = pengajuan.kepalaProdi;
+      }
+    }
+
+    if (nextReceiverId) {
+      data = await getUserDataById(nextReceiverId);
+    }
+
+    return data.docId;
+  };
+
+  const approvePengajuan = async (v) => {
+    let urutanDosen = getUrutanDosen(currentUser.id);
+    let currentDosen = `Dosen Pembimbing ${urutanDosen}`;
+    let signature = `signatureDosenPembimbing${urutanDosen}`;
+    let keterangan = `keteranganDosenPembimbing${urutanDosen}`;
+
+    let dataToStore = {
+      ...pengajuan,
+      status: `Disetujui oleh ${currentDosen}`,
+      [signature]: currentUser.signature,
+      [keterangan]: v,
+    };
+
+    try {
+      setIsLoading(true);
+      const success = await postData("pengajuan", dataToStore, pengajuan.docId);
+
+      if (success) {
+        handleOpenSnackbar("Pengajuan berhasil disetujui!", "success");
+        const nextReceiverUid = getNextReceiverUid();
+        const data = await getPushSubscription(nextReceiverUid);
+        const subscription = data.subscription;
+
+        if (socket) {
+          emitNotification(
+            socket,
+            "Pengajuan",
+            `Pengajuan baru menunggu approval dari Anda`,
+            subscription
+          );
+        }
+      }
+    } catch (error) {
+      console.log(error);
+    } finally {
+      getPengajuan(docId);
+      setIsLoading(false);
     }
   };
 
@@ -99,71 +207,47 @@ export default function DetailPengajuan() {
                 }}
               >
                 <Stack spacing={2} sx={{ mb: 3 }}>
-                  <Typography variant="h5">
-                    {pengajuan ? pengajuan.judul : ""}
-                  </Typography>
+                  <Typography variant="h5">{pengajuan?.judul}</Typography>
                   <Typography variant="subtitle1">
-                    Oleh {pengajuan ? pengajuan.nama : ""}
+                    Oleh {pengajuan?.nama}
                   </Typography>
                   <Divider />
                   <Stack direction="row" spacing={2} alignItems="center">
                     <Typography variant="body2">Status</Typography>
-                    {pengajuan ? getStatus(pengajuan.status) : ""}
+                    {pengajuan ? getStatusChip(pengajuan.status) : ""}
                   </Stack>
                 </Stack>
                 <Stack spacing={2} sx={{ mb: 3 }}>
                   <Typography variant="body1">
-                    {pengajuan ? pengajuan.deskripsi : ""}
+                    {pengajuan?.deskripsi}
                   </Typography>
                   <Divider />
                   <Typography variant="body2">Berkas</Typography>
                   <Stack direction="row" spacing={1}>
-                    <Chip
-                      icon={<OpenInNew />}
-                      label="Pengajuan"
-                      variant="outlined"
-                      color="primary"
-                      onClick={() => getUrl(pengajuan.pengajuanFile)}
-                    />
-                    <Chip
-                      icon={<OpenInNew />}
-                      label="KHS"
-                      variant="outlined"
-                      color="primary"
-                      onClick={() => getUrl(pengajuan.khsFile)}
-                    />
-                    <Chip
-                      icon={<OpenInNew />}
-                      label="FRS"
-                      variant="outlined"
-                      color="primary"
-                      onClick={() => getUrl(pengajuan.frsFile)}
-                    />
-                    <Chip
-                      icon={<OpenInNew />}
-                      label="Jalur Pra & Co"
-                      variant="outlined"
-                      color="primary"
-                      onClick={() => getUrl(pengajuan.jalurPraCoFile)}
-                    />
-                    <Chip
-                      icon={<OpenInNew />}
-                      label="TOEFL"
-                      variant="outlined"
-                      color="primary"
-                      onClick={() => getUrl(pengajuan.toeflFile)}
-                    />
-                    <Chip
-                      icon={<OpenInNew />}
-                      label="Kompetensi"
-                      variant="outlined"
-                      color="primary"
-                      onClick={() => getUrl(pengajuan.kompetensiFile)}
-                    />
+                    {[
+                      { label: "Pengajuan", file: pengajuan?.pengajuanFile },
+                      { label: "KHS", file: pengajuan?.khsFile },
+                      { label: "FRS", file: pengajuan?.frsFile },
+                      {
+                        label: "Jalur Pra & Co",
+                        file: pengajuan?.jalurPraCoFile,
+                      },
+                      { label: "TOEFL", file: pengajuan?.toeflFile },
+                      { label: "Kompetensi", file: pengajuan?.kompetensiFile },
+                    ].map((item, index) => (
+                      <Chip
+                        key={index}
+                        icon={<OpenInNew />}
+                        label={item.label}
+                        variant="outlined"
+                        color="primary"
+                        onClick={() => openUrlInNewTab(item.file)}
+                      />
+                    ))}
                   </Stack>
                 </Stack>
                 {/* scope: only Dosen can see this button */}
-                {currentUser && currentUser.role === "Dosen" && (
+                {currentUser?.role === "Dosen" && (
                   <Stack direction="row" spacing={1}>
                     <Button
                       variant="contained"

@@ -32,4 +32,18 @@ const useSocket = () => {
   return socket;
 };
 
+export const emitNotification = (socket, title, body, subscription) => {
+  if (socket) {
+    try {
+      socket.emit("send-notification", {
+        title,
+        body,
+        subscription,
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  }
+};
+
 export default useSocket;

@@ -86,6 +86,16 @@ export const getUserDataByUid = async (uid) => {
   }
 };
 
+export const getUserDataById = async (id) => {
+  try {
+    const user = await getDataWithQuery("users", "id", "==", id);
+    return user[0];
+  } catch (error) {
+    console.error("getUserById:", error);
+    throw error;
+  }
+};
+
 export const getUsersByRoles = async (roles) => {
   try {
     const users = await getDataWithQuery("users", "role", "in", roles);

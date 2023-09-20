@@ -285,7 +285,7 @@ export default function CreatePengajuan() {
 
   // Helper function to merge form data with file data and other necessary data
   const mergeFormAndFileData = (pdfPath, fileData) => {
-    return {
+    let data = {
       ...values,
       ...fileData,
       pengajuanFile: pdfPath,
@@ -293,6 +293,9 @@ export default function CreatePengajuan() {
       status: "Pending",
       timestamp: serverTimestamp(),
     };
+    delete data.created_at;
+
+    return data;
   };
 
   // Helper function to store merged data to Firestore
