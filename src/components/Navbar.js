@@ -251,7 +251,7 @@ export default function Navbar() {
             onClose={handleCloseUserMenu}
             onClick={handleCloseUserMenu}
           >
-            <Link href="/profil">
+            <Link href="/profile">
               <MenuItem>
                 <ListItemIcon>
                   <PersonIcon fontSize="small" />

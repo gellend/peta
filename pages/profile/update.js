@@ -20,7 +20,7 @@ import Link from "next/link";
 import Navbar from "../../src/components/Navbar";
 import useAppStore from "../../src/store/global";
 
-export default function UpdateProfil() {
+export default function UpdateProfile() {
   const { currentUser } = useAppStore((state) => state);
 
   return (
@@ -55,12 +55,12 @@ export default function UpdateProfil() {
                   spacing={2}
                   sx={{ mb: 3 }}
                 >
-                  <Link href="/profil">
+                  <Link href="/profile">
                     <IconButton>
                       <ArrowBack />
                     </IconButton>
                   </Link>
-                  <Typography variant="h5">Update profil</Typography>
+                  <Typography variant="h5">Update profile</Typography>
                 </Stack>
                 <Avatar
                   alt={currentUser ? currentUser.nama : ""}

@@ -21,7 +21,7 @@ import { useEffect } from "react";
 import { getCurrentLoginUser } from "../../src/lib/auth";
 import useAppStore from "../../src/store/global";
 
-export default function Profil() {
+export default function Profile() {
   const { currentUser } = useAppStore((state) => state);
 
   useEffect(() => {
@@ -61,9 +61,9 @@ export default function Profil() {
                   sx={{ mb: 3 }}
                 >
                   <Typography variant="h5">
-                    Profil {currentUser ? currentUser.nama : ""}
+                    Profile {currentUser ? currentUser.nama : ""}
                   </Typography>
-                  <Link href="/profil/update">
+                  <Link href="/profile/update">
                     <IconButton>
                       <Edit />
                     </IconButton>
