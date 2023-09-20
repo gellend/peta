@@ -75,13 +75,7 @@ export default function DetailPengajuan() {
       return "";
     }
 
-    return (
-      <Chip
-        label={statusInfo.label}
-        color={statusInfo.color}
-        sx={{ maxWidth: 100 }}
-      />
-    );
+    return <Chip label={statusInfo.label} color={statusInfo.color} />;
   };
 
   const openUrlInNewTab = (path) => {
