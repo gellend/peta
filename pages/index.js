@@ -51,6 +51,16 @@ export default function LogIn() {
     try {
       if ("serviceWorker" in navigator) {
         const registration = await navigator.serviceWorker.ready;
+
+        // Check for existing subscription
+        const existingSubscription =
+          await registration.pushManager.getSubscription();
+
+        if (existingSubscription) {
+          // Unsubscribe from the existing subscription
+          await existingSubscription.unsubscribe();
+        }
+
         const subscription = await registration.pushManager.subscribe({
           userVisibleOnly: true,
           applicationServerKey: urlBase64ToUint8Array(
