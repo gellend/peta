@@ -78,6 +78,8 @@ export const getUserDataByEmail = async (email) => {
 };
 
 export const getUserDataByUid = async (uid) => {
+  if (!uid) return null;
+
   try {
     const user = await getDoc(doc(db, "users", uid));
     return user.data();
@@ -183,6 +185,8 @@ export const getPushSubscription = async (userId) => {
 };
 
 export const storeNotification = async (notification) => {
+  if (!notification) return false;
+
   try {
     const success = await postData("notifications", notification);
     return success;
@@ -193,16 +197,23 @@ export const storeNotification = async (notification) => {
 };
 
 export const streamNotifications = async (uid, callback) => {
-  const q = query(
-    collection(db, "notifications"),
-    where("receiver_uid", "==", uid)
-  );
-  const unsubscribe = onSnapshot(q, (querySnapshot) => {
-    const notifications = [];
-    querySnapshot.forEach((doc) => {
-      notifications.push({ ...doc.data(), docId: doc.id });
+  if (!uid) return;
+
+  try {
+    const q = query(
+      collection(db, "notifications"),
+      where("receiver_uid", "==", uid)
+    );
+    const unsubscribe = onSnapshot(q, (querySnapshot) => {
+      const notifications = [];
+      querySnapshot.forEach((doc) => {
+        notifications.push({ ...doc.data(), docId: doc.id });
+      });
+      callback(notifications);
     });
-    callback(notifications);
-  });
-  return unsubscribe;
+    return unsubscribe;
+  } catch (error) {
+    console.error("streamNotifications:", error);
+    return null;
+  }
 };
