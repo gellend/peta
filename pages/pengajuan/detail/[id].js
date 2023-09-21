@@ -35,6 +35,7 @@ export default function DetailPengajuan() {
     useAppStore((state) => state);
   const socket = useSocket();
   const [pengajuan, setPengajuan] = useState(null);
+  const [currentDosenKey, setCurrentDosenKey] = useState("");
 
   const getPengajuan = async (docId) => {
     const rows = await getDetailPengajuan(docId);
@@ -85,20 +86,68 @@ export default function DetailPengajuan() {
     });
   };
 
+  const shouldDisableApproveButton = () => {
+    if (!pengajuan) return true;
+    if (currentUser?.role !== "Dosen") return true;
+    if (!currentUser?.signature) return true;
+
+    if (pengajuan.status === "Pending") {
+      if (currentDosenKey === "dosenPembimbing1") return false;
+      if (currentDosenKey === "dosenPembimbing2") return true;
+      if (currentDosenKey === "dosenPembimbing3") return true;
+    }
+
+    if (pengajuan.status === "Disetujui oleh Dosen Pembimbing 1") {
+      if (currentDosenKey === "dosenPembimbing1") return true;
+      if (currentDosenKey === "dosenPembimbing2") return false;
+      if (currentDosenKey === "dosenPembimbing3") return true;
+    }
+
+    if (pengajuan.status === "Disetujui oleh Dosen Pembimbing 2") {
+      if (currentDosenKey === "dosenPembimbing1") return true;
+      if (currentDosenKey === "dosenPembimbing2") return true;
+      if (currentDosenKey === "dosenPembimbing3") return false;
+    }
+
+    if (pengajuan.status === "Disetujui oleh Dosen Pembimbing 3") {
+      if (currentDosenKey === "dosenPembimbing1") return true;
+      if (currentDosenKey === "dosenPembimbing2") return true;
+      if (currentDosenKey === "dosenPembimbing3") return true;
+    }
+
+    if (pengajuan.status === "Ditolak oleh Dosen Pembimbing 1") {
+      if (currentDosenKey === "dosenPembimbing1") return true;
+      if (currentDosenKey === "dosenPembimbing2") return true;
+      if (currentDosenKey === "dosenPembimbing3") return true;
+    }
+
+    if (pengajuan.status === "Ditolak oleh Dosen Pembimbing 2") {
+      if (currentDosenKey === "dosenPembimbing1") return true;
+      if (currentDosenKey === "dosenPembimbing2") return true;
+      if (currentDosenKey === "dosenPembimbing3") return true;
+    }
+
+    if (pengajuan.status === "Ditolak oleh Dosen Pembimbing 3") {
+      if (currentDosenKey === "dosenPembimbing1") return true;
+      if (currentDosenKey === "dosenPembimbing2") return true;
+      if (currentDosenKey === "dosenPembimbing3") return true;
+    }
+  };
+
   const getUrutanDosen = (dosenId) => {
     const dosenPembimbingKeys = [
       "",
-      pengajuan.dosenPembimbing1.id,
-      pengajuan.dosenPembimbing2.id,
-      pengajuan.dosenPembimbing3.id,
+      pengajuan?.dosenPembimbing1.id,
+      pengajuan?.dosenPembimbing2.id,
+      pengajuan?.dosenPembimbing3.id,
     ];
     return dosenPembimbingKeys.indexOf(dosenId);
   };
 
   const getNextReceiverUid = async () => {
     let data;
-    let key = `dosenPembimbing${getUrutanDosen(currentUser.id) + 1}`;
-    let nextReceiverId = pengajuan[key].id;
+    let keyNextDosen = `dosenPembimbing${getUrutanDosen(currentUser.id) + 1}`;
+    let nextReceiverId = pengajuan[keyNextDosen].id;
 
     if (!nextReceiverId) {
       if (!pengajuan.signatureDosenKoordinatorLab) {
@@ -117,22 +166,18 @@ export default function DetailPengajuan() {
 
   const approvePengajuan = async (v) => {
     let urutanDosen = getUrutanDosen(currentUser.id);
-
     let currentDosen = `Dosen Pembimbing ${urutanDosen}`;
-    let key = `dosenPembimbing${urutanDosen}`;
 
     let dataToStore = {
       ...pengajuan,
       status: `Disetujui oleh ${currentDosen}`,
-      [key]: {
+      [currentDosenKey]: {
         id: currentUser.id,
         signature: currentUser.signature,
         keterangan: v,
         nama: currentUser.nama,
       },
     };
-
-    console.log(dataToStore);
 
     try {
       setIsLoading(true);
@@ -162,8 +207,17 @@ export default function DetailPengajuan() {
 
   useEffect(() => {
     getCurrentLoginUser();
-    if (docId) getPengajuan(docId);
   }, []);
+
+  useEffect(() => {
+    if (docId) getPengajuan(docId);
+  }, [docId]);
+
+  useEffect(() => {
+    if (currentUser?.role === "Dosen") {
+      setCurrentDosenKey(`dosenPembimbing${getUrutanDosen(currentUser.id)}`);
+    }
+  }, [pengajuan]);
 
   return (
     <Box sx={{ display: "flex" }}>
@@ -248,8 +302,9 @@ export default function DetailPengajuan() {
                     ))}
                   </Stack>
                 </Stack>
-                {/* scope: only Dosen can see this button */}
-                {currentUser?.role === "Dosen" && (
+                {(currentUser?.role === "Dosen" ||
+                  currentUser?.role === "Koordinator Lab" ||
+                  currentUser?.role === "Kepala Prodi") && (
                   <Stack direction="row" spacing={1}>
                     <Button
                       variant="contained"
@@ -257,10 +312,15 @@ export default function DetailPengajuan() {
                       onClick={() =>
                         handleOpenDialog("Setujui pengajuan?", approvePengajuan)
                       }
+                      disabled={shouldDisableApproveButton()}
                     >
                       Setujui
                     </Button>
-                    <Button variant="contained" color="error">
+                    <Button
+                      variant="contained"
+                      color="error"
+                      disabled={shouldDisableApproveButton()}
+                    >
                       Tolak
                     </Button>
                   </Stack>
