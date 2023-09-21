@@ -88,9 +88,9 @@ export default function DetailPengajuan() {
   const getUrutanDosen = (dosenId) => {
     const dosenPembimbingKeys = [
       "",
-      pengajuan.dosenPembimbing1,
-      pengajuan.dosenPembimbing2,
-      pengajuan.dosenPembimbing3,
+      pengajuan.dosenPembimbing1.id,
+      pengajuan.dosenPembimbing2.id,
+      pengajuan.dosenPembimbing3.id,
     ];
     return dosenPembimbingKeys.indexOf(dosenId);
   };
@@ -98,7 +98,7 @@ export default function DetailPengajuan() {
   const getNextReceiverUid = async () => {
     let data;
     let key = `dosenPembimbing${getUrutanDosen(currentUser.id) + 1}`;
-    let nextReceiverId = pengajuan[key];
+    let nextReceiverId = pengajuan[key].id;
 
     if (!nextReceiverId) {
       if (!pengajuan.signatureDosenKoordinatorLab) {
@@ -136,20 +136,19 @@ export default function DetailPengajuan() {
 
     try {
       setIsLoading(true);
-      const success = false; // await postData("pengajuan", dataToStore, pengajuan.docId);
+      const success = await postData("pengajuan", dataToStore, pengajuan.docId);
 
       if (success) {
         handleOpenSnackBar("Pengajuan berhasil disetujui!", "success");
         const nextReceiverUid = await getNextReceiverUid();
         const data = await getPushSubscription(nextReceiverUid);
-        const subscription = data.subscription;
 
         if (socket) {
           emitNotification(
             socket,
             "Pengajuan",
             `Pengajuan baru menunggu approval dari Anda`,
-            subscription
+            data?.subscription
           );
         }
       }
