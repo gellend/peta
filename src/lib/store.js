@@ -113,26 +113,18 @@ export const getPengajuanByMahasiswa = async (email) => {
 };
 
 export const getPengajuanByDosen = async (id) => {
-  const rows1 = await getDataWithQuery(
-    "pengajuan",
-    "dosenPembimbing1",
-    "==",
-    id
-  );
-  const rows2 = await getDataWithQuery(
-    "pengajuan",
-    "dosenPembimbing2",
-    "==",
-    id
-  );
-  const rows3 = await getDataWithQuery(
-    "pengajuan",
-    "dosenPembimbing3",
-    "==",
-    id
-  );
-  const rows = [...rows1, ...rows2, ...rows3];
-  return rows;
+  const rows = await getDataFromCollection("pengajuan");
+
+  const filteredRows = rows.filter((row) => {
+    const { dosenPembimbing1, dosenPembimbing2, dosenPembimbing3 } = row;
+    return (
+      dosenPembimbing1.id === id ||
+      (dosenPembimbing2 && dosenPembimbing2.id === id) ||
+      (dosenPembimbing3 && dosenPembimbing3.id === id)
+    );
+  });
+
+  return filteredRows;
 };
 
 export const getPengajuanByKepalaProdi = async (prodi) => {
