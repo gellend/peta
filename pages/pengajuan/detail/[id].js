@@ -26,6 +26,7 @@ import {
 import { generateDownloadUrl } from "../../../src/lib/upload";
 import useAppStore from "../../../src/store/global";
 import useSocket, { emitNotification } from "../../../src/lib/socket";
+import SignatureAlert from "../../../src/components/SignatureAlert";
 
 export default function DetailPengajuan() {
   const router = useRouter();
@@ -190,6 +191,8 @@ export default function DetailPengajuan() {
               <Typography variant="h5">Detail Pengajuan</Typography>
             </Stack>
           </Stack>
+          {/* check if signature is exist */}
+          <SignatureAlert />
 
           <Grid container spacing={3}>
             <Grid item xs={12}>

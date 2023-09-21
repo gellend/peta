@@ -1,12 +1,4 @@
-import {
-  Alert,
-  Box,
-  Button,
-  Container,
-  Grid,
-  Paper,
-  Toolbar,
-} from "@mui/material";
+import { Box, Button, Container, Grid, Paper, Toolbar } from "@mui/material";
 import Navbar from "../../src/components/Navbar";
 import { useEffect, useState } from "react";
 import { getCurrentLoginUser } from "../../src/lib/auth";
@@ -20,7 +12,7 @@ import {
 import useAppStore from "../../src/store/global";
 import { useRouter } from "next/router";
 import DataTable from "../../src/components/DataTable";
-import Link from "next/link";
+import SignatureAlert from "../../src/components/SignatureAlert";
 
 export default function Pengajuan() {
   const router = useRouter();
@@ -114,6 +106,9 @@ export default function Pengajuan() {
       >
         <Toolbar />
         <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
+          {/* check if signature is exist */}
+          <SignatureAlert />
+
           {/* scope: only Mahasiswa can see this button */}
           {currentUser && currentUser.role === "Mahasiswa" && (
             <Button
@@ -121,6 +116,7 @@ export default function Pengajuan() {
               variant="contained"
               onClick={() => router.push("/pengajuan/create")}
               sx={{ mb: 3 }}
+              disabled={currentUser?.signature ? false : true}
             >
               Ajukan Judul
             </Button>
@@ -133,14 +129,6 @@ export default function Pengajuan() {
             }}
           >
             <Grid container spacing={1}>
-              {!currentUser?.signature && (
-                <Grid item xs={12}>
-                  <Alert severity="error">
-                    Anda belum menambahkan tanda tangan. Silahkan{" "}
-                    <Link href="/profile/update">update disini</Link>
-                  </Alert>
-                </Grid>
-              )}
               <Grid item xs={12}>
                 {listPengajuan.length > 0 ? (
                   <DataTable columns={columns} rows={listPengajuan} />

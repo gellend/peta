@@ -93,15 +93,22 @@ export default function Profile() {
                       <TableCell>Role</TableCell>
                       <TableCell>{currentUser?.role}</TableCell>
                     </TableRow>
-                    <TableRow>
-                      <TableCell>Program Studi</TableCell>
-                      <TableCell>{currentUser?.prodi}</TableCell>
-                    </TableRow>
+                    {currentUser &&
+                      (currentUser.role == "Mahasiswa" ||
+                        currentUser.role == "Kepala Prodi") && (
+                        <TableRow>
+                          <TableCell>Program Studi</TableCell>
+                          <TableCell>{currentUser?.prodi}</TableCell>
+                        </TableRow>
+                      )}
                     <TableRow>
                       <TableCell>Tanda Tangan</TableCell>
                       <TableCell>
                         <Image
-                          src={currentUser?.signature}
+                          src={
+                            currentUser?.signature ??
+                            "/static/images/signature.png"
+                          }
                           alt={`Tanda tangan ${currentUser?.nama}`}
                           width={200}
                           height={128}
