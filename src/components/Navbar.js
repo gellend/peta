@@ -17,7 +17,7 @@ import {
   Typography,
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
-import { getAuth, signOut } from "firebase/auth";
+import { signOut } from "firebase/auth";
 
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import IconButton from "@mui/material/IconButton";
@@ -28,11 +28,11 @@ import MuiAppBar from "@mui/material/AppBar";
 import MuiDrawer from "@mui/material/Drawer";
 import NotificationsIcon from "@mui/icons-material/Notifications";
 import PersonIcon from "@mui/icons-material/Person";
-import { createFirebaseApp } from "../../firebase/clientApp";
 import { useRouter } from "next/router";
 import { useState } from "react";
 import useAppStore from "../store/global";
 import config from "../const/config.json";
+import { auth } from "../lib/auth";
 
 const drawerWidth = 240;
 
@@ -80,9 +80,6 @@ const Drawer = styled(MuiDrawer, {
   },
 }));
 
-const app = createFirebaseApp();
-const auth = getAuth(app);
-
 export default function Navbar() {
   // AppBar
   const [open, setOpen] = useState(false);
@@ -110,7 +107,9 @@ export default function Navbar() {
   // Notif
 
   const router = useRouter();
-  const { currentUser, clearCurrentUser } = useAppStore((state) => state);
+  const { currentUser, clearCurrentUser, setIsLoading } = useAppStore(
+    (state) => state
+  );
 
   let currentPage = router.pathname;
 
@@ -262,10 +261,15 @@ export default function Navbar() {
             <Divider />
             <MenuItem
               onClick={() => {
-                signOut(auth).then(() => {
-                  clearCurrentUser();
-                  router.push("/");
-                });
+                setIsLoading(true);
+                signOut(auth)
+                  .then(() => {
+                    clearCurrentUser();
+                    router.push("/");
+                  })
+                  .finally(() => {
+                    setIsLoading(false);
+                  });
               }}
             >
               <ListItemIcon>
@@ -324,10 +328,15 @@ export default function Navbar() {
           <ListItemButton
             data-cy="btn-logout"
             onClick={() => {
-              signOut(auth).then(() => {
-                clearCurrentUser();
-                router.push("/");
-              });
+              setIsLoading(true);
+              signOut(auth)
+                .then(() => {
+                  clearCurrentUser();
+                  router.push("/");
+                })
+                .finally(() => {
+                  setIsLoading(false);
+                });
             }}
           >
             <ListItemIcon>
