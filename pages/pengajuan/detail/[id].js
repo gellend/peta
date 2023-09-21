@@ -22,6 +22,7 @@ import {
   getPushSubscription,
   getUserDataById,
   postData,
+  storeNotification,
 } from "../../../src/lib/store";
 import { generateDownloadUrl } from "../../../src/lib/upload";
 import useAppStore from "../../../src/store/global";
@@ -187,6 +188,15 @@ export default function DetailPengajuan() {
         handleOpenSnackBar("Pengajuan berhasil disetujui!", "success");
         const nextReceiverUid = await getNextReceiverUid();
         const data = await getPushSubscription(nextReceiverUid);
+
+        // Store notification in Firestore
+        await storeNotification({
+          title: "Pengajuan",
+          body: `Pengajuan baru menunggu approval dari Anda`,
+          sender_uid: currentUser.uid,
+          sender_name: currentUser.nama,
+          receiver_uid: nextReceiverUid,
+        });
 
         if (socket) {
           emitNotification(

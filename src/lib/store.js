@@ -180,3 +180,13 @@ export const getPushSubscription = async (userId) => {
     return null;
   }
 };
+
+export const storeNotification = async (notification) => {
+  try {
+    const success = await postData("notifications", notification);
+    return success;
+  } catch (error) {
+    console.error("storeNotification:", error);
+    return false;
+  }
+};
