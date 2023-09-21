@@ -29,10 +29,11 @@ import MuiDrawer from "@mui/material/Drawer";
 import NotificationsIcon from "@mui/icons-material/Notifications";
 import PersonIcon from "@mui/icons-material/Person";
 import { useRouter } from "next/router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import useAppStore from "../store/global";
 import config from "../const/config.json";
 import { auth } from "../lib/auth";
+import { streamNotifications } from "../lib/store";
 
 const drawerWidth = 240;
 
@@ -104,6 +105,19 @@ export default function Navbar() {
 
   const handleOpenNotif = (e) => setNotifAnchorEl(e.currentTarget);
   const handleCloseNotif = () => setNotifAnchorEl(null);
+
+  const [notifications, setNotifications] = useState([]);
+
+  useEffect(() => {
+    const getNotifications = async () => {
+      await streamNotifications(currentUser?.uid, (notifications) => {
+        setNotifications(notifications);
+      });
+    };
+
+    getNotifications();
+  }, []);
+
   // Notif
 
   const router = useRouter();
@@ -145,7 +159,7 @@ export default function Navbar() {
           </Typography>
           <Tooltip title="Notifikasi">
             <IconButton onClick={handleOpenNotif} color="inherit">
-              <Badge badgeContent={4} color="secondary">
+              <Badge badgeContent={notifications?.length} color="secondary">
                 <NotificationsIcon />
               </Badge>
             </IconButton>
@@ -160,78 +174,37 @@ export default function Navbar() {
               horizontal: "left",
             }}
           >
-            <List
-              sx={{ width: "100%", maxWidth: 360, bgcolor: "background.paper" }}
-            >
-              <ListItem alignItems="flex-start">
-                <ListItemAvatar>
-                  <Avatar alt="Remy Sharp" src="/static/images/avatar/1.jpg" />
-                </ListItemAvatar>
-                <ListItemText
-                  primary="Brunch this weekend?"
-                  secondary={
-                    <>
-                      <Typography
-                        sx={{ display: "inline" }}
-                        component="span"
-                        variant="body2"
-                        color="text.primary"
-                      >
-                        Ali Connors
-                      </Typography>
-                      {" — I'll be in your neighborhood doing errands this…"}
-                    </>
-                  }
-                />
-              </ListItem>
-              <Divider variant="inset" component="li" />
-              <ListItem alignItems="flex-start">
-                <ListItemAvatar>
-                  <Avatar
-                    alt="Travis Howard"
-                    src="/static/images/avatar/2.jpg"
-                  />
-                </ListItemAvatar>
-                <ListItemText
-                  primary="Summer BBQ"
-                  secondary={
-                    <>
-                      <Typography
-                        sx={{ display: "inline" }}
-                        component="span"
-                        variant="body2"
-                        color="text.primary"
-                      >
-                        to Scott, Alex, Jennifer
-                      </Typography>
-                      {" — Wish I could come, but I'm out of town this…"}
-                    </>
-                  }
-                />
-              </ListItem>
-              <Divider variant="inset" component="li" />
-              <ListItem alignItems="flex-start">
-                <ListItemAvatar>
-                  <Avatar alt="Cindy Baker" src="/static/images/avatar/3.jpg" />
-                </ListItemAvatar>
-                <ListItemText
-                  primary="Oui Oui"
-                  secondary={
-                    <>
-                      <Typography
-                        sx={{ display: "inline" }}
-                        component="span"
-                        variant="body2"
-                        color="text.primary"
-                      >
-                        Sandra Adams
-                      </Typography>
-                      {" — Do you have Paris recommendations? Have you ever…"}
-                    </>
-                  }
-                />
-              </ListItem>
-            </List>
+            {notifications && notifications.length === 0 && (
+              <Typography
+                sx={{
+                  py: 2,
+                  px: 3,
+                  width: 360,
+                  maxWidth: 360,
+                  bgcolor: "background.paper",
+                }}
+              >
+                Tidak ada notifikasi
+              </Typography>
+            )}
+
+            {notifications && notifications.length > 0 && (
+              <List
+                sx={{ width: 360, maxWidth: 360, bgcolor: "background.paper" }}
+              >
+                {notifications.map((notif) => (
+                  <>
+                    <ListItem key={notif.docId} alignItems="flex-start">
+                      <ListItemText
+                        primary={notif.title}
+                        secondary={notif.body}
+                      />
+                    </ListItem>
+                    <Divider component="li" />
+                  </>
+                ))}
+              </List>
+            )}
           </Popover>
           <Tooltip title="Pengaturan Akun">
             <IconButton

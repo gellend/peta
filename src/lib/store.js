@@ -9,6 +9,7 @@ import {
   setDoc,
   getDoc,
   documentId,
+  onSnapshot,
 } from "firebase/firestore";
 
 const app = createFirebaseApp();
@@ -189,4 +190,19 @@ export const storeNotification = async (notification) => {
     console.error("storeNotification:", error);
     return false;
   }
+};
+
+export const streamNotifications = async (uid, callback) => {
+  const q = query(
+    collection(db, "notifications"),
+    where("receiver_uid", "==", uid)
+  );
+  const unsubscribe = onSnapshot(q, (querySnapshot) => {
+    const notifications = [];
+    querySnapshot.forEach((doc) => {
+      notifications.push({ ...doc.data(), docId: doc.id });
+    });
+    callback(notifications);
+  });
+  return unsubscribe;
 };
