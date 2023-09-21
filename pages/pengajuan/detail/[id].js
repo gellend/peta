@@ -117,20 +117,26 @@ export default function DetailPengajuan() {
 
   const approvePengajuan = async (v) => {
     let urutanDosen = getUrutanDosen(currentUser.id);
+
     let currentDosen = `Dosen Pembimbing ${urutanDosen}`;
-    let signature = `signatureDosenPembimbing${urutanDosen}`;
-    let keterangan = `keteranganDosenPembimbing${urutanDosen}`;
+    let key = `dosenPembimbing${urutanDosen}`;
 
     let dataToStore = {
       ...pengajuan,
       status: `Disetujui oleh ${currentDosen}`,
-      [signature]: currentUser.signature,
-      [keterangan]: v,
+      [key]: {
+        id: currentUser.id,
+        signature: currentUser.signature,
+        keterangan: v,
+        nama: currentUser.nama,
+      },
     };
+
+    console.log(dataToStore);
 
     try {
       setIsLoading(true);
-      const success = await postData("pengajuan", dataToStore, pengajuan.docId);
+      const success = false; // await postData("pengajuan", dataToStore, pengajuan.docId);
 
       if (success) {
         handleOpenSnackBar("Pengajuan berhasil disetujui!", "success");

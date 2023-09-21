@@ -18,7 +18,6 @@ import {
   TableRow,
 } from "@mui/material";
 import { PDFDocument } from "pdf-lib";
-import SignatureCanvas from "react-signature-canvas";
 
 import Navbar from "../../src/components/Navbar";
 import { useRouter } from "next/router";
@@ -197,7 +196,7 @@ export default function CreatePengajuan() {
     if (isValid) {
       try {
         setIsLoading(true);
-        const pdfPath = await uploadPdfToStorage(signature);
+        const pdfPath = await uploadPdfToStorage(currentUser?.signature);
         const fileData = await uploadFilesToStorage();
         const mergedData = mergeFormAndFileData(pdfPath, fileData);
 
@@ -284,6 +283,21 @@ export default function CreatePengajuan() {
 
   // Helper function to merge form data with file data and other necessary data
   const mergeFormAndFileData = (pdfPath, fileData) => {
+    let dosenPembimbing1 = {
+      id: values.dosenPembimbing1,
+      nama: getDosenName(values.dosenPembimbing1),
+    };
+
+    let dosenPembimbing2 = {
+      id: values.dosenPembimbing2,
+      nama: getDosenName(values.dosenPembimbing2),
+    };
+
+    let dosenPembimbing3 = {
+      id: values.dosenPembimbing3,
+      nama: getDosenName(values.dosenPembimbing3),
+    };
+
     let data = {
       ...values,
       ...fileData,
@@ -291,6 +305,9 @@ export default function CreatePengajuan() {
       ...currentUser,
       status: "Pending",
       timestamp: serverTimestamp(),
+      dosenPembimbing1,
+      dosenPembimbing2,
+      dosenPembimbing3,
     };
     delete data.created_at;
 
@@ -306,22 +323,6 @@ export default function CreatePengajuan() {
       console.error("Failed to store data to Firestore", error);
       return false;
     }
-  };
-
-  // Signature states
-  const [signature, setSignature] = useState(null);
-  const signatureCanvasRef = useRef();
-
-  // Function to clear the signature
-  const clearSignature = () => {
-    signatureCanvasRef.current.clear();
-    setSignature(null);
-  };
-
-  // Function to save the signature as an image (you can also use toDataURL)
-  const saveSignature = () => {
-    const signatureImage = signatureCanvasRef.current.toDataURL();
-    setSignature(signatureImage);
   };
 
   return (
@@ -698,40 +699,6 @@ export default function CreatePengajuan() {
                         </Stack>
                       </TableCell>
                     </TableRow>
-                    {/* <TableRow>
-                      <TableCell>
-                        <Stack direction="column" spacing={2} alignItems="left">
-                          <Typography variant="subtitle2">
-                            Tanda tangan
-                          </Typography>
-                          <div style={{ border: "1px solid black" }}>
-                            <SignatureCanvas
-                              ref={signatureCanvasRef}
-                              penColor="black"
-                              onEnd={() => {
-                                saveSignature();
-                              }}
-                              canvasProps={{
-                                width: 600,
-                                height: 200,
-                              }}
-                            />
-                          </div>
-
-                          <Stack direction="row" spacing={2}>
-                            <Button
-                              data-cy="button-clear-signature"
-                              variant="contained"
-                              onClick={clearSignature}
-                              color="error"
-                              disabled={!signature}
-                            >
-                              Reset Tanda Tangan
-                            </Button>
-                          </Stack>
-                        </Stack>
-                      </TableCell>
-                    </TableRow> */}
                   </TableBody>
                 </Table>
               </Grid>
