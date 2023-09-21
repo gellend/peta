@@ -698,7 +698,7 @@ export default function CreatePengajuan() {
                         </Stack>
                       </TableCell>
                     </TableRow>
-                    <TableRow>
+                    {/* <TableRow>
                       <TableCell>
                         <Stack direction="column" spacing={2} alignItems="left">
                           <Typography variant="subtitle2">
@@ -731,7 +731,7 @@ export default function CreatePengajuan() {
                           </Stack>
                         </Stack>
                       </TableCell>
-                    </TableRow>
+                    </TableRow> */}
                   </TableBody>
                 </Table>
               </Grid>
