@@ -199,6 +199,11 @@ export default function CreatePengajuan() {
     return dosen ? dosen.nama : "";
   };
 
+  const getLabName = (dosenId) => {
+    const data = labDropdown.find((dosen) => dosen.id === dosenId);
+    return data.lab || "";
+  };
+
   const handleFormSubmit = async (e) => {
     e.preventDefault();
 
@@ -312,6 +317,7 @@ export default function CreatePengajuan() {
     let dosenLab = {
       id: values.dosenLab,
       nama: getDosenLabName(values.dosenLab),
+      lab: getLabName(values.dosenLab),
     };
 
     let data = {
@@ -560,7 +566,7 @@ export default function CreatePengajuan() {
                         <TextField
                           data-cy="input-lab"
                           select
-                          label="Dosen Koordinator Lab"
+                          label="Laboratorium"
                           fullWidth
                           value={values.dosenLab}
                           name="dosenLab"
@@ -569,11 +575,11 @@ export default function CreatePengajuan() {
                           {labDropdown &&
                             labDropdown.map((dosen) => (
                               <MenuItem
-                                data-cy={`select-lab-${dosen.id}`}
+                                data-cy={`select-lab-${dosen.lab}`}
                                 key={dosen.id}
                                 value={dosen.id}
                               >
-                                {dosen.nama}
+                                {dosen.lab}
                               </MenuItem>
                             ))}
                         </TextField>
