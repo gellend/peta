@@ -325,7 +325,7 @@ export default function CreatePengajuan() {
       ...fileData,
       pengajuanFile: pdfPath,
       ...currentUser,
-      status: "Pending",
+      status: "0",
       timestamp: serverTimestamp(),
       dosenPembimbing1,
       dosenPembimbing2,

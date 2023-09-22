@@ -33,5 +33,18 @@
       "icon": "verified_user",
       "path": "/verifikasi"
     }
-  ]
+  ],
+  "statusPengajuan": {
+    "0": "Pending",
+    "1": "Disetujui Dosen Pembimbing 1",
+    "2": "Disetujui Dosen Pembimbing 2",
+    "3": "Disetujui Dosen Pembimbing 3",
+    "4": "Disetujui Koordinator Lab",
+    "5": "Disetujui Kepala Prodi",
+    "6": "Ditolak Dosen Pembimbing 1",
+    "7": "Ditolak Dosen Pembimbing 2",
+    "8": "Ditolak Dosen Pembimbing 3",
+    "9": "Ditolak Koordinator Lab",
+    "10": "Ditolak Kepala Prodi"
+  }
 }
