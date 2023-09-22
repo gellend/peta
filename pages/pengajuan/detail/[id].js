@@ -148,12 +148,14 @@ export default function DetailPengajuan() {
   const getNextReceiverUid = async () => {
     let data;
     let keyNextDosen = `dosenPembimbing${getUrutanDosen(currentUser.id) + 1}`;
-    let nextReceiverId = pengajuan[keyNextDosen].id;
+    let nextReceiverId = pengajuan[keyNextDosen]?.id;
 
     if (!nextReceiverId) {
-      if (!pengajuan.signatureDosenKoordinatorLab) {
-        nextReceiverId = pengajuan.dosenKoordinatorLab;
+      if (!pengajuan.dosenLab?.signature) {
+        console.log("get dosen lab");
+        nextReceiverId = pengajuan.dosenLab.id;
       } else {
+        console.log("get kaprodi");
         nextReceiverId = pengajuan.kepalaProdi;
       }
     }
@@ -162,26 +164,27 @@ export default function DetailPengajuan() {
       data = await getUserDataById(nextReceiverId);
     }
 
-    return data.docId;
+    return data.docId || null;
   };
 
   const approvePengajuan = async (v) => {
-    let urutanDosen = getUrutanDosen(currentUser.id);
-    let currentDosen = `Dosen Pembimbing ${urutanDosen}`;
-
     let dataToStore = {
       ...pengajuan,
-      status: `Disetujui oleh ${currentDosen}`,
+      status: `Disetujui oleh ${currentDosenKey}`,
       [currentDosenKey]: {
         id: currentUser.id,
         signature: currentUser.signature,
         keterangan: v,
         nama: currentUser.nama,
+        lab: currentUser.lab || "",
       },
     };
 
+    console.log(dataToStore);
+
     try {
       setIsLoading(true);
+      // const success = false;
       const success = await postData("pengajuan", dataToStore, pengajuan.docId);
 
       if (success) {
@@ -208,7 +211,7 @@ export default function DetailPengajuan() {
         }
       }
     } catch (error) {
-      console.log(error);
+      console.error(error);
     } finally {
       getPengajuan(docId);
       setIsLoading(false);
@@ -226,6 +229,8 @@ export default function DetailPengajuan() {
   useEffect(() => {
     if (currentUser?.role === "Dosen") {
       setCurrentDosenKey(`dosenPembimbing${getUrutanDosen(currentUser.id)}`);
+    } else if (currentUser?.role === "Koordinator Lab") {
+      setCurrentDosenKey("dosenLab");
     }
   }, [pengajuan]);
 
