@@ -54,7 +54,7 @@ export default function CreatePengajuan() {
     dosenPembimbing1: "",
     dosenPembimbing2: "",
     dosenPembimbing3: "",
-    lab: "",
+    dosenLab: "",
   };
 
   const validationRules = {
@@ -65,7 +65,7 @@ export default function CreatePengajuan() {
     deskripsi: (value) => (!value ? "Deskripsi harus diisi" : ""),
     dosenPembimbing1: (value) =>
       !value ? "Minimal harus memiliki 1 dosen pembimbing" : "",
-    lab: (value) => (!value ? "Lab harus diisi" : ""),
+    dosenLab: (value) => (!value ? "Lab harus diisi" : ""),
   };
 
   const { values, errors, handleChange, validateForm, resetForm } = useForm(
@@ -169,7 +169,7 @@ export default function CreatePengajuan() {
     drawText(0, textHeight * 22, getDosenName(formData.dosenPembimbing3));
 
     drawText(0, textHeight * 23, "Dosen Koordinator Lab:");
-    drawText(0, textHeight * 24, getDosenLabName(formData.lab));
+    drawText(0, textHeight * 24, getDosenLabName(formData.dosenLab));
 
     // Draw the signature image
     if (signature) {
@@ -309,6 +309,11 @@ export default function CreatePengajuan() {
       nama: getDosenName(values.dosenPembimbing3),
     };
 
+    let dosenLab = {
+      id: values.dosenLab,
+      nama: getDosenLabName(values.dosenLab),
+    };
+
     let data = {
       ...values,
       ...fileData,
@@ -319,6 +324,7 @@ export default function CreatePengajuan() {
       dosenPembimbing1,
       dosenPembimbing2,
       dosenPembimbing3,
+      dosenLab,
     };
     delete data.created_at;
 
@@ -556,8 +562,8 @@ export default function CreatePengajuan() {
                           select
                           label="Dosen Koordinator Lab"
                           fullWidth
-                          value={values.lab}
-                          name="lab"
+                          value={values.dosenLab}
+                          name="dosenLab"
                           onChange={handleChange}
                         >
                           {labDropdown &&
