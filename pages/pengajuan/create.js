@@ -21,7 +21,7 @@ import { PDFDocument } from "pdf-lib";
 
 import Navbar from "../../src/components/Navbar";
 import { useRouter } from "next/router";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import {
   getPushSubscription,
   getUsersByRoles,
@@ -32,15 +32,17 @@ import { uploadFile } from "../../src/lib/upload";
 import { serverTimestamp } from "firebase/firestore";
 import useAppStore from "../../src/store/global";
 import useForm from "../../src/helper/useForm";
-import io from "socket.io-client";
-
-let socket;
+import useSocket from "../../src/lib/socket";
 
 export default function CreatePengajuan() {
   const router = useRouter();
+  const socket = useSocket();
 
   // Dosen dropdown
   const [dosenDropdown, setDosenDropdown] = useState([]);
+
+  // Lab dropdown
+  const [labDropdown, setLabDropdown] = useState([]);
 
   // Form states
   const initialState = {
@@ -52,6 +54,7 @@ export default function CreatePengajuan() {
     dosenPembimbing1: "",
     dosenPembimbing2: "",
     dosenPembimbing3: "",
+    lab: "",
   };
 
   const validationRules = {
@@ -62,6 +65,7 @@ export default function CreatePengajuan() {
     deskripsi: (value) => (!value ? "Deskripsi harus diisi" : ""),
     dosenPembimbing1: (value) =>
       !value ? "Minimal harus memiliki 1 dosen pembimbing" : "",
+    lab: (value) => (!value ? "Lab harus diisi" : ""),
   };
 
   const { values, errors, handleChange, validateForm, resetForm } = useForm(
@@ -107,20 +111,19 @@ export default function CreatePengajuan() {
     }
   };
 
+  const fetchDataLab = async () => {
+    try {
+      const data = await getUsersByRoles(["Koordinator Lab"]);
+      setLabDropdown(data);
+    } catch (error) {
+      console.error("fetchDataLab:", error);
+    }
+  };
+
   useEffect(() => {
     getCurrentLoginUser();
     fetchDataDosen();
-
-    const socketSetup = async () => {
-      await fetch("/api/socket");
-      socket = io();
-
-      socket.on("connect", () => {
-        console.log("connected");
-      });
-    };
-
-    socketSetup();
+    fetchDataLab();
   }, []);
 
   // Function to generate the PDF
@@ -165,6 +168,9 @@ export default function CreatePengajuan() {
     drawText(0, textHeight * 21, "Dosen Pembimbing 3:");
     drawText(0, textHeight * 22, getDosenName(formData.dosenPembimbing3));
 
+    drawText(0, textHeight * 23, "Dosen Koordinator Lab:");
+    drawText(0, textHeight * 24, getDosenLabName(formData.lab));
+
     // Draw the signature image
     if (signature) {
       const signatureImage = await pdfDoc.embedPng(signature);
@@ -185,6 +191,11 @@ export default function CreatePengajuan() {
   // Helper function to get Dosen name from the dropdown data
   const getDosenName = (dosenId) => {
     const dosen = dosenDropdown.find((dosen) => dosen.id === dosenId);
+    return dosen ? dosen.nama : "";
+  };
+
+  const getDosenLabName = (dosenId) => {
+    const dosen = labDropdown.find((dosen) => dosen.id === dosenId);
     return dosen ? dosen.nama : "";
   };
 
@@ -529,6 +540,30 @@ export default function CreatePengajuan() {
                             dosenDropdown.map((dosen) => (
                               <MenuItem
                                 data-cy={`select-dospem-3-${dosen.id}`}
+                                key={dosen.id}
+                                value={dosen.id}
+                              >
+                                {dosen.nama}
+                              </MenuItem>
+                            ))}
+                        </TextField>
+                      </TableCell>
+                    </TableRow>
+                    <TableRow>
+                      <TableCell>
+                        <TextField
+                          data-cy="input-lab"
+                          select
+                          label="Dosen Koordinator Lab"
+                          fullWidth
+                          value={values.lab}
+                          name="lab"
+                          onChange={handleChange}
+                        >
+                          {labDropdown &&
+                            labDropdown.map((dosen) => (
+                              <MenuItem
+                                data-cy={`select-lab-${dosen.id}`}
                                 key={dosen.id}
                                 value={dosen.id}
                               >
