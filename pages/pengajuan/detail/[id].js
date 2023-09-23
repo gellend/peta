@@ -45,30 +45,38 @@ export default function DetailPengajuan() {
 
   const getStatusChip = (status) => {
     const statusMap = {
-      Pending: { label: "Pending", color: "warning" },
-      "Disetujui oleh Dosen Pembimbing 1": {
-        label: "Disetujui oleh Dosen Pembimbing 1",
-        color: "success",
+      0: { label: "Menunggu Verifikasi Dosen Pembimbing 1", color: "warning" },
+      1: {
+        label: "Menunggu Verifikasi Dosen Pembimbing 2",
+        color: "warning",
       },
-      "Disetujui oleh Dosen Pembimbing 2": {
-        label: "Disetujui oleh Dosen Pembimbing 2",
-        color: "success",
+      2: {
+        label: "Menunggu Verifikasi Dosen Pembimbing 3",
+        color: "warning",
       },
-      "Disetujui oleh Dosen Pembimbing 3": {
-        label: "Disetujui oleh Dosen Pembimbing 3",
-        color: "success",
+      3: {
+        label: "Menunggu Verifikasi Dosen Koordinator Lab",
+        color: "warning",
       },
-      "Ditolak oleh Dosen Pembimbing 1": {
+      4: {
+        label: "Menunggu Verifikasi Kepala Prodi",
+        color: "warning",
+      },
+      5: {
         label: "Ditolak oleh Dosen Pembimbing 1",
         color: "error",
       },
-      "Ditolak oleh Dosen Pembimbing 2": {
+      6: {
         label: "Ditolak oleh Dosen Pembimbing 2",
         color: "error",
       },
-      "Ditolak oleh Dosen Pembimbing 3": {
+      7: {
         label: "Ditolak oleh Dosen Pembimbing 3",
         color: "error",
+      },
+      8: {
+        label: "Disetujui",
+        color: "success",
       },
     };
 
@@ -89,50 +97,67 @@ export default function DetailPengajuan() {
 
   const shouldDisableApproveButton = () => {
     if (!pengajuan) return true;
-    if (currentUser?.role !== "Dosen") return true;
     if (!currentUser?.signature) return true;
 
-    if (pengajuan.status === "Pending") {
+    if (pengajuan.status === "0") {
       if (currentDosenKey === "dosenPembimbing1") return false;
       if (currentDosenKey === "dosenPembimbing2") return true;
       if (currentDosenKey === "dosenPembimbing3") return true;
+      if (currentDosenKey === "dosenLab") return true;
+      if (currentDosenKey === "kepalaProdi") return true;
     }
 
-    if (pengajuan.status === "Disetujui oleh Dosen Pembimbing 1") {
+    if (pengajuan.status === "1") {
       if (currentDosenKey === "dosenPembimbing1") return true;
       if (currentDosenKey === "dosenPembimbing2") return false;
       if (currentDosenKey === "dosenPembimbing3") return true;
+      if (currentDosenKey === "dosenLab") return true;
+      if (currentDosenKey === "kepalaProdi") return true;
     }
 
-    if (pengajuan.status === "Disetujui oleh Dosen Pembimbing 2") {
+    if (pengajuan.status === "2") {
       if (currentDosenKey === "dosenPembimbing1") return true;
       if (currentDosenKey === "dosenPembimbing2") return true;
       if (currentDosenKey === "dosenPembimbing3") return false;
+      if (currentDosenKey === "dosenLab") return true;
+      if (currentDosenKey === "kepalaProdi") return true;
     }
 
-    if (pengajuan.status === "Disetujui oleh Dosen Pembimbing 3") {
+    if (pengajuan.status === "3") {
+      if (currentDosenKey === "dosenPembimbing1") return true;
+      if (currentDosenKey === "dosenPembimbing2") return true;
+      if (currentDosenKey === "dosenPembimbing3") return true;
+      if (currentDosenKey === "dosenLab") return false;
+      if (currentDosenKey === "kepalaProdi") return true;
+    }
+
+    if (pengajuan.status === "4") {
+      if (currentDosenKey === "dosenPembimbing1") return true;
+      if (currentDosenKey === "dosenPembimbing2") return true;
+      if (currentDosenKey === "dosenPembimbing3") return true;
+      if (currentDosenKey === "dosenLab") return true;
+      if (currentDosenKey === "kepalaProdi") return false;
+    }
+
+    if (pengajuan.status === "6") {
       if (currentDosenKey === "dosenPembimbing1") return true;
       if (currentDosenKey === "dosenPembimbing2") return true;
       if (currentDosenKey === "dosenPembimbing3") return true;
     }
 
-    if (pengajuan.status === "Ditolak oleh Dosen Pembimbing 1") {
+    if (pengajuan.status === "7") {
       if (currentDosenKey === "dosenPembimbing1") return true;
       if (currentDosenKey === "dosenPembimbing2") return true;
       if (currentDosenKey === "dosenPembimbing3") return true;
     }
 
-    if (pengajuan.status === "Ditolak oleh Dosen Pembimbing 2") {
+    if (pengajuan.status === "8") {
       if (currentDosenKey === "dosenPembimbing1") return true;
       if (currentDosenKey === "dosenPembimbing2") return true;
       if (currentDosenKey === "dosenPembimbing3") return true;
     }
 
-    if (pengajuan.status === "Ditolak oleh Dosen Pembimbing 3") {
-      if (currentDosenKey === "dosenPembimbing1") return true;
-      if (currentDosenKey === "dosenPembimbing2") return true;
-      if (currentDosenKey === "dosenPembimbing3") return true;
-    }
+    return true;
   };
 
   const getUrutanDosen = (dosenId) => {
@@ -167,10 +192,34 @@ export default function DetailPengajuan() {
     return data.docId || null;
   };
 
+  const getNextStatusPengajuan = () => {
+    let status;
+    let keyNextDosen = `dosenPembimbing${getUrutanDosen(currentUser.id) + 1}`;
+    let isNextDosenExist = pengajuan[keyNextDosen]?.id;
+
+    if (keyNextDosen === "dosenPembimbing2") {
+      status = "1";
+    }
+
+    if (keyNextDosen === "dosenPembimbing3") {
+      status = "2";
+    }
+
+    if (!isNextDosenExist) {
+      if (!pengajuan.dosenLab?.signature) {
+        status = "3";
+      } else {
+        status = "4";
+      }
+    }
+
+    return status || pengajuan.status;
+  };
+
   const approvePengajuan = async (v) => {
     let dataToStore = {
       ...pengajuan,
-      status: `Disetujui oleh ${currentDosenKey}`,
+      status: getNextStatusPengajuan(),
       [currentDosenKey]: {
         id: currentUser.id,
         signature: currentUser.signature,
@@ -231,6 +280,8 @@ export default function DetailPengajuan() {
       setCurrentDosenKey(`dosenPembimbing${getUrutanDosen(currentUser.id)}`);
     } else if (currentUser?.role === "Koordinator Lab") {
       setCurrentDosenKey("dosenLab");
+    } else if (currentUser?.role === "Kepala Prodi") {
+      setCurrentDosenKey("kepalaProdi");
     }
   }, [pengajuan]);
 
