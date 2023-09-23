@@ -21,6 +21,7 @@ import {
   getDetailPengajuan,
   getPushSubscription,
   getUserDataById,
+  getUsersByRoles,
   postData,
   storeNotification,
 } from "../../../src/lib/store";
@@ -43,50 +44,40 @@ export default function DetailPengajuan() {
     setPengajuan(rows);
   };
 
+  const statusLabels = new Map([
+    [
+      "0",
+      { label: "Menunggu Verifikasi Dosen Pembimbing 1", color: "warning" },
+    ],
+    [
+      "1",
+      { label: "Menunggu Verifikasi Dosen Pembimbing 2", color: "warning" },
+    ],
+    [
+      "2",
+      { label: "Menunggu Verifikasi Dosen Pembimbing 3", color: "warning" },
+    ],
+    [
+      "3",
+      { label: "Menunggu Verifikasi Dosen Koordinator Lab", color: "warning" },
+    ],
+    ["4", { label: "Menunggu Verifikasi Kepala Prodi", color: "warning" }],
+    ["5", { label: "Ditolak Dosen Pembimbing 1", color: "error" }],
+    ["6", { label: "Ditolak Dosen Pembimbing 2", color: "error" }],
+    ["7", { label: "Ditolak Dosen Pembimbing 3", color: "error" }],
+    ["8", { label: "Ditolak Dosen Koordinator Lab", color: "error" }],
+    ["9", { label: "Ditolak Kepala Prodi", color: "error" }],
+    ["10", { label: "Disetujui", color: "success" }],
+  ]);
+
   const getStatusChip = (status) => {
-    const statusMap = {
-      0: { label: "Menunggu Verifikasi Dosen Pembimbing 1", color: "warning" },
-      1: {
-        label: "Menunggu Verifikasi Dosen Pembimbing 2",
-        color: "warning",
-      },
-      2: {
-        label: "Menunggu Verifikasi Dosen Pembimbing 3",
-        color: "warning",
-      },
-      3: {
-        label: "Menunggu Verifikasi Dosen Koordinator Lab",
-        color: "warning",
-      },
-      4: {
-        label: "Menunggu Verifikasi Kepala Prodi",
-        color: "warning",
-      },
-      5: {
-        label: "Ditolak oleh Dosen Pembimbing 1",
-        color: "error",
-      },
-      6: {
-        label: "Ditolak oleh Dosen Pembimbing 2",
-        color: "error",
-      },
-      7: {
-        label: "Ditolak oleh Dosen Pembimbing 3",
-        color: "error",
-      },
-      8: {
-        label: "Disetujui",
-        color: "success",
-      },
-    };
+    const statusInfo = statusLabels.get(status);
 
-    const statusInfo = statusMap[status];
-
-    if (!statusInfo) {
-      return "";
+    if (statusInfo) {
+      return <Chip label={statusInfo.label} color={statusInfo.color} />;
     }
 
-    return <Chip label={statusInfo.label} color={statusInfo.color} />;
+    return "";
   };
 
   const openUrlInNewTab = (path) => {
@@ -96,66 +87,18 @@ export default function DetailPengajuan() {
   };
 
   const shouldDisableApproveButton = () => {
-    if (!pengajuan) return true;
-    if (!currentUser?.signature) return true;
+    if (!pengajuan || !currentUser?.signature) return true;
 
-    if (pengajuan.status === "0") {
-      if (currentDosenKey === "dosenPembimbing1") return false;
-      if (currentDosenKey === "dosenPembimbing2") return true;
-      if (currentDosenKey === "dosenPembimbing3") return true;
-      if (currentDosenKey === "dosenLab") return true;
-      if (currentDosenKey === "kepalaProdi") return true;
-    }
-
-    if (pengajuan.status === "1") {
-      if (currentDosenKey === "dosenPembimbing1") return true;
-      if (currentDosenKey === "dosenPembimbing2") return false;
-      if (currentDosenKey === "dosenPembimbing3") return true;
-      if (currentDosenKey === "dosenLab") return true;
-      if (currentDosenKey === "kepalaProdi") return true;
-    }
-
-    if (pengajuan.status === "2") {
-      if (currentDosenKey === "dosenPembimbing1") return true;
-      if (currentDosenKey === "dosenPembimbing2") return true;
-      if (currentDosenKey === "dosenPembimbing3") return false;
-      if (currentDosenKey === "dosenLab") return true;
-      if (currentDosenKey === "kepalaProdi") return true;
-    }
-
-    if (pengajuan.status === "3") {
-      if (currentDosenKey === "dosenPembimbing1") return true;
-      if (currentDosenKey === "dosenPembimbing2") return true;
-      if (currentDosenKey === "dosenPembimbing3") return true;
-      if (currentDosenKey === "dosenLab") return false;
-      if (currentDosenKey === "kepalaProdi") return true;
-    }
-
-    if (pengajuan.status === "4") {
-      if (currentDosenKey === "dosenPembimbing1") return true;
-      if (currentDosenKey === "dosenPembimbing2") return true;
-      if (currentDosenKey === "dosenPembimbing3") return true;
-      if (currentDosenKey === "dosenLab") return true;
-      if (currentDosenKey === "kepalaProdi") return false;
-    }
-
-    if (pengajuan.status === "6") {
-      if (currentDosenKey === "dosenPembimbing1") return true;
-      if (currentDosenKey === "dosenPembimbing2") return true;
-      if (currentDosenKey === "dosenPembimbing3") return true;
-    }
-
-    if (pengajuan.status === "7") {
-      if (currentDosenKey === "dosenPembimbing1") return true;
-      if (currentDosenKey === "dosenPembimbing2") return true;
-      if (currentDosenKey === "dosenPembimbing3") return true;
-    }
-
-    if (pengajuan.status === "8") {
-      if (currentDosenKey === "dosenPembimbing1") return true;
-      if (currentDosenKey === "dosenPembimbing2") return true;
-      if (currentDosenKey === "dosenPembimbing3") return true;
-    }
+    if (pengajuan.status === "0" && currentDosenKey === "dosenPembimbing1")
+      return false;
+    if (pengajuan.status === "1" && currentDosenKey === "dosenPembimbing2")
+      return false;
+    if (pengajuan.status === "2" && currentDosenKey === "dosenPembimbing3")
+      return false;
+    if (pengajuan.status === "3" && currentDosenKey === "dosenLab")
+      return false;
+    if (pengajuan.status === "4" && currentDosenKey === "kepalaProdi")
+      return false;
 
     return true;
   };
@@ -170,7 +113,7 @@ export default function DetailPengajuan() {
     return dosenPembimbingKeys.indexOf(dosenId);
   };
 
-  const getNextReceiverUid = async () => {
+  const getNextReceiver = async () => {
     let data;
     let keyNextDosen = `dosenPembimbing${getUrutanDosen(currentUser.id) + 1}`;
     let nextReceiverId = pengajuan[keyNextDosen]?.id;
@@ -181,7 +124,8 @@ export default function DetailPengajuan() {
         nextReceiverId = pengajuan.dosenLab.id;
       } else {
         console.log("get kaprodi");
-        nextReceiverId = pengajuan.kepalaProdi;
+        const data = await getUsersByRoles(["Kepala Prodi"]);
+        return data.filter((u) => u.prodi === pengajuan.prodi)[0] || null;
       }
     }
 
@@ -189,37 +133,42 @@ export default function DetailPengajuan() {
       data = await getUserDataById(nextReceiverId);
     }
 
-    return data.docId || null;
+    console.log("next receiver", data);
+
+    return data || null;
   };
 
-  const getNextStatusPengajuan = () => {
-    let status;
-    let keyNextDosen = `dosenPembimbing${getUrutanDosen(currentUser.id) + 1}`;
-    let isNextDosenExist = pengajuan[keyNextDosen]?.id;
+  const getNextStatusPengajuan = (approve) => {
+    if (approve) {
+      if (pengajuan.status === "4") return "10";
 
-    if (keyNextDosen === "dosenPembimbing2") {
-      status = "1";
-    }
+      let keyNextDosen = `dosenPembimbing${getUrutanDosen(currentUser.id) + 1}`;
+      let isNextDosenExist = pengajuan[keyNextDosen]?.id;
 
-    if (keyNextDosen === "dosenPembimbing3") {
-      status = "2";
-    }
-
-    if (!isNextDosenExist) {
-      if (!pengajuan.dosenLab?.signature) {
-        status = "3";
-      } else {
-        status = "4";
+      if (keyNextDosen === "dosenPembimbing2") {
+        return "1";
       }
-    }
 
-    return status || pengajuan.status;
+      if (keyNextDosen === "dosenPembimbing3") {
+        return "2";
+      }
+
+      if (!isNextDosenExist) {
+        if (!pengajuan.dosenLab.signature) {
+          return "3";
+        } else {
+          return "4";
+        }
+      }
+
+      return pengajuan.status;
+    }
   };
 
   const approvePengajuan = async (v) => {
     let dataToStore = {
       ...pengajuan,
-      status: getNextStatusPengajuan(),
+      status: getNextStatusPengajuan(true),
       [currentDosenKey]: {
         id: currentUser.id,
         signature: currentUser.signature,
@@ -229,8 +178,6 @@ export default function DetailPengajuan() {
       },
     };
 
-    console.log(dataToStore);
-
     try {
       setIsLoading(true);
       // const success = false;
@@ -238,23 +185,23 @@ export default function DetailPengajuan() {
 
       if (success) {
         handleOpenSnackBar("Pengajuan berhasil disetujui!", "success");
-        const nextReceiverUid = await getNextReceiverUid();
-        const data = await getPushSubscription(nextReceiverUid);
+        const nextReceiver = await getNextReceiver();
+        const data = await getPushSubscription(nextReceiver.docId);
 
         // Store notification in Firestore
         await storeNotification({
           title: "Pengajuan",
-          body: `Pengajuan baru menunggu approval dari Anda`,
+          body: `Hi, ${nextReceiver.nama}! Pengajuan baru menunggu approval dari Anda`,
           sender_uid: currentUser.uid,
           sender_name: currentUser.nama,
-          receiver_uid: nextReceiverUid,
+          receiver_uid: nextReceiver.docId,
         });
 
         if (socket) {
           emitNotification(
             socket,
             "Pengajuan",
-            `Pengajuan baru menunggu approval dari Anda`,
+            `Hi, ${nextReceiver.nama}! Pengajuan baru menunggu approval dari Anda`,
             data?.subscription
           );
         }

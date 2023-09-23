@@ -136,7 +136,7 @@ export const getPengajuanByKepalaProdi = async (prodi) => {
 };
 
 export const getPengajuanByKoordinator = async (lab) => {
-  const rows = await getDataWithQuery("pengajuan", "lab", "==", lab);
+  const rows = await getDataWithQuery("pengajuan", "dosenLab.lab", "==", lab);
   return rows;
 };
 
