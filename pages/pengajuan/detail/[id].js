@@ -160,6 +160,12 @@ export default function DetailPengajuan() {
       }
 
       return pengajuan.status;
+    } else {
+      if (pengajuan.status === "0") return "5";
+      if (pengajuan.status === "1") return "6";
+      if (pengajuan.status === "2") return "7";
+      if (pengajuan.status === "3") return "8";
+      if (pengajuan.status === "4") return "9";
     }
   };
 
@@ -200,6 +206,53 @@ export default function DetailPengajuan() {
             socket,
             "Pengajuan",
             `Hi, ${nextReceiver.nama}! Pengajuan baru menunggu approval dari Anda`,
+            data?.subscription
+          );
+        }
+      }
+    } catch (error) {
+      console.error(error);
+    } finally {
+      getPengajuan(docId);
+      setIsLoading(false);
+    }
+  };
+
+  const rejectPengajuan = async (v) => {
+    let dataToStore = {
+      ...pengajuan,
+      status: getNextStatusPengajuan(false),
+      [currentDosenKey]: {
+        id: currentUser.id,
+        keterangan: v,
+        nama: currentUser.nama,
+        lab: currentUser.lab || "",
+      },
+    };
+
+    try {
+      setIsLoading(true);
+      const success = await postData("pengajuan", dataToStore, pengajuan.docId);
+
+      if (success) {
+        handleOpenSnackBar("Pengajuan ditolak!", "error");
+        const nextReceiver = pengajuan;
+        const data = await getPushSubscription(nextReceiver.uid);
+
+        // Store notification in Firestore
+        await storeNotification({
+          title: "Pengajuan",
+          body: `Hi, ${nextReceiver.nama}! Pengajuan Anda ditolak oleh ${currentUser.nama}`,
+          sender_uid: currentUser.uid,
+          sender_name: currentUser.nama,
+          receiver_uid: nextReceiver.uid,
+        });
+
+        if (socket) {
+          emitNotification(
+            socket,
+            "Pengajuan",
+            `Hi, ${nextReceiver.nama}! Pengajuan Anda ditolak oleh ${currentUser.nama}`,
             data?.subscription
           );
         }
@@ -330,6 +383,9 @@ export default function DetailPengajuan() {
                     <Button
                       variant="contained"
                       color="error"
+                      onClick={() =>
+                        handleOpenDialog("Tolak pengajuan?", rejectPengajuan)
+                      }
                       disabled={shouldDisableApproveButton()}
                     >
                       Tolak
