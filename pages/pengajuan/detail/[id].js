@@ -119,10 +119,10 @@ export default function DetailPengajuan() {
     let nextReceiverId = pengajuan[keyNextDosen]?.id;
 
     if (!nextReceiverId) {
-      if (!pengajuan.dosenLab?.signature) {
+      if (!pengajuan.dosenLab.signature) {
         console.log("get dosen lab");
         nextReceiverId = pengajuan.dosenLab.id;
-      } else {
+      } else if (currentDosenKey === "dosenLab") {
         console.log("get kaprodi");
         const data = await getUsersByRoles(["Kepala Prodi"]);
         return data.filter((u) => u.prodi === pengajuan.prodi)[0] || null;
@@ -132,8 +132,6 @@ export default function DetailPengajuan() {
     if (nextReceiverId) {
       data = await getUserDataById(nextReceiverId);
     }
-
-    console.log("next receiver", data);
 
     return data || null;
   };
@@ -156,7 +154,7 @@ export default function DetailPengajuan() {
       if (!isNextDosenExist) {
         if (!pengajuan.dosenLab.signature) {
           return "3";
-        } else {
+        } else if (currentDosenKey === "dosenLab") {
           return "4";
         }
       }
