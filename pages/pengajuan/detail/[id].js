@@ -29,6 +29,7 @@ import { generateDownloadUrl } from "../../../src/lib/upload";
 import useAppStore from "../../../src/store/global";
 import useSocket, { emitNotification } from "../../../src/lib/socket";
 import SignatureAlert from "../../../src/components/SignatureAlert";
+import { generateAndUploadPdf } from "../../../src/lib/pdf";
 
 export default function DetailPengajuan() {
   const router = useRouter();
@@ -180,6 +181,13 @@ export default function DetailPengajuan() {
         nama: currentUser.nama,
         lab: currentUser.lab || "",
       },
+    };
+
+    const pengajuanFile = await generateAndUploadPdf(dataToStore);
+
+    dataToStore = {
+      ...dataToStore,
+      pengajuanFile,
     };
 
     try {
