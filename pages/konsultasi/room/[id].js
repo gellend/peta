@@ -93,7 +93,11 @@ export default function RoomKonsultasi() {
 
   useEffect(() => {
     if (chatMessages.users && chatMessages.users.length > 0) {
-      getAnotherUser(chatMessages.users[1]);
+      if (chatMessages.users[0] === currentUser.uid) {
+        getAnotherUser(chatMessages.users[1]);
+      } else {
+        getAnotherUser(chatMessages.users[0]);
+      }
     }
   }, [chatMessages]);
 
