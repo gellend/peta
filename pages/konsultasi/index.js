@@ -43,11 +43,16 @@ export default function Konsultasi() {
   const getUsers = async () => {
     try {
       setIsLoading(true);
-      const data = await getUsersByRoles([
-        "Dosen",
-        "Kepala Prodi",
-        "Koordinator Lab",
-      ]);
+      let data;
+      if (currentUser.role === "Mahasiswa") {
+        data = await getUsersByRoles([
+          "Dosen",
+          "Kepala Prodi",
+          "Koordinator Lab",
+        ]);
+      } else {
+        data = await getUsersByRoles(["Mahasiswa"]);
+      }
 
       const userPromises = data.map(async (row) => {
         const room = await findOrGenerateRoomId(currentUser.uid, row.docId);
