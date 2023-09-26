@@ -28,6 +28,12 @@
       "path": "/pengajuan"
     },
     {
+      "role": ["Dosen", "Kepala Prodi", "Koordinator Lab", "Mahasiswa"],
+      "label": "Konsultasi",
+      "icon": "forum",
+      "path": "/konsultasi"
+    },
+    {
       "role": ["Admin"],
       "label": "Verifikasi Pengguna",
       "icon": "verified_user",

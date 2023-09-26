@@ -10,6 +10,8 @@ import {
   getDoc,
   documentId,
   onSnapshot,
+  addDoc,
+  serverTimestamp,
 } from "firebase/firestore";
 
 const app = createFirebaseApp();
@@ -214,6 +216,47 @@ export const streamNotifications = async (uid, callback) => {
     return unsubscribe;
   } catch (error) {
     console.error("streamNotifications:", error);
+    return null;
+  }
+};
+
+export const findOrGenerateRoomId = async (currentUserUid, dosenUid) => {
+  try {
+    const userQuery1 = await getDataWithQuery(
+      "rooms",
+      "users",
+      "array-contains",
+      currentUserUid
+    );
+    const userQuery2 = await getDataWithQuery(
+      "rooms",
+      "users",
+      "array-contains",
+      dosenUid
+    );
+
+    let room;
+
+    userQuery1.forEach((doc1) => {
+      userQuery2.forEach((doc2) => {
+        if (doc1.docId === doc2.docId) {
+          room = doc1.docId;
+        }
+      });
+    });
+
+    if (!room) {
+      // Generate a new room
+      const newRoomRef = await addDoc(collection(db, "rooms"), {
+        users: [currentUserUid, dosenUid],
+        createdAt: serverTimestamp(),
+      });
+      room = newRoomRef.id;
+    }
+
+    return room;
+  } catch (error) {
+    console.error("findOrGenerateRoomId:", error);
     return null;
   }
 };
