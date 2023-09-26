@@ -260,3 +260,22 @@ export const findOrGenerateRoomId = async (currentUserUid, dosenUid) => {
     return null;
   }
 };
+
+export const streamChatMessages = async (docId, callback) => {
+  if (!docId) return;
+
+  try {
+    const q = query(collection(db, "rooms"), where(documentId(), "==", docId));
+    const unsubscribe = onSnapshot(q, (querySnapshot) => {
+      const chats = [];
+      querySnapshot.forEach((doc) => {
+        chats.push({ ...doc.data(), docId: doc.id });
+      });
+      callback(chats);
+    });
+    return unsubscribe;
+  } catch (error) {
+    console.error("streamChatMessages:", error);
+    return null;
+  }
+};
