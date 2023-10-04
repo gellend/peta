@@ -17,7 +17,6 @@ import {
   TableCell,
   TableRow,
 } from "@mui/material";
-import { PDFDocument } from "pdf-lib";
 
 import Navbar from "../../src/components/Navbar";
 import { useRouter } from "next/router";
@@ -33,6 +32,8 @@ import { serverTimestamp } from "firebase/firestore";
 import useAppStore from "../../src/store/global";
 import useForm from "../../src/helper/useForm";
 import useSocket from "../../src/lib/socket";
+import getCurrentTimestamp from "../../src/helper/date";
+import { generateAndUploadPdf } from "../../src/lib/pdf";
 
 export default function CreatePengajuan() {
   const router = useRouter();
@@ -79,11 +80,11 @@ export default function CreatePengajuan() {
 
   // File map
   const FILE_MAP = {
-    khsFile: "khs.pdf",
-    frsFile: "frs.pdf",
-    jalurPraCoFile: "jalur-pra-co.pdf",
-    toeflFile: "toefl.pdf",
-    kompetensiFile: "kompetensi.pdf",
+    khsFile: "khs",
+    frsFile: "frs",
+    jalurPraCoFile: "jalur-pra-co",
+    toeflFile: "toefl",
+    kompetensiFile: "kompetensi",
   };
 
   // File states
@@ -126,68 +127,6 @@ export default function CreatePengajuan() {
     fetchDataLab();
   }, []);
 
-  // Function to generate the PDF
-  const generatePdf = async (formData, signature) => {
-    const pdfDoc = await PDFDocument.create();
-    const page = pdfDoc.addPage();
-
-    const { width, height } = page.getSize();
-    const margin = 50;
-    const textHeight = 20;
-
-    const drawText = (x, y, text, options = {}) => {
-      page.drawText(text, {
-        x: x + margin,
-        y: height - y - margin,
-        ...options,
-      });
-    };
-
-    // Draw the form data and signature on the PDF
-    drawText(0, 0, "Judul Tugas Akhir:");
-    drawText(0, textHeight, formData.judul);
-
-    drawText(0, textHeight * 3, "Total SKS Lulus:");
-    drawText(0, textHeight * 4, formData.totalSksLulus);
-
-    drawText(0, textHeight * 6, "SKS Ambil:");
-    drawText(0, textHeight * 7, formData.sksAmbil);
-
-    drawText(0, textHeight * 9, "SKS Mengulang:");
-    drawText(0, textHeight * 10, formData.sksMengulang);
-
-    drawText(0, textHeight * 12, "Deskripsi:");
-    drawText(0, textHeight * 13, formData.deskripsi);
-
-    drawText(0, textHeight * 15, "Dosen Pembimbing 1:");
-    drawText(0, textHeight * 16, getDosenName(formData.dosenPembimbing1));
-
-    drawText(0, textHeight * 18, "Dosen Pembimbing 2:");
-    drawText(0, textHeight * 19, getDosenName(formData.dosenPembimbing2));
-
-    drawText(0, textHeight * 21, "Dosen Pembimbing 3:");
-    drawText(0, textHeight * 22, getDosenName(formData.dosenPembimbing3));
-
-    drawText(0, textHeight * 23, "Dosen Koordinator Lab:");
-    drawText(0, textHeight * 24, getDosenLabName(formData.dosenLab));
-
-    // Draw the signature image
-    if (signature) {
-      const signatureImage = await pdfDoc.embedPng(signature);
-      const imageSize = { width: 100, height: 50 };
-      page.drawImage(signatureImage, {
-        x: width - imageSize.width - margin,
-        y: margin,
-        width: imageSize.width,
-        height: imageSize.height,
-      });
-    }
-
-    // Save the PDF to a blob
-    const pdfBytes = await pdfDoc.save();
-    return new Blob([pdfBytes], { type: "application/pdf" });
-  };
-
   // Helper function to get Dosen name from the dropdown data
   const getDosenName = (dosenId) => {
     const dosen = dosenDropdown.find((dosen) => dosen.id === dosenId);
@@ -212,9 +151,15 @@ export default function CreatePengajuan() {
     if (isValid) {
       try {
         setIsLoading(true);
-        const pdfPath = await uploadPdfToStorage(currentUser?.signature);
         const fileData = await uploadFilesToStorage();
-        const mergedData = mergeFormAndFileData(pdfPath, fileData);
+        let mergedData = mergeFormAndFileData(fileData);
+
+        const pengajuanFile = await generateAndUploadPdf(mergedData);
+
+        mergedData = {
+          ...mergedData,
+          pengajuanFile,
+        };
 
         const success = await storeDataToFirestore(mergedData);
 
@@ -259,28 +204,15 @@ export default function CreatePengajuan() {
     }
   };
 
-  // Helper function to upload the generated PDF to Firebase Storage
-  const uploadPdfToStorage = async (signature) => {
-    const formPdfBlob = await generatePdf(values, signature);
-    const pdfPath = `user/${currentUser.uid}/raw/pengajuan.pdf`;
-
-    try {
-      await uploadFile(formPdfBlob, pdfPath);
-      return pdfPath;
-    } catch (error) {
-      console.error(`Failed to upload file 'pengajuan.pdf', ${error}`);
-      throw error; // Rethrow the error to handle it in the main function
-    }
-  };
-
   // Helper function to upload each file to Firebase Storage
   const uploadFilesToStorage = async () => {
     const fileData = {};
+    const currentTimestamp = getCurrentTimestamp();
 
     for (const [inputName, input] of Object.entries(fileInputs)) {
       const { file } = input;
       if (file) {
-        const fileName = FILE_MAP[inputName];
+        const fileName = `${FILE_MAP[inputName]}-${currentTimestamp}.pdf`;
         if (fileName) {
           try {
             const path = `user/${currentUser.uid}/raw/${fileName}`;
@@ -298,7 +230,7 @@ export default function CreatePengajuan() {
   };
 
   // Helper function to merge form data with file data and other necessary data
-  const mergeFormAndFileData = (pdfPath, fileData) => {
+  const mergeFormAndFileData = (fileData) => {
     let dosenPembimbing1 = {
       id: values.dosenPembimbing1,
       nama: getDosenName(values.dosenPembimbing1),
@@ -323,7 +255,6 @@ export default function CreatePengajuan() {
     let data = {
       ...values,
       ...fileData,
-      pengajuanFile: pdfPath,
       ...currentUser,
       status: "0",
       timestamp: serverTimestamp(),
