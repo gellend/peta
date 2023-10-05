@@ -1,8 +1,8 @@
 # Pengajuan Judul Tugas Akhir (PETA)
 
-## Sistem informasi yang memungkinkan mahasiswa untuk melakukan pengajuan judul untuk tugas akhir, dan mendapatkan realtime update terkait pengajuan tersebut.
+Sistem informasi yang memungkinkan mahasiswa untuk melakukan pengajuan judul untuk tugas akhir, dan mendapatkan realtime update terkait pengajuan tersebut.
 
-The information system that allows students to submit their final project titles and receive real-time updates related to their submissions.
+_The information system that allows students to submit their final project titles and receive real-time updates related to their submissions._
 
 ## Table of Contents
 
@@ -27,19 +27,19 @@ Sistem informasi ini dibuat untuk membantu memudahkan pengajuan tersebut, dimana
 
 Selain itu, Dosen Pembimbing dan Kaprodi juga akan terbantu. Karena tidak perlu membubuhkan tanda tangan satu persatu, serta kemudahan untuk menyetujui atau memberikan revisi terhadap pengajuan yang dilakukan Mahasiswa.
 
-## Terakhir, terdapat fitur konsultasi yang memudahkan interaksi antara Mahasiswa dan Calon Dosen Pembimbing saat berdiskusi mengenai judul tugas akhir nantinya.
+Terakhir, terdapat fitur konsultasi yang memudahkan interaksi antara Mahasiswa dan Calon Dosen Pembimbing saat berdiskusi mengenai judul tugas akhir nantinya.
 
-Students at STIKI Malang need to perform several tasks when they want to submit their final project titles. These tasks include:
+_Students at STIKI Malang need to perform several tasks when they want to submit their final project titles. These tasks include:_
 
-1. Downloading documents from the provided website.
-2. Filling out these documents.
-3. Uploading the completed documents using the provided form.
+1. _Downloading documents from the provided website._
+2. _Filling out these documents._
+3. _Uploading the completed documents using the provided form._
 
-This information system is created to facilitate and simplify this submission process. Students will only need to fill out a form and will subsequently receive updates regarding their submissions.
+_This information system is created to facilitate and simplify this submission process. Students will only need to fill out a form and will subsequently receive updates regarding their submissions._
 
-Furthermore, this system will benefit the supervising professors and program coordinators. They will no longer need to individually sign documents, and it will be easier to approve or provide revisions for student submissions.
+_Furthermore, this system will benefit the supervising professors and program coordinators. They will no longer need to individually sign documents, and it will be easier to approve or provide revisions for student submissions._
 
-Lastly, there is a consultation feature that makes it easier for students to interact with potential project advisors when discussing their final project titles.
+_Lastly, there is a consultation feature that makes it easier for students to interact with potential project advisors when discussing their final project titles._
 
 ## Getting Started
 
@@ -48,26 +48,30 @@ Untuk memulai dengan proyek ini, pastikan Anda telah menginstal Node.js. Kemudia
 1. Clone repositori ini.
 2. Navigasi ke direktori proyek.
 3. Jalankan perintah-perintah berikut:
-   `npm install
- npm run build
- npm run start`
 
----
+   `npm install`
 
-To get started with this project, make sure you have Node.js installed. Then, follow these steps:
+   `npm run build`
 
-1. Clone the repository.
-2. Navigate to the project directory.
-3. Run the following commands:
-   `npm install
- npm run build
- npm run start`
+   `npm run start`
+
+_To get started with this project, make sure you have Node.js installed. Then, follow these steps:_
+
+1. _Clone the repository._
+2. _Navigate to the project directory._
+3. _Run the following commands:_
+
+   `npm install`
+
+   `npm run build`
+
+   `npm run start`
 
 ### Prerequisites
 
-## Sebelum menjalankan proyek, konfigurasikan variabel lingkungan dengan membuat file `.env`. Anda dapat menggunakan file `.env.example` sebagai template dan menggantikan nilai-nilai yang sesuai.
+Sebelum menjalankan proyek, konfigurasikan variabel lingkungan dengan membuat file `.env`. Anda dapat menggunakan file `.env.example` sebagai template dan menggantikan nilai-nilai yang sesuai.
 
-Before running the project, configure the environment variables by creating a `.env` file. You can use the `.env.example` file as a template and replace the placeholders with your specific values.
+_Before running the project, configure the environment variables by creating a `.env` file. You can use the `.env.example` file as a template and replace the placeholders with your specific values._
 
 ## License
 
