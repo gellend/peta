@@ -52,21 +52,40 @@ export default function RoomKonsultasi() {
   };
 
   const handleSubmit = async () => {
-    let dataToStore = {
-      ...chatMessages,
-      ...{
-        chats: [
-          ...chatMessages.chats,
-          {
-            message: textMessage,
-            sender_uid: currentUser.uid,
-            timestamp: new Date().toLocaleString("id-ID", {
-              timeZone: "Asia/Jakarta",
-            }),
-          },
-        ],
-      },
-    };
+    let dataToStore = {};
+
+    if (chatMessages.chats) {
+      dataToStore = {
+        ...chatMessages,
+        ...{
+          chats: [
+            ...chatMessages.chats,
+            {
+              message: textMessage,
+              sender_uid: currentUser.uid,
+              timestamp: new Date().toLocaleString("id-ID", {
+                timeZone: "Asia/Jakarta",
+              }),
+            },
+          ],
+        },
+      };
+    } else {
+      dataToStore = {
+        ...chatMessages,
+        ...{
+          chats: [
+            {
+              message: textMessage,
+              sender_uid: currentUser.uid,
+              timestamp: new Date().toLocaleString("id-ID", {
+                timeZone: "Asia/Jakarta",
+              }),
+            },
+          ],
+        },
+      };
+    }
 
     try {
       setIsLoading(true);
