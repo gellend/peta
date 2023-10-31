@@ -31,7 +31,7 @@ import { uploadFile } from "../../src/lib/upload";
 import { serverTimestamp } from "firebase/firestore";
 import useAppStore from "../../src/store/global";
 import useForm from "../../src/helper/useForm";
-import useSocket from "../../src/lib/socket";
+import useSocket, { emitNotification } from "../../src/lib/socket";
 import getCurrentTimestamp from "../../src/helper/date";
 import { generateAndUploadPdf } from "../../src/lib/pdf";
 
@@ -187,11 +187,14 @@ export default function CreatePengajuan() {
           const subscription = data.subscription;
 
           if (subscription) {
-            socket.emit("send-notification", {
-              title: "Pengajuan Baru",
-              body: `Oleh ${currentUser.nama}`,
-              subscription: subscription,
-            });
+            if (socket) {
+              emitNotification(
+                socket,
+                "Pengajuan",
+                `Hi, ${dosenPembimbing1.nama}! Pengajuan baru menunggu approval dari Anda`,
+                subscription
+              );
+            }
           }
         } else {
           console.log("Failed to store data to Firestore");
