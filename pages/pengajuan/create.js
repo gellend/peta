@@ -186,6 +186,15 @@ export default function CreatePengajuan() {
           const data = await getPushSubscription(dosenPembimbing1.docId);
           const subscription = data.subscription;
 
+          // Store notification in Firestore
+          await storeNotification({
+            title: "Pengajuan",
+            body: `Hi, ${dosenPembimbing1.nama}! Pengajuan baru menunggu approval dari Anda`,
+            sender_uid: currentUser.uid,
+            sender_name: currentUser.nama,
+            receiver_uid: dosenPembimbing1.docId,
+          });
+
           if (subscription) {
             if (socket) {
               emitNotification(
