@@ -10,6 +10,7 @@ _The information system that allows students to submit their final project title
 - [Getting Started](#getting-started)
   - [Prerequisites](#prerequisites)
   - [Installation](#installation)
+- [Docker](#docker)
 - [License](#license)
 - [Authors](#authors)
 - [Acknowledgments](#acknowledgments)
@@ -66,6 +67,14 @@ _To get started with this project, make sure you have Node.js installed. Then, f
    `npm run build`
 
    `npm run start`
+
+## Docker
+
+_Or you can easily utilize the Dockerfile by running the command below_
+
+`docker build -t peta-app .`
+
+`docker run -p 3000:3000 -d peta-app`
 
 ### Prerequisites
 
